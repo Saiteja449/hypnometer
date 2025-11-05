@@ -165,7 +165,6 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
 
   return (
     <View style={styles.profileContainer}>
-      {/* Header Section */}
       <View style={styles.profileHeader}>
         <View style={styles.avatarContainer}>
           <View style={styles.avatarGradient}>
@@ -198,7 +197,6 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
         </View>
       </View>
 
-      {/* Skills Breakdown */}
       <View style={styles.skillsContainer}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Skill Breakdown</Text>
@@ -208,24 +206,14 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
         </View>
 
         <View style={styles.skillsGrid}>
-          {/* Left Column */}
           <View style={styles.skillColumn}>
             <BarSkillMeter skill="Creativity" rating={4.5} level="EXPERT" />
 
-            <BarSkillMeter
-              skill="Expressiveness"
-              rating={4.2}
-              level="ADVANCED"
-            />
+            <BarSkillMeter skill="Expressive" rating={4.2} level="ADVANCED" />
           </View>
 
-          {/* Right Column */}
           <View style={styles.skillColumn}>
-            <BarSkillMeter
-              skill="Submodalities"
-              rating={4.0}
-              level="ADVANCED"
-            />
+            <BarSkillMeter skill="Submodali" rating={4.0} level="ADVANCED" />
 
             <BarSkillMeter skill="Tonality" rating={4.4} level="ADVANCED" />
           </View>
