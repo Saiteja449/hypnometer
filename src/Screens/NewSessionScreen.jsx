@@ -42,7 +42,6 @@ const NewSessionScreen = ({ navigation }) => {
     { id: 'smoking', name: 'Smoking', color: '#96CEB4' },
     { id: 'weight_loss', name: 'Weight Loss', color: '#FFEAA7' },
     { id: 'sleep', name: 'Sleep', color: '#DDA0DD' },
-    { id: 'pain', name: 'Pain Management', color: '#F4A460' },
     { id: 'stress', name: 'Stress', color: '#A78BFA' },
     { id: 'phobias', name: 'Phobias', color: '#F59E0B' },
     { id: 'performance', name: 'Performance', color: '#10B981' },
@@ -605,7 +604,6 @@ const NewSessionScreen = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.header}>
-          <Text style={styles.title}>Create New Session</Text>
           <Text style={styles.subtitle}>
             Track your hypnotherapy sessions and get feedback
           </Text>
@@ -616,7 +614,7 @@ const NewSessionScreen = ({ navigation }) => {
           <Text style={styles.label}>Session Title *</Text>
           <TextInput
             style={[styles.textInput, errors.title && styles.inputError]}
-            placeholder="e.g., Anxiety Relief Session, Confidence Building"
+            placeholder="e.g., Anxiety"
             value={sessionData.title}
             onChangeText={text => {
               setSessionData({ ...sessionData, title: text });
@@ -731,7 +729,7 @@ const NewSessionScreen = ({ navigation }) => {
 
         {/* Recording Upload */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Session Recording (Optional)</Text>
+          <Text style={styles.label}>Session Recording</Text>
           <Text style={styles.recordingSubtitle}>
             Files auto-delete after 24 hours for privacy
           </Text>
@@ -908,7 +906,7 @@ const styles = StyleSheet.create({
     maxWidth: 300,
   },
   inputContainer: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   label: {
     fontSize: 16,
@@ -922,7 +920,7 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 12,
     fontSize: 16,
     fontFamily: 'Nunito-Regular',
     color: '#1F2937',
@@ -992,10 +990,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   radioIconContainer: {
-    marginRight: 8,
+    marginRight: 4,
   },
   radioText: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: 'Nunito-Medium',
     color: '#6B7280',
   },
@@ -1023,7 +1021,6 @@ const styles = StyleSheet.create({
 
   // Date & Time Styles
   datetimeContainer: {
-    flexDirection: 'row',
     gap: 12,
   },
   datetimeButton: {
@@ -1065,11 +1062,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    padding: 12,
     borderRadius: 12,
     borderWidth: 2,
     borderStyle: 'dashed',
-    gap: 12,
+    gap: 8,
   },
   audioButton: {
     borderColor: '#4ECDC4',

@@ -68,23 +68,23 @@ const SelfAssessmentScreen = ({ navigation }) => {
   };
 
   const moodOptions = [
-    { 
-      value: 'happy', 
-      label: 'Positive', 
-      icon: 'HappyIcon', 
-      color: '#10B981' 
+    {
+      value: 'happy',
+      label: 'Positive',
+      icon: 'HappyIcon',
+      color: '#10B981',
     },
-    { 
-      value: 'neutral', 
-      label: 'Neutral', 
-      icon: 'NeutralIcon', 
-      color: '#F59E0B' 
+    {
+      value: 'neutral',
+      label: 'Neutral',
+      icon: 'NeutralIcon',
+      color: '#F59E0B',
     },
-    { 
-      value: 'challenge', 
-      label: 'Challenge', 
-      icon: 'ChallengeIcon', 
-      color: '#EF4444' 
+    {
+      value: 'challenge',
+      label: 'Challenge',
+      icon: 'ChallengeIcon',
+      color: '#EF4444',
     },
   ];
 
@@ -177,7 +177,15 @@ const SelfAssessmentScreen = ({ navigation }) => {
   const NeutralIcon = () => (
     <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="12" r="10" stroke="#F59E0B" strokeWidth="2" />
-      <Line x1="8" y1="14" x2="16" y2="14" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" />
+      <Line
+        x1="8"
+        y1="14"
+        x2="16"
+        y2="14"
+        stroke="#F59E0B"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
       <Circle cx="9" cy="10" r="1" fill="#F59E0B" />
       <Circle cx="15" cy="10" r="1" fill="#F59E0B" />
     </Svg>
@@ -230,7 +238,15 @@ const SelfAssessmentScreen = ({ navigation }) => {
         strokeWidth="2"
         strokeLinecap="round"
       />
-      <Rect x="3" y="3" width="18" height="18" rx="2" stroke="#8641f4" strokeWidth="2" />
+      <Rect
+        x="3"
+        y="3"
+        width="18"
+        height="18"
+        rx="2"
+        stroke="#8641f4"
+        strokeWidth="2"
+      />
     </Svg>
   );
 
@@ -238,10 +254,42 @@ const SelfAssessmentScreen = ({ navigation }) => {
     <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="12" r="10" stroke="#8641f4" strokeWidth="2" />
       <Circle cx="12" cy="12" r="4" stroke="#8641f4" strokeWidth="2" />
-      <Line x1="12" y1="2" x2="12" y2="6" stroke="#8641f4" strokeWidth="2" strokeLinecap="round" />
-      <Line x1="12" y1="18" x2="12" y2="22" stroke="#8641f4" strokeWidth="2" strokeLinecap="round" />
-      <Line x1="4.93" y1="4.93" x2="7.76" y2="7.76" stroke="#8641f4" strokeWidth="2" strokeLinecap="round" />
-      <Line x1="16.24" y1="16.24" x2="19.07" y2="19.07" stroke="#8641f4" strokeWidth="2" strokeLinecap="round" />
+      <Line
+        x1="12"
+        y1="2"
+        x2="12"
+        y2="6"
+        stroke="#8641f4"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <Line
+        x1="12"
+        y1="18"
+        x2="12"
+        y2="22"
+        stroke="#8641f4"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <Line
+        x1="4.93"
+        y1="4.93"
+        x2="7.76"
+        y2="7.76"
+        stroke="#8641f4"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <Line
+        x1="16.24"
+        y1="16.24"
+        x2="19.07"
+        y2="19.07"
+        stroke="#8641f4"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </Svg>
   );
 
@@ -324,23 +372,33 @@ const SelfAssessmentScreen = ({ navigation }) => {
     </Svg>
   );
 
-  const getMoodIcon = (type) => {
+  const getMoodIcon = type => {
     switch (type) {
-      case 'happy': return <HappyIcon />;
-      case 'neutral': return <NeutralIcon />;
-      case 'challenge': return <ChallengeIcon />;
-      default: return <NeutralIcon />;
+      case 'happy':
+        return <HappyIcon />;
+      case 'neutral':
+        return <NeutralIcon />;
+      case 'challenge':
+        return <ChallengeIcon />;
+      default:
+        return <NeutralIcon />;
     }
   };
 
-  const getSkillIcon = (type) => {
+  const getSkillIcon = type => {
     switch (type) {
-      case 'creativity': return <CreativityIcon />;
-      case 'expressiveness': return <ExpressivenessIcon />;
-      case 'submodalities': return <SubmodalitiesIcon />;
-      case 'tonality': return <TonalityIcon />;
-      case 'overall': return <ImpactIcon />;
-      default: return <ImpactIcon />;
+      case 'creativity':
+        return <CreativityIcon />;
+      case 'expressiveness':
+        return <ExpressivenessIcon />;
+      case 'submodalities':
+        return <SubmodalitiesIcon />;
+      case 'tonality':
+        return <TonalityIcon />;
+      case 'overall':
+        return <ImpactIcon />;
+      default:
+        return <ImpactIcon />;
     }
   };
 
@@ -349,9 +407,7 @@ const SelfAssessmentScreen = ({ navigation }) => {
     return (
       <View style={styles.ratingItem}>
         <View style={styles.ratingHeader}>
-          <View style={styles.skillIcon}>
-            {getSkillIcon(iconType)}
-          </View>
+          <View style={styles.skillIcon}>{getSkillIcon(iconType)}</View>
           <Text style={styles.ratingSkill}>{skill}</Text>
           <Text style={styles.ratingValue}>{rating}/5</Text>
         </View>
@@ -381,7 +437,10 @@ const SelfAssessmentScreen = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <CustomHeader title="Self Assessment" onBackPress={() => navigation.goBack()} />
+      <CustomHeader
+        title="Self Assessment"
+        onBackPress={() => navigation.goBack()}
+      />
       <ScrollView
         showsVerticalScrollIndicator={false}
         style={[styles.scrollView, styles.container]}
@@ -434,9 +493,7 @@ const SelfAssessmentScreen = ({ navigation }) => {
                   setAssessment({ ...assessment, mood: mood.value })
                 }
               >
-                <View style={styles.moodIcon}>
-                  {getMoodIcon(mood.value)}
-                </View>
+                <View style={styles.moodIcon}>{getMoodIcon(mood.value)}</View>
                 <Text
                   style={[
                     styles.moodLabel,
@@ -543,7 +600,9 @@ const SelfAssessmentScreen = ({ navigation }) => {
             <View style={styles.reflectionInput}>
               <View style={styles.reflectionLabelContainer}>
                 <ImprovementIcon />
-                <Text style={styles.reflectionLabel}>Areas for improvement</Text>
+                <Text style={styles.reflectionLabel}>
+                  Areas for improvement
+                </Text>
               </View>
               <TextInput
                 style={styles.textInput}
@@ -655,7 +714,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginHorizontal: 20,
-    marginBottom: 24,
+    marginBottom: 16,
   },
   label: {
     fontSize: 16,
@@ -733,7 +792,7 @@ const styles = StyleSheet.create({
   moodButton: {
     flex: 1,
     alignItems: 'center',
-    padding: 16,
+    padding: 12,
     borderWidth: 2,
     borderColor: '#E5E7EB',
     borderRadius: 12,
@@ -751,7 +810,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   moodLabel: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamily: 'Nunito-SemiBold',
     color: '#374151',
   },
@@ -795,9 +854,7 @@ const styles = StyleSheet.create({
   reflectionsContainer: {
     gap: 16,
   },
-  reflectionInput: {
-    marginBottom: 8,
-  },
+
   reflectionLabelContainer: {
     flexDirection: 'row',
     alignItems: 'center',
