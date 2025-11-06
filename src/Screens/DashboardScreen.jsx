@@ -59,9 +59,7 @@ const DashboardScreen = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <CustomHeader
-        title="Dashboard"
-      />
+      <CustomHeader title="Dashboard" />
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

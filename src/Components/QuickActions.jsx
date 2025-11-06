@@ -66,7 +66,7 @@ const QuickActions = ({ navigation }) => {
       icon: <PlusIcon />,
       screen: 'NewSessionScreen',
       color: '#8641f4',
-      description: 'Create and log new therapy sessions'
+      description: 'Create and log new therapy sessions',
     },
     {
       id: 2,
@@ -74,16 +74,16 @@ const QuickActions = ({ navigation }) => {
       icon: <AnalyticsIcon />,
       screen: 'AnalyticsScreen',
       color: '#41b884',
-      description: 'View performance insights and growth'
+      description: 'View performance insights and growth',
     },
-    {
-      id: 3,
-      title: 'Self Review',
-      icon: <ReviewIcon />,
-      screen: 'SelfAssessmentScreen',
-      color: '#f44182',
-      description: 'Reflect on your session performance'
-    },
+    // {
+    //   id: 3,
+    //   title: 'Self Review',
+    //   icon: <ReviewIcon />,
+    //   screen: 'SelfAssessmentScreen',
+    //   color: '#f44182',
+    //   description: 'Reflect on your session performance'
+    // },
   ];
 
   return (
@@ -105,12 +105,12 @@ const QuickActions = ({ navigation }) => {
           >
             <View style={styles.actionCardContent}>
               <View style={styles.actionLeft}>
-                <View style={styles.actionIconContainer}>
-                  {action.icon}
-                </View>
+                <View style={styles.actionIconContainer}>{action.icon}</View>
                 <View style={styles.actionTextContainer}>
                   <Text style={styles.actionCardTitle}>{action.title}</Text>
-                  <Text style={styles.actionDescription}>{action.description}</Text>
+                  <Text style={styles.actionDescription}>
+                    {action.description}
+                  </Text>
                 </View>
               </View>
               <View style={styles.actionArrow}>

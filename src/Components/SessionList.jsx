@@ -96,6 +96,7 @@ const SessionList = ({
         {sessions.length > 0 && showViewAll && (
           <TouchableOpacity
             style={styles.viewAllButton}
+            onPress={() => navigation.navigate('AllSessionsScreen')}
             hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           >
             <Text style={styles.viewAllText}>View All</Text>

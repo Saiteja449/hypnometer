@@ -472,7 +472,7 @@ const AdminDashboard = ({ navigation }) => {
             <SearchIcon />
             <TextInput
               style={styles.searchTextInput}
-              placeholder="Search users by name, email, or qualification..."
+              placeholder="Search users by name, email"
               value={searchQuery}
               onChangeText={setSearchQuery}
               placeholderTextColor="#9CA3AF"
@@ -968,7 +968,7 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderRadius: 12,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 8,
   },
   searchTextInput: {
     flex: 1,

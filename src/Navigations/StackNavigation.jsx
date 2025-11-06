@@ -9,6 +9,7 @@ import SignUpScreen from '../Auth/SignUpScreen';
 import PendingApprovalScreen from '../Auth/PendingApprovalScreen';
 import LoginScreen from '../Auth/LoginScreen';
 import AdminDashboard from '../Screens/Admin/AdminDashboard';
+import AllSessionsScreen from '../Screens/AllSessionsScreen';
 const Stack = createNativeStackNavigator();
 
 const StackNavigation = () => {
@@ -17,7 +18,7 @@ const StackNavigation = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="LoginScreen"
+      initialRouteName="DashboardScreen"
     >
       <Stack.Screen component={LoginScreen} name="LoginScreen" />
       <Stack.Screen component={SignUpScreen} name="SignUpScreen" />
@@ -33,6 +34,7 @@ const StackNavigation = () => {
         name="SelfAssessmentScreen"
         component={SelfAssessmentScreen}
       />
+      <Stack.Screen name="AllSessionsScreen" component={AllSessionsScreen} />
     </Stack.Navigator>
   );
 };
