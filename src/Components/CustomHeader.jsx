@@ -19,6 +19,7 @@ const CustomHeader = ({
   showBackButton = true,
   showBorder = true,
   centerTitle = false,
+  showThemeToggle = true,
 }) => {
   const { theme, isDark, toggleTheme } = useTheme();
 
@@ -26,6 +27,10 @@ const CustomHeader = ({
   const titleColor = theme.primary;
   const subtitleColor = theme.secondary;
   const borderColor = theme.border;
+
+  const hasLeftIcon = showBackButton && onBackPress;
+  const hasRightIcon = showThemeToggle;
+  const shouldCenterTitle = centerTitle || (!hasLeftIcon && !hasRightIcon);
 
   const BackIcon = () => (
     <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -72,7 +77,7 @@ const CustomHeader = ({
       ]}
     >
       <View style={styles.leftSection}>
-        {showBackButton && onBackPress && (
+        {hasLeftIcon && (
           <TouchableOpacity
             style={styles.backButton}
             onPress={onBackPress}
@@ -86,7 +91,7 @@ const CustomHeader = ({
       <View
         style={[
           styles.centerSection,
-          centerTitle && styles.centerSectionCentered,
+          shouldCenterTitle && styles.centerSectionCentered,
         ]}
       >
         <Text style={[styles.title, { color: titleColor }]} numberOfLines={1}>
@@ -103,7 +108,7 @@ const CustomHeader = ({
       </View>
 
       <View style={styles.rightSection}>
-        <ThemeToggleIcon />
+        {showThemeToggle && <ThemeToggleIcon />}
       </View>
     </View>
   );

@@ -184,7 +184,7 @@ const RegistrationScreen = ({ navigation }) => {
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <CustomHeader title="Create Account" />
+      <CustomHeader title="Create Account" showThemeToggle={false} />
 
       <ScrollView
         style={styles.container}

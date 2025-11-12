@@ -526,11 +526,12 @@ const LoginScreen = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {currentStep === 'credentials' && loginType === 'user' && (
-        <CustomHeader title="Sign In" />
+        <CustomHeader title="Sign In" showThemeToggle={false} />
       )}
       {currentStep === 'otp' && loginType === 'user' && (
         <CustomHeader
           title="Sign In"
+          showThemeToggle={false}
           onBackPress={() => {
             if (currentStep === 'otp') {
               setCurrentStep('credentials');
