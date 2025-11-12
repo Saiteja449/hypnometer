@@ -525,16 +525,21 @@ const LoginScreen = ({ navigation }) => {
       style={{ flex: 1 }}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <CustomHeader
-        title="Sign In"
-        onBackPress={() => {
-          if (currentStep === 'otp') {
-            setCurrentStep('credentials');
-          } else {
-            navigation.goBack();
-          }
-        }}
-      />
+      {currentStep === 'credentials' && loginType === 'user' && (
+        <CustomHeader title="Sign In" />
+      )}
+      {currentStep === 'otp' && loginType === 'user' && (
+        <CustomHeader
+          title="Sign In"
+          onBackPress={() => {
+            if (currentStep === 'otp') {
+              setCurrentStep('credentials');
+            } else {
+              navigation.goBack();
+            }
+          }}
+        />
+      )}
 
       <ScrollView
         style={styles.container}
@@ -556,7 +561,7 @@ const LoginScreen = ({ navigation }) => {
           ? renderCredentialsStep()
           : renderOtpStep()}
 
-        {loginType === 'user' && currentStep === 'credentials' && (
+        {/* {loginType === 'user' && currentStep === 'credentials' && (
           <View style={styles.footer}>
             <Text style={styles.footerText}>
               Don't have an account?{' '}
@@ -568,7 +573,7 @@ const LoginScreen = ({ navigation }) => {
               </Text>
             </Text>
           </View>
-        )}
+        )} */}
       </ScrollView>
     </KeyboardAvoidingView>
   );

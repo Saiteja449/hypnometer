@@ -5,7 +5,7 @@ import DashboardScreen from '../Screens/DashboardScreen';
 import NewSessionScreen from '../Screens/NewSessionScreen';
 import AnalyticsScreen from '../Screens/AnalyticsScreen';
 import SelfAssessmentScreen from '../Screens/SelfAssessment';
-import SignUpScreen from '../Auth/SignUpScreen';
+import RegistrationScreen from '../Auth/RegistrationScreen';
 import PendingApprovalScreen from '../Auth/PendingApprovalScreen';
 import LoginScreen from '../Auth/LoginScreen';
 import AdminDashboard from '../Screens/Admin/AdminDashboard';
@@ -21,7 +21,7 @@ const StackNavigation = () => {
       initialRouteName="DashboardScreen"
     >
       <Stack.Screen component={LoginScreen} name="LoginScreen" />
-      <Stack.Screen component={SignUpScreen} name="SignUpScreen" />
+      <Stack.Screen component={RegistrationScreen} name="RegistrationScreen" />
       <Stack.Screen
         component={PendingApprovalScreen}
         name="PendingApprovalScreen"

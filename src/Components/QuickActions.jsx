@@ -1,248 +1,244 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Svg, { Path, Circle, Rect, G } from 'react-native-svg';
+import LinearGradient from 'react-native-linear-gradient';
+import Svg, { Path } from 'react-native-svg';
+// Assuming your ThemeContext.js file is in a folder named 'Context'
+import { useTheme } from '../Context/ThemeContext';
+
+const ActionGradients = {
+  newSession: ['#7A40F2', '#A673FF'],
+  analyticsHub: ['#38C172', '#58D68D'],
+  selfReview: ['#F56565', '#E33A3A'],
+};
+
+// --- SVG Icons ---
+const PlusIcon = ({ color }) => (
+  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M12 5V19M5 12H19"
+      stroke={color}
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+const AnalyticsIcon = ({ color }) => (
+  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M3 3V21H21"
+      stroke={color}
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+    <Path
+      d="M7 15L11 9L15 13L19 7"
+      stroke={color}
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+const ReviewIcon = ({ color }) => (
+  <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+    <Path
+      d="M12 20H21M3 6L10.5 13.5L13.5 10.5L21 18M3 6V18H21V6H3Z"
+      stroke={color}
+      strokeWidth="2.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
+
+const ArrowIcon = ({ color }) => (
+  <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+    <Path
+      d="M3 8H13M13 8L9 4M13 8L9 12"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </Svg>
+);
 
 const QuickActions = ({ navigation }) => {
-  // SVG Icons (unchanged)
-  const PlusIcon = () => (
-    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M12 5V19M5 12H19"
-        stroke="#FFFFFF"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
-  const AnalyticsIcon = () => (
-    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M3 3V21H21"
-        stroke="#FFFFFF"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M7 15L11 9L15 13L19 7"
-        stroke="#FFFFFF"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
-  const ReviewIcon = () => (
-    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M12 20H21M3 6L10.5 13.5L13.5 10.5L21 18M3 6V18H21V6H3Z"
-        stroke="#FFFFFF"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
-  const ArrowIcon = () => (
-    <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      <Path
-        d="M3 8H13M13 8L9 4M13 8L9 12"
-        stroke="#FFFFFF"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
+  const { theme, isDark } = useTheme();
 
   const actions = [
     {
       id: 1,
       title: 'New Session',
-      icon: <PlusIcon />,
+      icon: <PlusIcon color="#FFFFFF" />,
       screen: 'NewSessionScreen',
-      color: '#8641f4',
+      colors: ActionGradients.newSession,
       description: 'Create and log new therapy sessions',
     },
     {
       id: 2,
-      title: 'Analytics',
-      icon: <AnalyticsIcon />,
+      title: 'Analytics Hub',
+      icon: <AnalyticsIcon color="#FFFFFF" />,
       screen: 'AnalyticsScreen',
-      color: '#41b884',
-      description: 'View performance insights and growth',
+      colors: ActionGradients.analyticsHub,
+      description: 'View performance insights and growth metrics',
     },
     // {
     //   id: 3,
     //   title: 'Self Review',
-    //   icon: <ReviewIcon />,
+    //   icon: <ReviewIcon color="#FFFFFF" />,
     //   screen: 'SelfAssessmentScreen',
-    //   color: '#f44182',
-    //   description: 'Reflect on your session performance'
+    //   colors: ActionGradients.selfReview,
+    //   description: 'Reflect and rate your session performance',
     // },
   ];
 
+  const dynamicStyles = StyleSheet.create({
+    actionsContainer: {
+      backgroundColor: theme.card,
+      padding: 16,
+      borderRadius: 20,
+      shadowColor: isDark ? theme.cardShadow : theme.cardShadow,
+      shadowOffset: { width: 0, height: 5 },
+      shadowOpacity: isDark ? 0.3 : 0.15,
+      shadowRadius: 15,
+      elevation: 10,
+    },
+    sectionHeader: {
+      marginBottom: 20,
+    },
+    sectionTitle: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      color: theme.primary, // Dynamic
+      marginBottom: 4,
+    },
+    sectionSubtitle: {
+      fontSize: 14,
+      color: theme.secondary, // Dynamic
+      fontWeight: '500',
+    },
+    actionsList: {
+      gap: 16,
+    },
+    actionCard: {
+      borderRadius: 16,
+      padding: 20,
+      position: 'relative',
+      overflow: 'hidden',
+      minHeight: 100,
+    },
+    actionCardContent: {
+      position: 'relative',
+      zIndex: 2,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    actionLeft: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      flex: 1,
+    },
+    actionIconContainer: {
+      width: 56,
+      height: 56,
+      borderRadius: 14,
+      backgroundColor: 'rgba(255,255,255,0.15)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginRight: 16,
+    },
+    actionTextContainer: {
+      flex: 1,
+    },
+    actionCardTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#FFFFFF',
+      marginBottom: 4,
+    },
+    actionDescription: {
+      fontSize: 13,
+      color: 'rgba(255,255,255,0.8)',
+      fontWeight: '400',
+    },
+    actionArrow: {
+      backgroundColor: 'rgba(0,0,0,0.2)',
+      padding: 10,
+      borderRadius: 12,
+      marginLeft: 12,
+    },
+    cardDecoration: {
+      position: 'absolute',
+      top: -50,
+      right: -50,
+      width: 140,
+      height: 140,
+      borderRadius: 70,
+      backgroundColor: 'rgba(255,255,255,0.05)',
+    },
+  });
+
+  const ActionCard = ({ action }) => (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() => {
+        if (navigation && navigation.navigate) {
+          navigation.navigate(action.screen);
+        } else {
+          console.log(`Navigating to ${action.screen}`);
+        }
+      }}
+    >
+      <LinearGradient
+        colors={action.colors}
+        start={{ x: 0.1, y: 0.1 }}
+        end={{ x: 0.9, y: 0.9 }}
+        style={dynamicStyles.actionCard}
+      >
+        <View style={dynamicStyles.actionCardContent}>
+          <View style={dynamicStyles.actionLeft}>
+            <View style={dynamicStyles.actionIconContainer}>{action.icon}</View>
+
+            <View style={dynamicStyles.actionTextContainer}>
+              <Text style={dynamicStyles.actionCardTitle}>{action.title}</Text>
+              <Text style={dynamicStyles.actionDescription}>
+                {action.description}
+              </Text>
+            </View>
+          </View>
+
+          <View style={dynamicStyles.actionArrow}>
+            <ArrowIcon color="#FFFFFF" />
+          </View>
+
+          <View style={dynamicStyles.cardDecoration} />
+        </View>
+      </LinearGradient>
+    </TouchableOpacity>
+  );
+
   return (
-    <View style={styles.actionsContainer}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <Text style={styles.sectionSubtitle}>
-          One-tap access to key features
+    <View style={dynamicStyles.actionsContainer}>
+      <View style={dynamicStyles.sectionHeader}>
+        <Text style={dynamicStyles.sectionTitle}>Quick Actions</Text>
+        <Text style={dynamicStyles.sectionSubtitle}>
+          One-tap access to your core workflows
         </Text>
       </View>
 
-      <View style={styles.actionsList}>
+      <View style={dynamicStyles.actionsList}>
         {actions.map(action => (
-          <TouchableOpacity
-            key={action.id}
-            style={[styles.actionCard, { backgroundColor: action.color }]}
-            onPress={() => navigation.navigate(action.screen)}
-            activeOpacity={0.9}
-          >
-            <View style={styles.actionCardContent}>
-              <View style={styles.actionLeft}>
-                <View style={styles.actionIconContainer}>{action.icon}</View>
-                <View style={styles.actionTextContainer}>
-                  <Text style={styles.actionCardTitle}>{action.title}</Text>
-                  <Text style={styles.actionDescription}>
-                    {action.description}
-                  </Text>
-                </View>
-              </View>
-              <View style={styles.actionArrow}>
-                <ArrowIcon />
-              </View>
-            </View>
-
-            {/* Decorative elements */}
-            <View style={styles.cardDecoration} />
-            <View style={[styles.cardDot, styles.cardDot1]} />
-            <View style={[styles.cardDot, styles.cardDot2]} />
-          </TouchableOpacity>
+          <ActionCard key={action.id} action={action} />
         ))}
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  actionsContainer: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    margin: 16,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: '#F0F2FF',
-  },
-  sectionHeader: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontFamily: 'Nunito-Bold',
-    color: '#2D3748',
-    marginBottom: 4,
-  },
-  sectionSubtitle: {
-    fontSize: 14,
-    color: '#718096',
-    fontFamily: 'Nunito-Medium',
-  },
-  actionsList: {
-    gap: 12,
-  },
-  actionCard: {
-    borderRadius: 16,
-    padding: 20,
-    position: 'relative',
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-    minHeight: 100,
-  },
-  actionCardContent: {
-    position: 'relative',
-    zIndex: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  actionLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-  },
-  actionIconContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 12,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
-  },
-  actionTextContainer: {
-    flex: 1,
-  },
-  actionCardTitle: {
-    fontSize: 18,
-    fontFamily: 'Nunito-Bold',
-    color: '#FFFFFF',
-    marginBottom: 4,
-  },
-  actionDescription: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.9)',
-    fontFamily: 'Nunito-Medium',
-  },
-  actionArrow: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    padding: 10,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
-    marginLeft: 12,
-  },
-  cardDecoration: {
-    position: 'absolute',
-    top: -40,
-    right: -40,
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(255,255,255,0.1)',
-  },
-  cardDot: {
-    position: 'absolute',
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: 'rgba(255,255,255,0.4)',
-  },
-  cardDot1: {
-    top: 25,
-    right: 25,
-  },
-  cardDot2: {
-    top: 45,
-    right: 45,
-    width: 4,
-    height: 4,
-  },
-});
 
 export default QuickActions;

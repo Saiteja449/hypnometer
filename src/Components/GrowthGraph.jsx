@@ -15,15 +15,16 @@ import Svg, {
   LinearGradient,
   Stop,
 } from 'react-native-svg';
+import { useTheme } from '../Context/ThemeContext';
 
 const GrowthGraph = () => {
+  const { theme, isDark } = useTheme();
+
   const screenWidth = Dimensions.get('window').width - 40;
 
-  // Time range options
   const timeRanges = ['1W', '1M', '3M', '1Y'];
   const [selectedRange, setSelectedRange] = React.useState('1M');
 
-  // Chart data based on selected range
   const getChartData = () => {
     const data = {
       '1W': {
@@ -48,36 +49,46 @@ const GrowthGraph = () => {
 
   const currentData = getChartData();
 
+  const chartLineColor = (opacity = 1) =>
+    `rgba(${parseInt(theme.accent.slice(1, 3), 16)}, ${parseInt(
+      theme.accent.slice(3, 5),
+      16,
+    )}, ${parseInt(theme.accent.slice(5, 7), 16)}, ${opacity})`;
+
   const chartData = {
     labels: currentData.labels,
     datasets: [
       {
         data: currentData.data,
-        color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
+        color: chartLineColor,
         strokeWidth: 3,
       },
     ],
   };
 
   const chartConfig = {
-    backgroundColor: '#ffffff',
-    backgroundGradientFrom: '#ffffff',
-    backgroundGradientTo: '#ffffff',
+    backgroundColor: theme.card,
+    backgroundGradientFrom: theme.card,
+    backgroundGradientTo: theme.card,
+
     decimalPlaces: 1,
-    color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(107, 114, 128, ${opacity})`,
+    color: chartLineColor,
+    labelColor: (opacity = 1) =>
+      isDark
+        ? `rgba(255, 255, 255, ${opacity})`
+        : `rgba(113, 128, 150, ${opacity})`,
     style: {
       borderRadius: 16,
     },
     propsForDots: {
       r: '6',
       strokeWidth: '2',
-      stroke: '#8641f4',
-      fill: '#ffffff',
+      stroke: theme.accent,
+      fill: theme.card,
     },
     propsForBackgroundLines: {
-      strokeDasharray: '', // solid lines
-      stroke: '#E2E8F0',
+      strokeDasharray: '',
+      stroke: theme.border,
       strokeWidth: 1,
     },
     propsForLabels: {
@@ -86,7 +97,6 @@ const GrowthGraph = () => {
     },
   };
 
-  // Custom SVG arrow for trend indicator
   const TrendArrow = ({ trend }) => (
     <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
       {trend === 'up' ? (
@@ -109,7 +119,6 @@ const GrowthGraph = () => {
     </Svg>
   );
 
-  // Calculate growth metrics
   const calculateMetrics = () => {
     const data = currentData.data;
     const current = data[data.length - 1];
@@ -128,35 +137,184 @@ const GrowthGraph = () => {
 
   const metrics = calculateMetrics();
 
+  const dynamicStyles = StyleSheet.create({
+    graphContainer: {
+      backgroundColor: theme.card,
+      padding: 16,
+      borderRadius: 20,
+      shadowColor: isDark ? theme.cardShadow : theme.cardShadow,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowRadius: 12,
+      elevation: 4,
+      borderWidth: 1,
+      borderColor: theme.border,
+    },
+    graphHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: 16,
+    },
+    sectionTitle: {
+      fontSize: 20,
+      fontFamily: 'Nunito-Bold',
+      color: theme.primary,
+      marginBottom: 4,
+    },
+    graphSubtitle: {
+      fontSize: 14,
+      color: theme.secondary,
+      fontFamily: 'Nunito-Medium',
+    },
+    currentScore: {
+      alignItems: 'center',
+      backgroundColor: isDark ? theme.background : '#F8FAFF',
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.border,
+    },
+    scoreValue: {
+      fontSize: 18,
+      fontFamily: 'Nunito-Bold',
+      color: theme.accent,
+      marginBottom: 2,
+    },
+    scoreLabel: {
+      fontSize: 12,
+      color: theme.secondary,
+      fontFamily: 'Nunito-Medium',
+    },
+    timeRangeContainer: {
+      flexDirection: 'row',
+      backgroundColor: isDark ? theme.background : '#F7FAFC',
+      padding: 4,
+      borderRadius: 12,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: theme.border,
+    },
+    timeRangeButton: {
+      flex: 1,
+      paddingVertical: 8,
+      paddingHorizontal: 4,
+      borderRadius: 8,
+      alignItems: 'center',
+    },
+    timeRangeButtonActive: {
+      backgroundColor: theme.card,
+      shadowColor: theme.cardShadow,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.1,
+      shadowRadius: 2,
+      elevation: 2,
+    },
+    timeRangeText: {
+      fontSize: 12,
+      fontFamily: 'Nunito-Medium',
+      color: theme.secondary,
+    },
+    timeRangeTextActive: {
+      color: theme.accent,
+      fontFamily: 'Nunito-Bold',
+    },
+    chartWrapper: {
+      alignItems: 'center',
+      marginBottom: 16,
+    },
+    chart: {
+      borderRadius: 16,
+      marginVertical: 8,
+    },
+    metricsContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 16,
+      gap: 12,
+    },
+    metricCard: {
+      flex: 1,
+      backgroundColor: isDark ? theme.background : '#F8FAFF',
+      padding: 12,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: theme.border,
+      alignItems: 'center',
+    },
+    metricHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 4,
+    },
+    metricLabel: {
+      fontSize: 12,
+      color: theme.secondary,
+      fontFamily: 'Nunito-Medium',
+      marginRight: 4,
+    },
+    metricValue: {
+      fontSize: 16,
+      fontFamily: 'Nunito-Bold',
+      color: theme.primary,
+    },
+    performanceIndicator: {
+      backgroundColor: isDark ? '#332700' : '#FFF9E6',
+      padding: 16,
+      borderRadius: 12,
+      borderWidth: 1,
+      borderColor: isDark ? '#665100' : '#FFE999',
+    },
+    performanceBar: {
+      height: 6,
+      backgroundColor: theme.border,
+      borderRadius: 3,
+      marginBottom: 8,
+      overflow: 'hidden',
+    },
+    performanceFill: {
+      height: '100%',
+      backgroundColor: theme.accent,
+      borderRadius: 3,
+    },
+    performanceText: {
+      fontSize: 14,
+      fontFamily: 'Nunito-SemiBold',
+      color: isDark ? '#FFD700' : '#D97706',
+      textAlign: 'center',
+    },
+  });
+
   return (
-    <View style={styles.graphContainer}>
-      {/* Header with title and metrics */}
-      <View style={styles.graphHeader}>
+    <View style={dynamicStyles.graphContainer}>
+      <View style={dynamicStyles.graphHeader}>
         <View>
-          <Text style={styles.sectionTitle}>Growth Progress</Text>
-          <Text style={styles.graphSubtitle}>Metaphor Mastery Score</Text>
+          <Text style={dynamicStyles.sectionTitle}>Growth Progress</Text>
+          <Text style={dynamicStyles.graphSubtitle}>
+            Metaphor Mastery Score
+          </Text>
         </View>
-        <View style={styles.currentScore}>
-          <Text style={styles.scoreValue}>{metrics.currentScore}</Text>
-          <Text style={styles.scoreLabel}>Current</Text>
+        <View style={dynamicStyles.currentScore}>
+          <Text style={dynamicStyles.scoreValue}>{metrics.currentScore}</Text>
+          <Text style={dynamicStyles.scoreLabel}>Current</Text>
         </View>
       </View>
 
-      {/* Time Range Selector */}
-      <View style={styles.timeRangeContainer}>
+      <View style={dynamicStyles.timeRangeContainer}>
         {timeRanges.map(range => (
           <TouchableOpacity
             key={range}
             style={[
-              styles.timeRangeButton,
-              selectedRange === range && styles.timeRangeButtonActive,
+              dynamicStyles.timeRangeButton,
+              selectedRange === range && dynamicStyles.timeRangeButtonActive,
             ]}
             onPress={() => setSelectedRange(range)}
           >
             <Text
               style={[
-                styles.timeRangeText,
-                selectedRange === range && styles.timeRangeTextActive,
+                dynamicStyles.timeRangeText,
+                selectedRange === range && dynamicStyles.timeRangeTextActive,
               ]}
             >
               {range}
@@ -165,15 +323,14 @@ const GrowthGraph = () => {
         ))}
       </View>
 
-      {/* Chart */}
-      <View style={styles.chartWrapper}>
+      <View style={dynamicStyles.chartWrapper}>
         <LineChart
           data={chartData}
           width={screenWidth}
           height={200}
           chartConfig={chartConfig}
           bezier
-          style={styles.chart}
+          style={dynamicStyles.chart}
           withVerticalLines={true}
           withHorizontalLines={true}
           withInnerLines={true}
@@ -182,16 +339,15 @@ const GrowthGraph = () => {
         />
       </View>
 
-      {/* Metrics Cards */}
-      <View style={styles.metricsContainer}>
-        <View style={styles.metricCard}>
-          <View style={styles.metricHeader}>
-            <Text style={styles.metricLabel}>Growth</Text>
+      <View style={dynamicStyles.metricsContainer}>
+        <View style={dynamicStyles.metricCard}>
+          <View style={dynamicStyles.metricHeader}>
+            <Text style={dynamicStyles.metricLabel}>Growth</Text>
             <TrendArrow trend={metrics.trend} />
           </View>
           <Text
             style={[
-              styles.metricValue,
+              dynamicStyles.metricValue,
               { color: metrics.trend === 'up' ? '#27ae60' : '#e74c3c' },
             ]}
           >
@@ -200,168 +356,18 @@ const GrowthGraph = () => {
           </Text>
         </View>
 
-        <View style={styles.metricCard}>
-          <Text style={styles.metricLabel}>Highest</Text>
-          <Text style={styles.metricValue}>{metrics.highest}</Text>
+        <View style={dynamicStyles.metricCard}>
+          <Text style={dynamicStyles.metricLabel}>Highest</Text>
+          <Text style={dynamicStyles.metricValue}>{metrics.highest}</Text>
         </View>
 
-        <View style={styles.metricCard}>
-          <Text style={styles.metricLabel}>Average</Text>
-          <Text style={styles.metricValue}>{metrics.average}</Text>
+        <View style={dynamicStyles.metricCard}>
+          <Text style={dynamicStyles.metricLabel}>Average</Text>
+          <Text style={dynamicStyles.metricValue}>{metrics.average}</Text>
         </View>
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  graphContainer: {
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-    margin: 16,
-    borderRadius: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 4,
-    borderWidth: 1,
-    borderColor: '#F0F2FF',
-  },
-  graphHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontFamily: 'Nunito-Bold',
-    color: '#2D3748',
-    marginBottom: 4,
-  },
-  graphSubtitle: {
-    fontSize: 14,
-    color: '#718096',
-    fontFamily: 'Nunito-Medium',
-  },
-  currentScore: {
-    alignItems: 'center',
-    backgroundColor: '#F8FAFF',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  scoreValue: {
-    fontSize: 18,
-    fontFamily: 'Nunito-Bold',
-    color: '#8641f4',
-    marginBottom: 2,
-  },
-  scoreLabel: {
-    fontSize: 12,
-    color: '#718096',
-    fontFamily: 'Nunito-Medium',
-  },
-  timeRangeContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#F7FAFC',
-    padding: 4,
-    borderRadius: 12,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-  },
-  timeRangeButton: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 4,
-    borderRadius: 8,
-    alignItems: 'center',
-  },
-  timeRangeButtonActive: {
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  timeRangeText: {
-    fontSize: 12,
-    fontFamily: 'Nunito-Medium',
-    color: '#718096',
-  },
-  timeRangeTextActive: {
-    color: '#8641f4',
-    fontFamily: 'Nunito-Bold',
-  },
-  chartWrapper: {
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  chart: {
-    borderRadius: 16,
-    marginVertical: 8,
-  },
-  metricsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-    gap: 12,
-  },
-  metricCard: {
-    flex: 1,
-    backgroundColor: '#F8FAFF',
-    padding: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    alignItems: 'center',
-  },
-  metricHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  metricLabel: {
-    fontSize: 12,
-    color: '#718096',
-    fontFamily: 'Nunito-Medium',
-    marginRight: 4,
-  },
-  metricValue: {
-    fontSize: 16,
-    fontFamily: 'Nunito-Bold',
-    color: '#2D3748',
-  },
-  performanceIndicator: {
-    backgroundColor: '#FFF9E6',
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#FFE999',
-  },
-  performanceBar: {
-    height: 6,
-    backgroundColor: '#E2E8F0',
-    borderRadius: 3,
-    marginBottom: 8,
-    overflow: 'hidden',
-  },
-  performanceFill: {
-    height: '100%',
-    backgroundColor: '#8641f4',
-    borderRadius: 3,
-  },
-  performanceText: {
-    fontSize: 14,
-    fontFamily: 'Nunito-SemiBold',
-    color: '#D97706',
-    textAlign: 'center',
-  },
-});
 
 export default GrowthGraph;

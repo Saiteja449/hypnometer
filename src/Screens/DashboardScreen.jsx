@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, ScrollView, RefreshControl } from 'react-native';
+import { View, ScrollView, RefreshControl, StyleSheet } from 'react-native';
 import ProfileHeader from '../Components/ProfileHeader';
-import { styles } from '../globalcss';
 import QuickActions from '../Components/QuickActions';
 import GrowthGraph from '../Components/GrowthGraph';
 import SessionList from '../Components/SessionList';
 import CustomHeader from '../Components/CustomHeader';
 
+import { useTheme } from '../Context/ThemeContext';
+
 const DashboardScreen = ({ navigation }) => {
+  const { theme } = useTheme();
+
   const [refreshing, setRefreshing] = useState(false);
   const [userData, setUserData] = useState(null);
   const [recentSessions, setRecentSessions] = useState([]);
@@ -48,6 +51,14 @@ const DashboardScreen = ({ navigation }) => {
         avgRating: 4.2,
         ratings: [4, 4, 3, 5, 5],
       },
+      {
+        id: 3,
+        title: 'Trauma Processing',
+        type: 'Trauma',
+        date: '2024-01-13',
+        avgRating: 4.8,
+        ratings: [5, 5, 5, 4, 5],
+      },
     ]);
   };
 
@@ -57,20 +68,54 @@ const DashboardScreen = ({ navigation }) => {
     setTimeout(() => setRefreshing(false), 1000);
   };
 
+  const dynamicStyles = StyleSheet.create({
+    screenContainer: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
+    scrollViewContent: {
+      paddingHorizontal: 16,
+      paddingTop: 16,
+      paddingBottom: 40,
+    },
+    componentWrapper: {
+      marginBottom: 16,
+    },
+  });
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={dynamicStyles.screenContainer}>
       <CustomHeader title="Dashboard" />
       <ScrollView
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.accent}
+            colors={[theme.accent]}
+            progressBackgroundColor={theme.card}
+          />
         }
         showsVerticalScrollIndicator={false}
-        style={styles.container}
+        contentContainerStyle={dynamicStyles.scrollViewContent}
       >
-        <ProfileHeader userData={userData} />
-        <QuickActions navigation={navigation} />
-        <GrowthGraph />
-        <SessionList sessions={recentSessions} navigation={navigation} />
+        <View style={dynamicStyles.componentWrapper}>
+          <ProfileHeader userData={userData} />
+        </View>
+        <View style={dynamicStyles.componentWrapper}>
+          <QuickActions navigation={navigation} />
+        </View>
+        <View style={dynamicStyles.componentWrapper}>
+          <GrowthGraph />
+        </View>
+        <View style={dynamicStyles.componentWrapper}>
+          <SessionList
+            sessions={recentSessions}
+            navigation={navigation}
+            title="Recent Sessions"
+            showViewAll={true}
+          />
+        </View>
       </ScrollView>
     </View>
   );
