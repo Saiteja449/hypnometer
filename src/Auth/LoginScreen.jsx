@@ -37,47 +37,8 @@ const LoginScreen = ({ navigation }) => {
   const [modalMessage, setModalMessage] = useState('');
   const [modalButtons, setModalButtons] = useState([]);
 
-  const EmailIcon = () => (
-    <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <Rect
-        x="2"
-        y="4"
-        width="20"
-        height="16"
-        rx="3"
-        stroke={theme.accent}
-        strokeWidth="2"
-      />
-      <Path
-        d="M2 7L10.1649 12.7154C10.8261 13.1783 11.1567 13.4097 11.5163 13.4993C11.8339 13.5785 12.1661 13.5785 12.4837 13.4993C12.8433 13.4097 13.1739 13.1783 13.8351 12.7154L22 7"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
-  const LockIcon = () => (
-    <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <Rect
-        x="3"
-        y="10"
-        width="18"
-        height="12"
-        rx="3"
-        stroke={theme.accent}
-        strokeWidth="2"
-      />
-      <Path
-        d="M7 10V7C7 4.23858 9.23858 2 12 2C14.7614 2 17 4.23858 17 7V10"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-      <Circle cx="12" cy="15" r="2" fill={theme.accent} />
-    </Svg>
-  );
+import EmailIcon from '../Icons/EmailIcon';
+import LockIcon from '../Icons/LockIcon';
 
   const validateCredentials = () => {
     const newErrors = {};
@@ -202,7 +163,7 @@ const LoginScreen = ({ navigation }) => {
               style={[styles.inputWrapper, errors.email && styles.inputError]}
             >
               <View style={styles.inputIcon}>
-                <EmailIcon />
+                <EmailIcon color={theme.accent} />
               </View>
               <TextInput
                 style={styles.textInput}
@@ -229,7 +190,7 @@ const LoginScreen = ({ navigation }) => {
               ]}
             >
               <View style={styles.inputIcon}>
-                <LockIcon />
+                <LockIcon color={theme.accent} />
               </View>
               <TextInput
                 style={styles.textInput}

@@ -21,118 +21,11 @@ const PendingApprovalScreen = ({ navigation, route }) => {
   // Get user data from signup if needed
   const userData = route.params?.userData || {};
 
-  const ApprovalIcon = () => (
-    <Svg width="120" height="120" viewBox="0 0 24 24" fill="none">
-      <Circle cx="12" cy="12" r="10" stroke={theme.accent} strokeWidth="2" />
-      <Path
-        d="M8 12L11 15L16 9"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Circle cx="12" cy="8" r="1" fill={theme.accent} />
-      <Path
-        d="M12 12V15"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </Svg>
-  );
-
-  const ClockIcon = () => (
-    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <Circle cx="12" cy="12" r="9" stroke={theme.accent} strokeWidth="2" />
-      <Path
-        d="M12 6V12L16 14"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
-  const DocumentIcon = () => (
-    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M14 2V8H20"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M16 13H8"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M16 17H8"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M10 9H9H8"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
-  const EmailIcon = () => (
-    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <Rect
-        x="2"
-        y="4"
-        width="20"
-        height="16"
-        rx="2"
-        stroke={theme.accent}
-        strokeWidth="2"
-      />
-      <Path
-        d="M2 6L12 13L22 6"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
-  const CheckListIcon = () => (
-    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M9 11L12 14L22 4"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
+import ApprovalIcon from '../Icons/ApprovalIcon';
+import ClockIcon from '../Icons/ClockIcon';
+import DocumentIcon from '../Icons/DocumentIcon';
+import EmailIconPending from '../Icons/EmailIconPending';
+import CheckListIcon from '../Icons/CheckListIcon';
 
 
   return (
@@ -144,7 +37,7 @@ const PendingApprovalScreen = ({ navigation, route }) => {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.iconContainer}>
-            <ApprovalIcon />
+            <ApprovalIcon color={theme.accent} size={120} />
           </View>
           <Text style={styles.title}>Account Under Review</Text>
           <Text style={styles.subtitle}>
@@ -156,7 +49,7 @@ const PendingApprovalScreen = ({ navigation, route }) => {
         {/* Status Card */}
         <View style={styles.statusCard}>
           <View style={styles.statusHeader}>
-            <ClockIcon />
+            <ClockIcon color={theme.accent} size={24} />
             <Text style={styles.statusTitle}>Review in Progress</Text>
           </View>
           <View style={styles.progressContainer}>
@@ -174,10 +67,9 @@ const PendingApprovalScreen = ({ navigation, route }) => {
           <Text style={styles.sectionTitle}>What to Expect Next</Text>
 
           <View style={styles.expectationItem}>
-            <View style={styles.expectationIcon}>
-              <DocumentIcon />
-            </View>
-            <View style={styles.expectationContent}>
+                      <View style={styles.expectationIcon}>
+                        <DocumentIcon color={theme.accent} size={24} />
+                      </View>            <View style={styles.expectationContent}>
               <Text style={styles.expectationTitle}>Document Verification</Text>
               <Text style={styles.expectationDescription}>
                 Our team is reviewing your qualifications and certifications
@@ -186,10 +78,9 @@ const PendingApprovalScreen = ({ navigation, route }) => {
           </View>
 
           <View style={styles.expectationItem}>
-            <View style={styles.expectationIcon}>
-              <CheckListIcon />
-            </View>
-            <View style={styles.expectationContent}>
+                      <View style={styles.expectationIcon}>
+                        <CheckListIcon color={theme.accent} size={24} />
+                      </View>            <View style={styles.expectationContent}>
               <Text style={styles.expectationTitle}>Background Check</Text>
               <Text style={styles.expectationDescription}>
                 Ensuring all professional requirements are met
@@ -198,10 +89,9 @@ const PendingApprovalScreen = ({ navigation, route }) => {
           </View>
 
           <View style={styles.expectationItem}>
-            <View style={styles.expectationIcon}>
-              <EmailIcon />
-            </View>
-            <View style={styles.expectationContent}>
+                      <View style={styles.expectationIcon}>
+                        <EmailIconPending color={theme.accent} size={24} />
+                      </View>            <View style={styles.expectationContent}>
               <Text style={styles.expectationTitle}>Notification</Text>
               <Text style={styles.expectationDescription}>
                 You'll receive an email once your account is approved
