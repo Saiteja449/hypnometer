@@ -5,15 +5,16 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Modal, // Added Modal import
+  Modal, 
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import Svg, { Path, Circle, Rect } from 'react-native-svg';
 import CustomHeader from '../Components/CustomHeader';
 import { useTheme } from '../Context/ThemeContext';
+import EmailIcon from '../Icons/EmailIcon';
+import LockIcon from '../Icons/LockIcon';
 
 import { useApp } from '../Context/AppContext';
 
@@ -36,9 +37,6 @@ const LoginScreen = ({ navigation }) => {
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
   const [modalButtons, setModalButtons] = useState([]);
-
-import EmailIcon from '../Icons/EmailIcon';
-import LockIcon from '../Icons/LockIcon';
 
   const validateCredentials = () => {
     const newErrors = {};
@@ -68,19 +66,31 @@ import LockIcon from '../Icons/LockIcon';
 
     setIsLoading(true);
     try {
-      const response = await loginUser(formData.email, formData.password, navigation);
+      const response = await loginUser(
+        formData.email,
+        formData.password,
+        navigation,
+      );
       if (!response.success) {
         if (response.errors?.type === 'invalid_credentials') {
           setModalTitle('Login Failed');
-          setModalMessage('Invalid credentials. Do you want to create a new account?');
+          setModalMessage(
+            'Invalid credentials. Do you want to create a new account?',
+          );
           setModalButtons([
             { text: 'Cancel', style: 'cancel' },
-            { text: 'Register', onPress: () => navigation.navigate('RegistrationScreen') },
+            {
+              text: 'Register',
+              onPress: () => navigation.navigate('RegistrationScreen'),
+            },
           ]);
           setModalVisible(true);
         } else {
           setModalTitle('Login Failed');
-          setModalMessage(response.errors?.general || 'An unexpected error occurred during login.');
+          setModalMessage(
+            response.errors?.general ||
+              'An unexpected error occurred during login.',
+          );
           setModalButtons([{ text: 'OK' }]);
           setModalVisible(true);
         }
@@ -94,7 +104,6 @@ import LockIcon from '../Icons/LockIcon';
       setIsLoading(false);
     }
   };
-
 
   const updateFormData = (field, value) => {
     setFormData({
@@ -122,13 +131,21 @@ import LockIcon from '../Icons/LockIcon';
             {modalButtons.map((button, index) => (
               <TouchableOpacity
                 key={index}
-                style={[styles.modalButton, button.style === 'cancel' && styles.modalButtonCancel]}
+                style={[
+                  styles.modalButton,
+                  button.style === 'cancel' && styles.modalButtonCancel,
+                ]}
                 onPress={() => {
                   setModalVisible(false);
                   button.onPress && button.onPress();
                 }}
               >
-                <Text style={[styles.modalButtonText, button.style === 'cancel' && styles.modalButtonTextCancel]}>
+                <Text
+                  style={[
+                    styles.modalButtonText,
+                    button.style === 'cancel' && styles.modalButtonTextCancel,
+                  ]}
+                >
                   {button.text}
                 </Text>
               </TouchableOpacity>
@@ -145,7 +162,6 @@ import LockIcon from '../Icons/LockIcon';
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <CustomHeader title="Sign In" showThemeToggle={false} />
-
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -219,9 +235,19 @@ import LockIcon from '../Icons/LockIcon';
               {isLoading ? 'Logging in...' : 'Login'}
             </Text>
           </TouchableOpacity>
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>
+              Don't have an account?{' '}
+              <Text
+                style={styles.signUpLink}
+                onPress={() => navigation.navigate('RegistrationScreen')}
+              >
+                Register here
+              </Text>
+            </Text>
+          </View>
         </View>
       </ScrollView>
-
       {renderModal()} {/* Render the custom modal */}
     </KeyboardAvoidingView>
   );
@@ -524,6 +550,5 @@ const getStyles = theme =>
       color: theme.primary,
     },
   });
-
 
 export default LoginScreen;

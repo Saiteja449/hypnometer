@@ -1,13 +1,13 @@
 import React from 'react';
-import Svg, { Rect, Path } from 'react-native-svg';
+import Svg, { Path, Rect } from 'react-native-svg';
 import { useTheme } from '../Context/ThemeContext';
 
-const EmailIcon = ({ color }) => {
+const EmailIconAdmin = ({ color, size = 16 }) => {
   const { theme } = useTheme();
-  const iconColor = color || theme.accent;
+  const iconColor = color || theme.secondary; // This email icon uses secondary color
 
   return (
-    <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
       <Rect
         x="2"
         y="4"
@@ -28,4 +28,4 @@ const EmailIcon = ({ color }) => {
   );
 };
 
-export default EmailIcon;
+export default EmailIconAdmin;

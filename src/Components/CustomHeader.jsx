@@ -7,6 +7,8 @@ import {
   Dimensions,
 } from 'react-native';
 import Svg, { Path, Circle, Rect } from 'react-native-svg';
+import ChartIcon from '../Icons/ChartIcon';
+import SessionIcon from '../Icons/SessionIcon';
 
 import { useTheme } from '../Context/ThemeContext';
 
@@ -118,25 +120,6 @@ export const AnalyticsHeader = ({ onBackPress }) => {
   const { theme } = useTheme();
   const iconColor = theme.accent;
 
-  const ChartIcon = () => (
-    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M3 3V19H21"
-        stroke={iconColor}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M7 14L10 11L13 15L17 9"
-        stroke={iconColor}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
   return (
     <CustomHeader
       title="Session Analytics"
@@ -174,29 +157,6 @@ export const AssessmentHeader = ({ onBackPress }) => {
 };
 
 export const SessionHeader = ({ onBackPress }) => {
-  const { theme } = useTheme();
-  const iconColor = theme.accent;
-
-  const SessionIcon = () => (
-    <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <Rect
-        x="3"
-        y="4"
-        width="18"
-        height="16"
-        rx="2"
-        stroke={iconColor}
-        strokeWidth="2"
-      />
-      <Path
-        d="M8 2V6M16 2V6M3 10H21"
-        stroke={iconColor}
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </Svg>
-  );
-
   return (
     <CustomHeader
       title="Create New Session"

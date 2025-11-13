@@ -20,6 +20,7 @@ import CustomHeader from '../Components/CustomHeader';
 import LinearGradient from 'react-native-linear-gradient';
 
 import { useTheme } from '../Context/ThemeContext';
+import ClockIcon from '../Icons/ClockIcon';
 
 const { width } = Dimensions.get('window');
 
@@ -362,19 +363,6 @@ const NewSessionScreen = ({ navigation }) => {
     <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <Path
         d="M8 2V6M16 2V6M3 10H21M5 4H19C20.1046 4 21 4.89543 21 6V20C21 21.1046 20.1046 22 19 22H5C3.89543 22 3 21.1046 3 20V6C3 4.89543 3.89543 4 5 4Z"
-        stroke={theme.accent}
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </Svg>
-  );
-
-  const ClockIcon = () => (
-    <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <Circle cx="12" cy="12" r="9" stroke={theme.accent} strokeWidth="2" />
-      <Path
-        d="M12 6V12L16 14"
         stroke={theme.accent}
         strokeWidth="2"
         strokeLinecap="round"
@@ -1010,7 +998,7 @@ const NewSessionScreen = ({ navigation }) => {
               style={dynamicStyles.datetimeButton}
               onPress={() => setShowTimePicker(true)}
             >
-              <ClockIcon />
+              <ClockIcon size={20} />
               <Text style={dynamicStyles.datetimeText}>
                 {formatTime(sessionData.date)}
               </Text>

@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import Svg, { Path, Circle, Rect, Line } from 'react-native-svg';
 import CustomHeader from '../Components/CustomHeader';
+import SessionIcon from '../Icons/SessionIcon';
+import StarIcon from '../Icons/StarIcon';
 
 const { width } = Dimensions.get('window');
 
@@ -101,26 +103,6 @@ const SelfAssessmentScreen = ({ navigation }) => {
     </Svg>
   );
 
-  const SessionIcon = () => (
-    <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <Rect
-        x="3"
-        y="4"
-        width="18"
-        height="16"
-        rx="2"
-        stroke="#8641f4"
-        strokeWidth="2"
-      />
-      <Path
-        d="M8 2V6M16 2V6M3 10H21"
-        stroke="#8641f4"
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </Svg>
-  );
-
   const MoodIcon = () => (
     <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
       <Circle cx="12" cy="12" r="10" stroke="#8641f4" strokeWidth="2" />
@@ -132,18 +114,6 @@ const SelfAssessmentScreen = ({ navigation }) => {
       />
       <Circle cx="9" cy="10" r="1" fill="#8641f4" />
       <Circle cx="15" cy="10" r="1" fill="#8641f4" />
-    </Svg>
-  );
-
-  const RatingIcon = () => (
-    <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <Path
-        d="M12 2L14.09 8.26L21 9.27L16 14.14L17.18 21.02L12 17.77L6.82 21.02L8 14.14L3 9.27L9.91 8.26L12 2Z"
-        stroke="#8641f4"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
     </Svg>
   );
 
@@ -510,7 +480,7 @@ const SelfAssessmentScreen = ({ navigation }) => {
         {/* Skill Ratings */}
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeader}>
-            <RatingIcon />
+            <StarIcon color="#8641f4" />
             <Text style={styles.sectionTitle}>Skill Ratings</Text>
           </View>
           <Text style={styles.sectionSubtitle}>

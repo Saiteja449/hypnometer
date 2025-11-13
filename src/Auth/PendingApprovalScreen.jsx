@@ -9,9 +9,13 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
-import Svg, { Path, Circle, Rect } from 'react-native-svg';
 import { useTheme } from '../Context/ThemeContext'; // Import useTheme
 
+import ApprovalIcon from '../Icons/ApprovalIcon';
+import ClockIcon from '../Icons/ClockIcon';
+import DocumentIcon from '../Icons/DocumentIcon';
+import EmailIconPending from '../Icons/EmailIconPending';
+import CheckListIcon from '../Icons/CheckListIcon';
 const { width, height } = Dimensions.get('window');
 
 const PendingApprovalScreen = ({ navigation, route }) => {
@@ -21,11 +25,6 @@ const PendingApprovalScreen = ({ navigation, route }) => {
   // Get user data from signup if needed
   const userData = route.params?.userData || {};
 
-import ApprovalIcon from '../Icons/ApprovalIcon';
-import ClockIcon from '../Icons/ClockIcon';
-import DocumentIcon from '../Icons/DocumentIcon';
-import EmailIconPending from '../Icons/EmailIconPending';
-import CheckListIcon from '../Icons/CheckListIcon';
 
 
   return (

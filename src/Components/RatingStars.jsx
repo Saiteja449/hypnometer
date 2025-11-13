@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { styles } from '../globalcss';
+import { styles } from '../../globalcss';
 
 const RatingStars = ({ rating, size = 16, showNumber = false }) => {
   const fullStars = Math.floor(rating);

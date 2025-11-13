@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import Slider from '@react-native-community/slider';
-import { styles } from '../globalcss';
+import { styles } from '../../globalcss';
 
 const RatingSlider = ({ skill, icon, rating, onRatingChange }) => {
   return (

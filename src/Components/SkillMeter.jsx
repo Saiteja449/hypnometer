@@ -1,7 +1,7 @@
 // components/Common/SkillMeter.js
 import React from 'react';
 import { View, Text, Animated } from 'react-native';
-import { styles } from '../globalcss';
+import { styles } from '../../globalcss';
 
 const SkillMeter = ({ skill, rating, showLabel = true, showRating = true }) => {
   const progressAnim = React.useRef(new Animated.Value(0)).current;

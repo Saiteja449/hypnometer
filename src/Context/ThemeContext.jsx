@@ -11,6 +11,11 @@ const LightColors = {
   accent: '#8641f4', // Purple accent
   border: '#E2E8F0',
   cardShadow: 'rgba(0, 0, 0, 0.05)',
+  cardShadowOpacity: 0.1, // Added
+  buttonText: '#FFFFFF', // Added
+  success: '#10B981', // Green
+  warning: '#F59E0B', // Orange
+  danger: '#EF4444', // Red
 };
 
 const DarkColors = {
@@ -21,6 +26,11 @@ const DarkColors = {
   accent: '#A673FF', // Lighter purple accent for contrast
   border: '#2D3748',
   cardShadow: 'rgba(255, 255, 255, 0.1)',
+  cardShadowOpacity: 0.2, // Added
+  buttonText: '#FFFFFF', // Added
+  success: '#34D399', // Lighter Green for dark mode
+  warning: '#FBBF24', // Lighter Orange for dark mode
+  danger: '#F87171', // Lighter Red for dark mode
 };
 
 const ThemeContext = createContext();

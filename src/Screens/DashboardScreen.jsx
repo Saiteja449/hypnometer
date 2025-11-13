@@ -68,47 +68,50 @@ const DashboardScreen = ({ navigation }) => {
     setTimeout(() => setRefreshing(false), 1000);
   };
 
-  const dynamicStyles = StyleSheet.create({
-    screenContainer: {
-      flex: 1,
-      backgroundColor: theme.background,
-    },
-    scrollViewContent: {
-      paddingHorizontal: 16,
-      paddingTop: 16,
-      paddingBottom: 40,
-    },
-    componentWrapper: {
-      marginBottom: 16,
-    },
-  });
+  const styles = useMemo(() => getStyles(theme), [theme]);
+
+  const getStyles = theme =>
+    StyleSheet.create({
+      screenContainer: {
+        flex: 1,
+        backgroundColor: theme.colors.background,
+      },
+      scrollViewContent: {
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        paddingBottom: 40,
+      },
+      componentWrapper: {
+        marginBottom: 16,
+      },
+    });
 
   return (
-    <View style={dynamicStyles.screenContainer}>
+    <View style={styles.screenContainer}>
       <CustomHeader title="Dashboard" />
       <ScrollView
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={theme.accent}
-            colors={[theme.accent]}
-            progressBackgroundColor={theme.card}
+            tintColor={theme.colors.accent}
+            colors={[theme.colors.accent]}
+            progressBackgroundColor={theme.colors.cardBackground}
           />
         }
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={dynamicStyles.scrollViewContent}
+        contentContainerStyle={styles.scrollViewContent}
       >
-        <View style={dynamicStyles.componentWrapper}>
+        <View style={styles.componentWrapper}>
           <ProfileHeader userData={userData} />
         </View>
-        <View style={dynamicStyles.componentWrapper}>
+        <View style={styles.componentWrapper}>
           <QuickActions navigation={navigation} />
         </View>
-        <View style={dynamicStyles.componentWrapper}>
+        <View style={styles.componentWrapper}>
           <GrowthGraph />
         </View>
-        <View style={dynamicStyles.componentWrapper}>
+        <View style={styles.componentWrapper}>
           <SessionList
             sessions={recentSessions}
             navigation={navigation}

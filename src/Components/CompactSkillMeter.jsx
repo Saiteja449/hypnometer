@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { styles } from '../globalcss';
+import { styles } from '../../globalcss';
 
 export const CompactSkillMeter = ({ skill, rating, size = 'medium' }) => {
   const getSkillColor = skillName => {

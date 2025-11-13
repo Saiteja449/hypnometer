@@ -11,7 +11,9 @@ import {
   RefreshControl,
   ScrollView,
 } from 'react-native';
-import Svg, { Path, Circle } from 'react-native-svg';
+import SearchIcon from '../Icons/SearchIcon';
+import SessionIcon from '../Icons/SessionIcon';
+import StarIcon from '../Icons/StarIcon';
 import CustomHeader from '../Components/CustomHeader';
 import { useTheme } from '../Context/ThemeContext';
 
@@ -134,9 +136,9 @@ const AllSessionsScreen = ({ navigation, route }) => {
 
   const getStatusColor = (status, hasFeedback) => {
     if (status === 'completed') {
-      return hasFeedback ? theme.success : theme.warning;
+      return hasFeedback ? theme.colors.success : theme.colors.warning;
     }
-    return theme.secondary;
+    return theme.colors.secondary;
   };
 
   const getStatusText = (status, hasFeedback) => {
@@ -146,280 +148,263 @@ const AllSessionsScreen = ({ navigation, route }) => {
     return 'In Progress';
   };
 
-  const dynamicStyles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: theme.background,
-    },
-    content: {
-      flex: 1,
-      padding: 16,
-    },
-    searchContainer: {
-      marginBottom: 16,
-    },
-    searchInput: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: theme.card,
-      borderWidth: 1,
-      borderColor: theme.border,
-      borderRadius: 12,
-      paddingHorizontal: 16,
-      paddingVertical: 6,
-      shadowColor: theme.cardShadow,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: isDark ? 0.3 : 0.05,
-      shadowRadius: 6,
-      elevation: 2,
-    },
-    searchTextInput: {
-      flex: 1,
-      fontSize: 16,
-      fontFamily: 'Nunito-Regular',
-      color: theme.primary,
-      marginLeft: 12,
-      backgroundColor: 'transparent',
-    },
-    filterContainer: {
-      marginBottom: 16,
-    },
-    filterContent: {
-      paddingHorizontal: 4,
-    },
-    filterTab: {
-      paddingHorizontal: 20,
-      paddingVertical: 8,
-      backgroundColor: theme.card,
-      borderRadius: 8,
-      marginRight: 8,
-      minWidth: 100,
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor: theme.border,
-    },
-    filterTabActive: {
-      backgroundColor: theme.accent,
-      borderColor: theme.accent,
-      paddingHorizontal: 22,
-    },
-    filterTabText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.secondary,
-      lineHeight: 18,
-    },
-    filterTabTextActive: {
-      color: '#FFFFFF',
-    },
-    resultsHeader: {
-      marginBottom: 16,
-      paddingHorizontal: 4,
-    },
-    resultsText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Medium',
-      color: theme.secondary,
-    },
-    listContent: {
-      flexGrow: 1,
-      paddingBottom: 20,
-    },
-    sessionCardWrapper: {
-      marginBottom: 16,
-      borderRadius: 16,
-      padding: 1,
-      backgroundColor: 'transparent',
-    },
-    sessionCardWrapperGlow: {
-      backgroundColor: isDark ? theme.accent + '20' : theme.accent + '10',
-      shadowColor: theme.accent,
-      shadowOffset: { width: 0, height: 0 },
-      shadowOpacity: isDark ? 0.4 : 0.2,
-      shadowRadius: 5,
-      elevation: 3,
-    },
-    sessionCard: {
-      backgroundColor: theme.card,
-      borderRadius: 15,
-      padding: 20,
-      shadowColor: theme.cardShadow,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: isDark ? 0.3 : 0.15,
-      shadowRadius: 10,
-      elevation: 5,
-      borderWidth: 1,
-      borderColor: isDark ? '#374151' : '#E5E7EB',
-    },
-    sessionHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-      marginBottom: 12,
-    },
-    sessionInfo: {
-      flex: 1,
-    },
-    sessionTitle: {
-      fontSize: 18,
-      fontFamily: 'Nunito-Bold',
-      color: theme.primary,
-      marginBottom: 4,
-    },
-    therapistName: {
-      fontSize: 14,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.accent,
-    },
-    statusBadge: {
-      paddingHorizontal: 10,
-      paddingVertical: 6,
-      borderRadius: 10,
-      minWidth: 100,
-      alignItems: 'center',
-    },
-    statusText: {
-      fontSize: 12,
-      fontFamily: 'Nunito-Bold',
-      color: '#FFFFFF',
-    },
-    sessionDetails: {
-      marginBottom: 16,
-      borderTopWidth: 1,
-      borderTopColor: theme.border,
-      paddingTop: 12,
-    },
-    detailRow: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 6,
-    },
-    detailLabel: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Medium',
-      color: theme.secondary,
-    },
-    detailValue: {
-      fontSize: 14,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.primary,
-    },
-    ratingContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 4,
-    },
-    ratingText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Bold',
-      color: theme.primary,
-    },
-    feedbackSection: {
-      backgroundColor: isDark ? '#1F2937' : '#F8FAFF',
-      padding: 12,
-      borderRadius: 10,
-      marginBottom: 16,
-      borderLeftWidth: 4,
-      borderLeftColor: theme.accent,
-    },
-    feedbackLabel: {
-      fontSize: 12,
-      fontFamily: 'Nunito-Bold',
-      color: theme.accent,
-      marginBottom: 4,
-    },
-    feedbackText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Regular',
-      color: theme.primary,
-      lineHeight: 20,
-    },
-    progressSection: {
-      marginTop: 8,
-    },
-    progressHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: 6,
-    },
-    progressLabel: {
-      fontSize: 12,
-      fontFamily: 'Nunito-Medium',
-      color: theme.secondary,
-    },
-    progressPercentage: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Bold',
-      color: theme.primary,
-    },
-    progressBar: {
-      height: 8,
-      backgroundColor: theme.border,
-      borderRadius: 4,
-      overflow: 'hidden',
-    },
-    progressFill: {
-      height: '100%',
-      borderRadius: 4,
-    },
-    emptyContainer: {
-      alignItems: 'center',
-      paddingVertical: 60,
-      paddingHorizontal: 20,
-    },
-    emptyTitle: {
-      fontSize: 18,
-      fontFamily: 'Nunito-Bold',
-      color: theme.primary,
-      marginTop: 16,
-      marginBottom: 8,
-      textAlign: 'center',
-    },
-    emptyDescription: {
-      fontSize: 14,
-      color: theme.secondary,
-      fontFamily: 'Nunito-Regular',
-      textAlign: 'center',
-      lineHeight: 20,
-    },
-  });
+  const styles = useMemo(() => getStyles(theme, isDark), [theme, isDark]);
 
-  const SearchIcon = ({ color }) => (
-    <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-      <Circle cx="11" cy="11" r="8" stroke={color} strokeWidth="2" />
-      <Path
-        d="M21 21L16.65 16.65"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </Svg>
-  );
+  const getStyles = (theme, isDark) =>
+    StyleSheet.create({
+      container: {
+        flex: 1,
+        backgroundColor: theme.colors.background,
+      },
+      content: {
+        flex: 1,
+        padding: 16,
+      },
+      searchContainer: {
+        marginBottom: 16,
+      },
+      searchInput: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: theme.colors.cardBackground,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 6,
+        shadowColor: theme.colors.shadow,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: isDark ? 0.3 : 0.05,
+        shadowRadius: 6,
+        elevation: 2,
+      },
+      searchTextInput: {
+        flex: 1,
+        fontSize: 16,
+        fontFamily: 'Nunito-Regular',
+        color: theme.colors.text,
+        marginLeft: 12,
+        backgroundColor: 'transparent',
+      },
+      filterContainer: {
+        marginBottom: 16,
+      },
+      filterContent: {
+        paddingHorizontal: 4,
+      },
+      filterTab: {
+        paddingHorizontal: 20,
+        paddingVertical: 8,
+        backgroundColor: theme.colors.cardBackground,
+        borderRadius: 8,
+        marginRight: 8,
+        minWidth: 100,
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+      },
+      filterTabActive: {
+        backgroundColor: theme.colors.accent,
+        borderColor: theme.colors.accent,
+        paddingHorizontal: 22,
+      },
+      filterTabText: {
+        fontSize: 14,
+        fontFamily: 'Nunito-SemiBold',
+        color: theme.colors.textSecondary,
+        lineHeight: 18,
+      },
+      filterTabTextActive: {
+        color: theme.colors.buttonText,
+      },
+      resultsHeader: {
+        marginBottom: 16,
+        paddingHorizontal: 4,
+      },
+      resultsText: {
+        fontSize: 14,
+        fontFamily: 'Nunito-Medium',
+        color: theme.colors.textSecondary,
+      },
+      listContent: {
+        flexGrow: 1,
+        paddingBottom: 20,
+      },
+      sessionCardWrapper: {
+        marginBottom: 16,
+        borderRadius: 16,
+        padding: 1,
+        backgroundColor: 'transparent',
+      },
+      sessionCardWrapperGlow: {
+        backgroundColor: isDark
+          ? theme.colors.accent + '20'
+          : theme.colors.accent + '10',
+        shadowColor: theme.colors.accent,
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: isDark ? 0.4 : 0.2,
+        shadowRadius: 5,
+        elevation: 3,
+      },
+      sessionCard: {
+        backgroundColor: theme.colors.cardBackground,
+        borderRadius: 15,
+        padding: 20,
+        shadowColor: theme.colors.shadow,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: isDark ? 0.3 : 0.15,
+        shadowRadius: 10,
+        elevation: 5,
+        borderWidth: 1,
+        borderColor: isDark ? '#374151' : '#E5E7EB',
+      },
+      sessionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: 12,
+      },
+      sessionInfo: {
+        flex: 1,
+      },
+      sessionTitle: {
+        fontSize: 18,
+        fontFamily: 'Nunito-Bold',
+        color: theme.colors.text,
+        marginBottom: 4,
+      },
+      therapistName: {
+        fontSize: 14,
+        fontFamily: 'Nunito-SemiBold',
+        color: theme.colors.accent,
+      },
+      statusBadge: {
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 10,
+        minWidth: 100,
+        alignItems: 'center',
+      },
+      statusText: {
+        fontSize: 12,
+        fontFamily: 'Nunito-Bold',
+        color: theme.colors.buttonText,
+      },
+      sessionDetails: {
+        marginBottom: 16,
+        borderTopWidth: 1,
+        borderTopColor: theme.colors.border,
+        paddingTop: 12,
+      },
+      detailRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 6,
+      },
+      detailLabel: {
+        fontSize: 14,
+        fontFamily: 'Nunito-Medium',
+        color: theme.colors.textSecondary,
+      },
+      detailValue: {
+        fontSize: 14,
+        fontFamily: 'Nunito-SemiBold',
+        color: theme.colors.text,
+      },
+      ratingContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+      },
+      ratingText: {
+        fontSize: 14,
+        fontFamily: 'Nunito-Bold',
+        color: theme.colors.text,
+      },
+      feedbackSection: {
+        backgroundColor: isDark ? '#1F2937' : '#F8FAFF',
+        padding: 12,
+        borderRadius: 10,
+        marginBottom: 16,
+        borderLeftWidth: 4,
+        borderLeftColor: theme.colors.accent,
+      },
+      feedbackLabel: {
+        fontSize: 12,
+        fontFamily: 'Nunito-Bold',
+        color: theme.colors.accent,
+        marginBottom: 4,
+      },
+      feedbackText: {
+        fontSize: 14,
+        fontFamily: 'Nunito-Regular',
+        color: theme.colors.text,
+        lineHeight: 20,
+      },
+      progressSection: {
+        marginTop: 8,
+      },
+      progressHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 6,
+      },
+      progressLabel: {
+        fontSize: 12,
+        fontFamily: 'Nunito-Medium',
+        color: theme.colors.textSecondary,
+      },
+      progressPercentage: {
+        fontSize: 14,
+        fontFamily: 'Nunito-Bold',
+        color: theme.colors.text,
+      },
+      progressBar: {
+        height: 8,
+        backgroundColor: theme.colors.border,
+        borderRadius: 4,
+        overflow: 'hidden',
+      },
+      progressFill: {
+        height: '100%',
+        borderRadius: 4,
+      },
+      emptyContainer: {
+        alignItems: 'center',
+        paddingVertical: 60,
+        paddingHorizontal: 20,
+      },
+      emptyTitle: {
+        fontSize: 18,
+        fontFamily: 'Nunito-Bold',
+        color: theme.colors.text,
+        marginTop: 16,
+        marginBottom: 8,
+        textAlign: 'center',
+      },
+      emptyDescription: {
+        fontSize: 14,
+        color: theme.colors.textSecondary,
+        fontFamily: 'Nunito-Regular',
+        textAlign: 'center',
+        lineHeight: 20,
+      },
+    });
 
-  const PlusIcon = ({ color }) => (
-    <Svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-      <Circle cx="40" cy="40" r="38" stroke={color} strokeWidth="2" />
-      <Path
-        d="M30 40H50M40 30V50"
-        stroke={color}
-        strokeWidth="2"
-        strokeLinecap="round"
-      />
-    </Svg>
-  );
+
 
   const renderSessionItem = ({ item }) => {
     const isCompletedAndReviewed = item.status === 'completed' && item.feedback;
     const cardGlowStyle = isCompletedAndReviewed
-      ? dynamicStyles.sessionCardWrapperGlow
+      ? styles.sessionCardWrapperGlow
       : {};
 
     return (
-      <View style={[dynamicStyles.sessionCardWrapper, cardGlowStyle]}>
+      <View style={[styles.sessionCardWrapper, cardGlowStyle]}>
         <TouchableOpacity
-          style={dynamicStyles.sessionCard}
+          style={styles.sessionCard}
           onPress={() =>
             navigation.navigate('SessionDetail', {
               sessionId: item.id,
@@ -427,82 +412,75 @@ const AllSessionsScreen = ({ navigation, route }) => {
             })
           }
         >
-          <View style={dynamicStyles.sessionHeader}>
-            <View style={dynamicStyles.sessionInfo}>
-              <Text style={dynamicStyles.sessionTitle}>{item.title}</Text>
-              <Text style={dynamicStyles.therapistName}>{item.therapist}</Text>
+          <View style={styles.sessionHeader}>
+            <View style={styles.sessionInfo}>
+              <Text style={styles.sessionTitle}>{item.title}</Text>
+              <Text style={styles.therapistName}>{item.therapist}</Text>
             </View>
             <View
               style={[
-                dynamicStyles.statusBadge,
+                styles.statusBadge,
                 {
                   backgroundColor: getStatusColor(item.status, item.feedback),
                 },
               ]}
             >
-              <Text style={dynamicStyles.statusText}>
+              <Text style={styles.statusText}>
                 {getStatusText(item.status, item.feedback)}
               </Text>
             </View>
           </View>
 
-          <View style={dynamicStyles.sessionDetails}>
-            <View style={dynamicStyles.detailRow}>
-              <Text style={dynamicStyles.detailLabel}>Date:</Text>
-              <Text style={dynamicStyles.detailValue}>{item.date}</Text>
+          <View style={styles.sessionDetails}>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Date:</Text>
+              <Text style={styles.detailValue}>{item.date}</Text>
             </View>
-            <View style={dynamicStyles.detailRow}>
-              <Text style={dynamicStyles.detailLabel}>Duration:</Text>
-              <Text style={dynamicStyles.detailValue}>{item.duration}</Text>
+            <View style={styles.detailRow}>
+              <Text style={styles.detailLabel}>Duration:</Text>
+              <Text style={styles.detailValue}>{item.duration}</Text>
             </View>
             {item.rating && (
-              <View style={dynamicStyles.detailRow}>
-                <Text style={dynamicStyles.detailLabel}>Rating:</Text>
-                <View style={dynamicStyles.ratingContainer}>
-                  <Text style={dynamicStyles.ratingText}>{item.rating}/5</Text>
-                  <Svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill={theme.warning}
-                  >
-                    <Path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                  </Svg>
+              <View style={styles.detailRow}>
+                <Text style={styles.detailLabel}>Rating:</Text>
+                <View style={styles.ratingContainer}>
+                  <Text style={styles.ratingText}>{item.rating}/5</Text>
+                  <StarIcon size={16} color={theme.colors.warning} />
                 </View>
               </View>
             )}
           </View>
 
           {item.feedback && (
-            <View style={dynamicStyles.feedbackSection}>
-              <Text style={dynamicStyles.feedbackLabel}>
+            <View style={styles.feedbackSection}>
+              <Text style={styles.feedbackLabel}>
                 Therapist Feedback:
               </Text>
-              <Text style={dynamicStyles.feedbackText} numberOfLines={2}>
+              <Text style={styles.feedbackText} numberOfLines={2}>
                 {item.feedback}
               </Text>
             </View>
           )}
 
-          <View style={dynamicStyles.progressSection}>
-            <View style={dynamicStyles.progressHeader}>
-              <Text style={dynamicStyles.progressLabel}>Progress</Text>
-              <Text style={dynamicStyles.progressPercentage}>
+          <View style={styles.progressSection}>
+            <View style={styles.progressHeader}>
+              <Text style={styles.progressLabel}>Progress</Text>
+              <Text style={styles.progressPercentage}>
                 {item.progress}%
               </Text>
             </View>
-            <View style={dynamicStyles.progressBar}>
+            <View style={styles.progressBar}>
               <View
                 style={[
-                  dynamicStyles.progressFill,
+                  styles.progressFill,
                   {
                     width: `${item.progress}%`,
                     backgroundColor:
                       item.progress > 70
-                        ? theme.success
+                        ? theme.colors.success
                         : item.progress > 40
-                        ? theme.warning
-                        : theme.error,
+                        ? theme.colors.warning
+                        : theme.colors.error,
                   },
                 ]}
               />
@@ -514,10 +492,10 @@ const AllSessionsScreen = ({ navigation, route }) => {
   };
 
   const renderEmptyComponent = () => (
-    <View style={dynamicStyles.emptyContainer}>
-      <PlusIcon color={isDark ? '#4B5563' : '#E2E8F0'} />
-      <Text style={dynamicStyles.emptyTitle}>No Sessions Found</Text>
-      <Text style={dynamicStyles.emptyDescription}>
+    <View style={styles.emptyContainer}>
+      <SessionIcon color={isDark ? '#4B5563' : '#E2E8F0'} />
+      <Text style={styles.emptyTitle}>No Sessions Found</Text>
+      <Text style={styles.emptyDescription}>
         {searchQuery || filter !== 'all'
           ? 'Try adjusting your search or filter criteria'
           : 'No therapy sessions available yet'}
@@ -526,9 +504,9 @@ const AllSessionsScreen = ({ navigation, route }) => {
   );
 
   return (
-    <View style={dynamicStyles.container}>
+    <View style={styles.container}>
       <StatusBar
-        backgroundColor={theme.accent}
+        backgroundColor={theme.colors.accent}
         barStyle={isDark ? 'light-content' : 'light-content'}
       />
       <CustomHeader
@@ -536,16 +514,16 @@ const AllSessionsScreen = ({ navigation, route }) => {
         onBackPress={() => navigation.goBack()}
       />
 
-      <View style={dynamicStyles.content}>
-        <View style={dynamicStyles.searchContainer}>
-          <View style={dynamicStyles.searchInput}>
-            <SearchIcon color={theme.secondary} />
+      <View style={styles.content}>
+        <View style={styles.searchContainer}>
+          <View style={styles.searchInput}>
+            <SearchIcon color={theme.colors.textSecondary} />
             <TextInput
-              style={dynamicStyles.searchTextInput}
+              style={styles.searchTextInput}
               placeholder="Search sessions, therapists, notes..."
               value={searchQuery}
               onChangeText={setSearchQuery}
-              placeholderTextColor={theme.secondary}
+              placeholderTextColor={theme.colors.textSecondary}
             />
           </View>
         </View>
@@ -553,8 +531,8 @@ const AllSessionsScreen = ({ navigation, route }) => {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          style={dynamicStyles.filterContainer}
-          contentContainerStyle={dynamicStyles.filterContent}
+          style={styles.filterContainer}
+          contentContainerStyle={styles.filterContent}
         >
           {[
             { key: 'all', label: 'All Sessions' },
@@ -566,14 +544,14 @@ const AllSessionsScreen = ({ navigation, route }) => {
               key={tab.key}
               onPress={() => setFilter(tab.key)}
               style={[
-                dynamicStyles.filterTab,
-                filter === tab.key && dynamicStyles.filterTabActive,
+                styles.filterTab,
+                filter === tab.key && styles.filterTabActive,
               ]}
             >
               <Text
                 style={[
-                  dynamicStyles.filterTabText,
-                  filter === tab.key && dynamicStyles.filterTabTextActive,
+                  styles.filterTabText,
+                  filter === tab.key && styles.filterTabTextActive,
                 ]}
                 numberOfLines={1}
                 ellipsizeMode="clip"
@@ -584,8 +562,8 @@ const AllSessionsScreen = ({ navigation, route }) => {
           ))}
         </ScrollView>
 
-        <View style={dynamicStyles.resultsHeader}>
-          <Text style={dynamicStyles.resultsText}>
+        <View style={styles.resultsHeader}>
+          <Text style={styles.resultsText}>
             **{filteredSessions.length}** session
             {filteredSessions.length !== 1 ? 's' : ''} found
           </Text>
@@ -600,12 +578,12 @@ const AllSessionsScreen = ({ navigation, route }) => {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={theme.accent}
-              colors={[theme.accent]}
+              tintColor={theme.colors.accent}
+              colors={[theme.colors.accent]}
             />
           }
           ListEmptyComponent={renderEmptyComponent}
-          contentContainerStyle={dynamicStyles.listContent}
+          contentContainerStyle={styles.listContent}
         />
       </View>
     </View>
