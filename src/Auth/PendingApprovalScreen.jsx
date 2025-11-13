@@ -10,27 +10,31 @@ import {
   Dimensions,
 } from 'react-native';
 import Svg, { Path, Circle, Rect } from 'react-native-svg';
+import { useTheme } from '../Context/ThemeContext'; // Import useTheme
 
 const { width, height } = Dimensions.get('window');
 
 const PendingApprovalScreen = ({ navigation, route }) => {
+  const { theme } = useTheme(); // Initialize theme
+  const styles = getStyles(theme); // Use getStyles with theme
+
   // Get user data from signup if needed
   const userData = route.params?.userData || {};
 
   const ApprovalIcon = () => (
     <Svg width="120" height="120" viewBox="0 0 24 24" fill="none">
-      <Circle cx="12" cy="12" r="10" stroke="#8641f4" strokeWidth="2" />
+      <Circle cx="12" cy="12" r="10" stroke={theme.accent} strokeWidth="2" />
       <Path
         d="M8 12L11 15L16 9"
-        stroke="#8641f4"
+        stroke={theme.accent}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-      <Circle cx="12" cy="8" r="1" fill="#8641f4" />
+      <Circle cx="12" cy="8" r="1" fill={theme.accent} />
       <Path
         d="M12 12V15"
-        stroke="#8641f4"
+        stroke={theme.accent}
         strokeWidth="2"
         strokeLinecap="round"
       />
@@ -39,10 +43,10 @@ const PendingApprovalScreen = ({ navigation, route }) => {
 
   const ClockIcon = () => (
     <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-      <Circle cx="12" cy="12" r="9" stroke="#8641f4" strokeWidth="2" />
+      <Circle cx="12" cy="12" r="9" stroke={theme.accent} strokeWidth="2" />
       <Path
         d="M12 6V12L16 14"
-        stroke="#8641f4"
+        stroke={theme.accent}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -54,35 +58,35 @@ const PendingApprovalScreen = ({ navigation, route }) => {
     <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path
         d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z"
-        stroke="#8641f4"
+        stroke={theme.accent}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <Path
         d="M14 2V8H20"
-        stroke="#8641f4"
+        stroke={theme.accent}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <Path
         d="M16 13H8"
-        stroke="#8641f4"
+        stroke={theme.accent}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <Path
         d="M16 17H8"
-        stroke="#8641f4"
+        stroke={theme.accent}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <Path
         d="M10 9H9H8"
-        stroke="#8641f4"
+        stroke={theme.accent}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -98,12 +102,12 @@ const PendingApprovalScreen = ({ navigation, route }) => {
         width="20"
         height="16"
         rx="2"
-        stroke="#8641f4"
+        stroke={theme.accent}
         strokeWidth="2"
       />
       <Path
         d="M2 6L12 13L22 6"
-        stroke="#8641f4"
+        stroke={theme.accent}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -115,14 +119,14 @@ const PendingApprovalScreen = ({ navigation, route }) => {
     <Svg width="24" height="24" viewBox="0 0 24 24" fill="none">
       <Path
         d="M9 11L12 14L22 4"
-        stroke="#8641f4"
+        stroke={theme.accent}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <Path
         d="M21 12V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H16"
-        stroke="#8641f4"
+        stroke={theme.accent}
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -130,13 +134,6 @@ const PendingApprovalScreen = ({ navigation, route }) => {
     </Svg>
   );
 
-  useFocusEffect(
-    useCallback(() => {
-      setTimeout(() => {
-        navigation.replace('DashboardScreen');
-      }, 1500);
-    }, []),
-  );
 
   return (
     <View style={styles.container}>
@@ -258,30 +255,23 @@ const PendingApprovalScreen = ({ navigation, route }) => {
       {/* Footer Actions */}
       <View style={styles.footer}>
         <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={() => navigation.navigate('Login')}
-        >
-          <Text style={styles.primaryButtonText}>Return to Login</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.secondaryButton}
+          style={styles.primaryButton} // Renaming primaryButton to secondaryButton for styling consistency
           onPress={() => {
             // Handle support contact
             // You can link to email or phone
           }}
         >
-          <Text style={styles.secondaryButtonText}>Contact Support</Text>
+          <Text style={styles.primaryButtonText}>Contact Support</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
+    backgroundColor: theme.background,
   },
   scrollContent: {
     padding: 20,
@@ -298,23 +288,23 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontFamily: 'Nunito-Bold',
-    color: '#1F2937',
+    color: theme.primary,
     textAlign: 'center',
     marginBottom: 12,
   },
   subtitle: {
     fontSize: 16,
     fontFamily: 'Nunito-Regular',
-    color: '#6B7280',
+    color: theme.secondary,
     textAlign: 'center',
     lineHeight: 22,
   },
   statusCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.card,
     borderRadius: 16,
     padding: 20,
     marginBottom: 24,
-    shadowColor: '#000',
+    shadowColor: theme.cardShadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -328,7 +318,7 @@ const styles = StyleSheet.create({
   statusTitle: {
     fontSize: 18,
     fontFamily: 'Nunito-SemiBold',
-    color: '#1F2937',
+    color: theme.primary,
     marginLeft: 12,
   },
   progressContainer: {
@@ -337,7 +327,7 @@ const styles = StyleSheet.create({
   progressBar: {
     width: '100%',
     height: 6,
-    backgroundColor: '#E5E7EB',
+    backgroundColor: theme.border,
     borderRadius: 3,
     marginBottom: 12,
     overflow: 'hidden',
@@ -345,13 +335,13 @@ const styles = StyleSheet.create({
   progressFill: {
     width: '60%',
     height: '100%',
-    backgroundColor: '#8641f4',
+    backgroundColor: theme.accent,
     borderRadius: 3,
   },
   statusText: {
     fontSize: 14,
     fontFamily: 'Nunito-Regular',
-    color: '#6B7280',
+    color: theme.secondary,
     textAlign: 'center',
   },
   expectationsSection: {
@@ -360,16 +350,16 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontFamily: 'Nunito-Bold',
-    color: '#1F2937',
+    color: theme.primary,
     marginBottom: 16,
   },
   expectationItem: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.card,
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: theme.cardShadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -384,23 +374,23 @@ const styles = StyleSheet.create({
   expectationTitle: {
     fontSize: 16,
     fontFamily: 'Nunito-SemiBold',
-    color: '#1F2937',
+    color: theme.primary,
     marginBottom: 4,
   },
   expectationDescription: {
     fontSize: 14,
     fontFamily: 'Nunito-Regular',
-    color: '#6B7280',
+    color: theme.secondary,
     lineHeight: 20,
   },
   timelineSection: {
     marginBottom: 24,
   },
   timeline: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.card,
     borderRadius: 12,
     padding: 20,
-    shadowColor: '#000',
+    shadowColor: theme.cardShadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
@@ -411,24 +401,19 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: 20,
   },
-  timelineItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 20,
-  },
   timelineDot: {
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#10B981',
+    backgroundColor: '#10B981', // Keep green for approved status
     marginTop: 4,
     marginRight: 12,
   },
   timelineDotPending: {
-    backgroundColor: '#8641f4',
+    backgroundColor: theme.accent,
   },
   timelineDotFuture: {
-    backgroundColor: '#E5E7EB',
+    backgroundColor: theme.border,
   },
   timelineContent: {
     flex: 1,
@@ -436,13 +421,13 @@ const styles = StyleSheet.create({
   timelineTitle: {
     fontSize: 16,
     fontFamily: 'Nunito-SemiBold',
-    color: '#1F2937',
+    color: theme.primary,
     marginBottom: 2,
   },
   timelineTime: {
     fontSize: 14,
     fontFamily: 'Nunito-Regular',
-    color: '#6B7280',
+    color: theme.secondary,
   },
   supportSection: {
     marginBottom: 24,
@@ -450,19 +435,19 @@ const styles = StyleSheet.create({
   supportText: {
     fontSize: 14,
     fontFamily: 'Nunito-Regular',
-    color: '#6B7280',
+    color: theme.secondary,
     marginBottom: 12,
     lineHeight: 20,
   },
   supportContacts: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.card,
     borderRadius: 12,
     padding: 16,
   },
   contactItem: {
     fontSize: 14,
     fontFamily: 'Nunito-Medium',
-    color: '#374151',
+    color: theme.primary,
     marginBottom: 8,
   },
   footer: {
@@ -470,24 +455,24 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: theme.card,
     padding: 20,
     paddingBottom: 30,
     borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-    shadowColor: '#000',
+    borderTopColor: theme.border,
+    shadowColor: theme.cardShadow,
     shadowOffset: { width: 0, height: -2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 8,
   },
   primaryButton: {
-    backgroundColor: '#8641f4',
+    backgroundColor: theme.accent,
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
     marginBottom: 12,
-    shadowColor: '#8641f4',
+    shadowColor: theme.accent,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
@@ -498,17 +483,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Nunito-SemiBold',
     color: '#FFFFFF',
   },
-  secondaryButton: {
+  secondaryButton: { // This style is no longer used, but keeping it for now
     paddingVertical: 16,
     borderRadius: 12,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: theme.border,
   },
-  secondaryButtonText: {
+  secondaryButtonText: { // This style is no longer used, but keeping it for now
     fontSize: 16,
     fontFamily: 'Nunito-SemiBold',
-    color: '#374151',
+    color: theme.primary,
   },
 });
 

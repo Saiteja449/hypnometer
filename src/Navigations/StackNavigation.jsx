@@ -4,12 +4,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import DashboardScreen from '../Screens/DashboardScreen';
 import NewSessionScreen from '../Screens/NewSessionScreen';
 import AnalyticsScreen from '../Screens/AnalyticsScreen';
-import SelfAssessmentScreen from '../Screens/SelfAssessment';
+import SelfAssessment from '../Screens/SelfAssessment';
 import RegistrationScreen from '../Auth/RegistrationScreen';
 import PendingApprovalScreen from '../Auth/PendingApprovalScreen';
 import LoginScreen from '../Auth/LoginScreen';
 import AdminDashboard from '../Screens/Admin/AdminDashboard';
 import AllSessionsScreen from '../Screens/AllSessionsScreen';
+import SplashScreen from '../Screens/SplashScreen';
 const Stack = createNativeStackNavigator();
 
 const StackNavigation = () => {
@@ -18,8 +19,9 @@ const StackNavigation = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName="RegistrationScreen"
+      initialRouteName="SplashScreen"
     >
+      <Stack.Screen name="SplashScreen" component={SplashScreen} />
       <Stack.Screen component={LoginScreen} name="LoginScreen" />
       <Stack.Screen component={RegistrationScreen} name="RegistrationScreen" />
       <Stack.Screen
@@ -32,7 +34,7 @@ const StackNavigation = () => {
       <Stack.Screen name="AnalyticsScreen" component={AnalyticsScreen} />
       <Stack.Screen
         name="SelfAssessmentScreen"
-        component={SelfAssessmentScreen}
+        component={SelfAssessment}
       />
       <Stack.Screen name="AllSessionsScreen" component={AllSessionsScreen} />
     </Stack.Navigator>

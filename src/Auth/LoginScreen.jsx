@@ -5,7 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Alert,
+  Modal, // Added Modal import
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -30,6 +30,12 @@ const LoginScreen = ({ navigation }) => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+
+  // State for custom modal
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState('');
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalButtons, setModalButtons] = useState([]);
 
   const EmailIcon = () => (
     <Svg width="20" height="20" viewBox="0 0 24 24" fill="none">
@@ -101,18 +107,33 @@ const LoginScreen = ({ navigation }) => {
 
     setIsLoading(true);
     try {
-      const response = await loginUser(formData.email, formData.password);
-      if (response.success) {
-        navigation.replace('DashboardScreen');
-      } else {
-        Alert.alert('Login Failed', response.errors.general || 'Invalid credentials');
+      const response = await loginUser(formData.email, formData.password, navigation);
+      if (!response.success) {
+        if (response.errors?.type === 'invalid_credentials') {
+          setModalTitle('Login Failed');
+          setModalMessage('Invalid credentials. Do you want to create a new account?');
+          setModalButtons([
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Register', onPress: () => navigation.navigate('RegistrationScreen') },
+          ]);
+          setModalVisible(true);
+        } else {
+          setModalTitle('Login Failed');
+          setModalMessage(response.errors?.general || 'An unexpected error occurred during login.');
+          setModalButtons([{ text: 'OK' }]);
+          setModalVisible(true);
+        }
       }
     } catch (error) {
-      Alert.alert('Error', 'An unexpected error occurred during login.');
+      setModalTitle('Error');
+      setModalMessage('An unexpected error occurred during login.');
+      setModalButtons([{ text: 'OK' }]);
+      setModalVisible(true);
     } finally {
       setIsLoading(false);
     }
   };
+
 
   const updateFormData = (field, value) => {
     setFormData({
@@ -124,6 +145,38 @@ const LoginScreen = ({ navigation }) => {
       setErrors({ ...errors, [field]: '' });
     }
   };
+
+  const renderModal = () => (
+    <Modal
+      animationType="fade"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => setModalVisible(false)}
+    >
+      <View style={styles.centeredView}>
+        <View style={styles.modalView}>
+          <Text style={styles.modalTitle}>{modalTitle}</Text>
+          <Text style={styles.modalMessage}>{modalMessage}</Text>
+          <View style={styles.modalButtonContainer}>
+            {modalButtons.map((button, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[styles.modalButton, button.style === 'cancel' && styles.modalButtonCancel]}
+                onPress={() => {
+                  setModalVisible(false);
+                  button.onPress && button.onPress();
+                }}
+              >
+                <Text style={[styles.modalButtonText, button.style === 'cancel' && styles.modalButtonTextCancel]}>
+                  {button.text}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
 
   return (
     <KeyboardAvoidingView
@@ -207,6 +260,8 @@ const LoginScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {renderModal()} {/* Render the custom modal */}
     </KeyboardAvoidingView>
   );
 };
@@ -444,7 +499,70 @@ const getStyles = theme =>
       shadowRadius: 8,
       elevation: 4,
     },
+    // Modal Styles
+    centeredView: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(0, 0, 0, 0.6)', // Dim background
+    },
+    modalView: {
+      margin: 20,
+      backgroundColor: theme.card,
+      borderRadius: 20,
+      padding: 35,
+      alignItems: 'center',
+      shadowColor: '#000',
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 4,
+      elevation: 5,
+      width: '80%',
+    },
+    modalTitle: {
+      marginBottom: 15,
+      textAlign: 'center',
+      fontSize: 20,
+      fontFamily: 'Nunito-Bold',
+      color: theme.primary,
+    },
+    modalMessage: {
+      marginBottom: 20,
+      textAlign: 'center',
+      fontSize: 16,
+      fontFamily: 'Nunito-Regular',
+      color: theme.secondary,
+    },
+    modalButtonContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      width: '100%',
+      marginTop: 10,
+    },
+    modalButton: {
+      borderRadius: 10,
+      padding: 12,
+      elevation: 2,
+      backgroundColor: theme.accent,
+      minWidth: 100,
+      alignItems: 'center',
+    },
+    modalButtonCancel: {
+      backgroundColor: theme.border,
+    },
+    modalButtonText: {
+      color: 'white',
+      fontFamily: 'Nunito-SemiBold',
+      textAlign: 'center',
+      fontSize: 16,
+    },
+    modalButtonTextCancel: {
+      color: theme.primary,
+    },
   });
 
-export default LoginScreen;
 
+export default LoginScreen;
