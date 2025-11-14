@@ -166,7 +166,7 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
   const dynamicStyles = StyleSheet.create({
     profileContainer: {
       backgroundColor: theme.background, // Dynamic
-      padding: 16,
+      padding: 12,
       borderRadius: 20,
       shadowColor: isDark ? theme.cardShadow : '#000', // Dynamic shadow logic
       shadowOffset: { width: 0, height: 10 },
@@ -177,20 +177,20 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
     separator: {
       height: 1,
       backgroundColor: theme.border, // Dynamic border color
-      marginVertical: 20,
+      marginVertical: 16,
     },
     profileHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: 10,
+      marginBottom: 8,
     },
     avatarContainer: {
-      marginRight: 20,
+      marginRight: 16,
     },
     avatarRing: {
-      width: 80,
-      height: 80,
-      borderRadius: 40,
+      width: 70,
+      height: 70,
+      borderRadius: 35,
       padding: 3,
       justifyContent: 'center',
       alignItems: 'center',
@@ -198,15 +198,16 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
     avatarInner: {
       width: '100%',
       height: '100%',
-      borderRadius: 40,
+      borderRadius: 35,
       backgroundColor: theme.card,
       justifyContent: 'center',
       alignItems: 'center',
     },
     avatarText: {
       color: theme.primary,
-      fontSize: 24,
+      fontSize: 20,
       fontWeight: '700',
+      fontFamily: 'Nunito-Bold',
     },
     profileInfo: {
       flex: 1,
@@ -214,21 +215,21 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
     nameContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: 4,
+      marginBottom: 2,
     },
     userName: {
-      fontSize: 24,
+      fontSize: 20,
       fontWeight: 'bold',
       color: theme.primary, // Dynamic
-      marginRight: 10,
+      marginRight: 8,
     },
     editButton: {
       padding: 4,
     },
     userTitle: {
-      fontSize: 16,
+      fontSize: 15,
       color: theme.secondary, // Dynamic
-      marginBottom: 12,
+      marginBottom: 8,
       fontWeight: '500',
     },
     ratingContainer: {
@@ -239,15 +240,15 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: isDark ? '#3D3D3D' : theme.card, // Slight variation on badge
-      paddingHorizontal: 16,
-      paddingVertical: 8,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
       borderRadius: 20,
       borderWidth: 1,
       borderColor: theme.border, // Dynamic
-      marginRight: 12,
+      marginRight: 8,
     },
     overallRating: {
-      fontSize: 18,
+      fontSize: 16,
       fontWeight: 'bold',
       color: StaticColors.ratingStar, // Static
       marginLeft: 6,
@@ -270,17 +271,17 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 20,
+      marginBottom: 16,
     },
     sectionTitle: {
-      fontSize: 20,
+      fontSize: 18,
       fontWeight: 'bold',
       color: theme.primary, // Dynamic
     },
     skillPill: {
       backgroundColor: theme.card, // Dynamic
-      paddingHorizontal: 12,
-      paddingVertical: 6,
+      paddingHorizontal: 10,
+      paddingVertical: 4,
       borderRadius: 16,
       borderWidth: 1,
       borderColor: theme.border,
@@ -294,8 +295,8 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
     singleColumnSkillsGrid: {},
 
     barSkillContainer: {
-      marginBottom: 12,
-      padding: 12,
+      marginBottom: 8,
+      padding: 10,
       backgroundColor: theme.card, // Dynamic
       borderRadius: 12,
       borderWidth: 1,
@@ -305,7 +306,7 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 10,
+      marginBottom: 8,
     },
     barSkillName: {
       fontSize: 16,
@@ -325,11 +326,11 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
     barRatingMax: {
       fontSize: 14,
       color: theme.secondary, // Dynamic
-      marginLeft: 2,
+      marginLeft: 0,
       fontWeight: '400',
     },
     progressBarContainer: {
-      marginBottom: 8,
+      marginBottom: 6,
       position: 'relative',
     },
     progressBarBackground: {
@@ -349,19 +350,19 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
     skillLevelContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginTop: 6,
+      marginTop: 4,
     },
     skillLevel: {
       fontSize: 14,
       fontWeight: 'bold',
       textTransform: 'uppercase',
-      marginLeft: 6,
+      marginLeft: 4,
     },
 
     statsContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 10,
+      marginBottom: 8,
     },
     statCard: {
       width: '31%',
@@ -375,11 +376,12 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       elevation: 6,
     },
     statNumber: {
-      fontSize: 24,
+      fontSize: 20,
       fontWeight: 'bold',
       color: '#FFFFFF',
       marginTop: 10,
       marginBottom: 2,
+      fontFamily: 'Nunito-Bold',
     },
     statLabel: {
       fontSize: 14,

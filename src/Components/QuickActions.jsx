@@ -59,7 +59,7 @@ const QuickActions = ({ navigation }) => {
   const dynamicStyles = StyleSheet.create({
     actionsContainer: {
       backgroundColor: theme.card,
-      padding: 16,
+      padding: 12,
       borderRadius: 20,
       shadowColor: isDark ? theme.cardShadow : theme.cardShadow,
       shadowOffset: { width: 0, height: 5 },
@@ -68,13 +68,13 @@ const QuickActions = ({ navigation }) => {
       elevation: 10,
     },
     sectionHeader: {
-      marginBottom: 20,
+      marginBottom: 16,
     },
     sectionTitle: {
-      fontSize: 22,
+      fontSize: 20,
       fontWeight: 'bold',
       color: theme.primary, // Dynamic
-      marginBottom: 4,
+      marginBottom: 2,
     },
     sectionSubtitle: {
       fontSize: 14,
@@ -82,11 +82,11 @@ const QuickActions = ({ navigation }) => {
       fontWeight: '500',
     },
     actionsList: {
-      gap: 16,
+      gap: 12,
     },
     actionCard: {
       borderRadius: 16,
-      padding: 20,
+      padding: 16,
       position: 'relative',
       overflow: 'hidden',
       minHeight: 100,
@@ -104,22 +104,22 @@ const QuickActions = ({ navigation }) => {
       flex: 1,
     },
     actionIconContainer: {
-      width: 56,
-      height: 56,
-      borderRadius: 14,
+      width: 48,
+      height: 48,
+      borderRadius: 12,
       backgroundColor: 'rgba(255,255,255,0.15)',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: 16,
+      marginRight: 12,
     },
     actionTextContainer: {
       flex: 1,
     },
     actionCardTitle: {
-      fontSize: 18,
+      fontSize: 17,
       fontWeight: 'bold',
       color: '#FFFFFF',
-      marginBottom: 4,
+      marginBottom: 2,
     },
     actionDescription: {
       fontSize: 13,
@@ -128,9 +128,9 @@ const QuickActions = ({ navigation }) => {
     },
     actionArrow: {
       backgroundColor: 'rgba(0,0,0,0.2)',
-      padding: 10,
+      padding: 8,
       borderRadius: 12,
-      marginLeft: 12,
+      marginLeft: 8,
     },
     cardDecoration: {
       position: 'absolute',

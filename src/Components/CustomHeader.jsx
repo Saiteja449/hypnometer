@@ -172,12 +172,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    minHeight: 80,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    minHeight: 60,
   },
   leftSection: {
-    width: 40,
+    width: 30,
     alignItems: 'flex-start',
   },
   centerSection: {
@@ -189,24 +189,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   rightSection: {
-    width: 40,
+    width: 30,
     alignItems: 'flex-end',
     justifyContent: 'center',
   },
   backButton: {
-    padding: 4,
+    padding: 2,
   },
   rightButton: {
-    padding: 4,
+    padding: 2,
   },
   title: {
-    fontSize: 18,
+    fontSize: 17,
     fontFamily: 'Nunito-Bold',
   },
   subtitle: {
-    fontSize: 14,
+    fontSize: 13,
     fontFamily: 'Nunito-Medium',
-    marginTop: 2,
+    marginTop: 0,
     textAlign: 'left',
   },
 });

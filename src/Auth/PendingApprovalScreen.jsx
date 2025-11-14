@@ -163,23 +163,23 @@ const getStyles = (theme) => StyleSheet.create({
     backgroundColor: theme.background,
   },
   scrollContent: {
-    padding: 20,
-    paddingBottom: 120, // Space for fixed footer
+    padding: 16,
+    paddingBottom: 80, // Space for fixed footer
   },
   header: {
     alignItems: 'center',
-    marginBottom: 30,
-    marginTop: 20,
+    marginBottom: 20,
+    marginTop: 16,
   },
   iconContainer: {
-    marginBottom: 20,
+    marginBottom: 16,
   },
   title: {
-    fontSize: 28,
+    fontSize: 20,
     fontFamily: 'Nunito-Bold',
     color: theme.primary,
     textAlign: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
@@ -191,8 +191,8 @@ const getStyles = (theme) => StyleSheet.create({
   statusCard: {
     backgroundColor: theme.card,
     borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
+    padding: 16,
+    marginBottom: 20,
     shadowColor: theme.cardShadow,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -202,7 +202,7 @@ const getStyles = (theme) => StyleSheet.create({
   statusHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   statusTitle: {
     fontSize: 18,
@@ -218,7 +218,7 @@ const getStyles = (theme) => StyleSheet.create({
     height: 6,
     backgroundColor: theme.border,
     borderRadius: 3,
-    marginBottom: 12,
+    marginBottom: 8,
     overflow: 'hidden',
   },
   progressFill: {
@@ -234,20 +234,20 @@ const getStyles = (theme) => StyleSheet.create({
     textAlign: 'center',
   },
   expectationsSection: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontFamily: 'Nunito-Bold',
     color: theme.primary,
-    marginBottom: 16,
+    marginBottom: 12,
   },
   expectationItem: {
     flexDirection: 'row',
     backgroundColor: theme.card,
     borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
+    padding: 12,
+    marginBottom: 8,
     shadowColor: theme.cardShadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -255,7 +255,7 @@ const getStyles = (theme) => StyleSheet.create({
     elevation: 1,
   },
   expectationIcon: {
-    marginRight: 12,
+    marginRight: 8,
   },
   expectationContent: {
     flex: 1,
@@ -264,7 +264,7 @@ const getStyles = (theme) => StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Nunito-SemiBold',
     color: theme.primary,
-    marginBottom: 4,
+    marginBottom: 2,
   },
   expectationDescription: {
     fontSize: 14,
@@ -273,12 +273,12 @@ const getStyles = (theme) => StyleSheet.create({
     lineHeight: 20,
   },
   timelineSection: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   timeline: {
     backgroundColor: theme.card,
     borderRadius: 12,
-    padding: 20,
+    padding: 16,
     shadowColor: theme.cardShadow,
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
@@ -288,7 +288,7 @@ const getStyles = (theme) => StyleSheet.create({
   timelineItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 20,
+    marginBottom: 16,
   },
   timelineDot: {
     width: 12,
@@ -296,7 +296,7 @@ const getStyles = (theme) => StyleSheet.create({
     borderRadius: 6,
     backgroundColor: '#10B981', // Keep green for approved status
     marginTop: 4,
-    marginRight: 12,
+    marginRight: 8,
   },
   timelineDotPending: {
     backgroundColor: theme.accent,
@@ -311,7 +311,7 @@ const getStyles = (theme) => StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Nunito-SemiBold',
     color: theme.primary,
-    marginBottom: 2,
+    marginBottom: 0,
   },
   timelineTime: {
     fontSize: 14,
@@ -319,25 +319,25 @@ const getStyles = (theme) => StyleSheet.create({
     color: theme.secondary,
   },
   supportSection: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   supportText: {
     fontSize: 14,
     fontFamily: 'Nunito-Regular',
     color: theme.secondary,
-    marginBottom: 12,
+    marginBottom: 8,
     lineHeight: 20,
   },
   supportContacts: {
     backgroundColor: theme.card,
     borderRadius: 12,
-    padding: 16,
+    padding: 12,
   },
   contactItem: {
     fontSize: 14,
     fontFamily: 'Nunito-Medium',
     color: theme.primary,
-    marginBottom: 8,
+    marginBottom: 4,
   },
   footer: {
     position: 'absolute',
@@ -345,8 +345,8 @@ const getStyles = (theme) => StyleSheet.create({
     left: 0,
     right: 0,
     backgroundColor: theme.card,
-    padding: 20,
-    paddingBottom: 30,
+    padding: 16,
+    paddingBottom: 20,
     borderTopWidth: 1,
     borderTopColor: theme.border,
     shadowColor: theme.cardShadow,
@@ -357,10 +357,10 @@ const getStyles = (theme) => StyleSheet.create({
   },
   primaryButton: {
     backgroundColor: theme.accent,
-    paddingVertical: 16,
+    paddingVertical: 12,
     borderRadius: 12,
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 8,
     shadowColor: theme.accent,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,

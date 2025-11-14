@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -54,48 +54,48 @@ const AnalyticsScreen = ({ navigation }) => {
     StyleSheet.create({
       container: {
         flex: 1,
-        backgroundColor: theme.colors.background,
+        backgroundColor: theme.background,
       },
       scrollView: {
         flex: 1,
       },
       header: {
-        padding: 20,
-        paddingBottom: 10,
+        padding: 12,
+        paddingBottom: 6,
       },
       headerContent: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 8,
+        marginBottom: 4,
       },
       title: {
-        fontSize: 28,
+        fontSize: 20,
         fontFamily: 'Nunito-Bold',
-        color: theme.colors.text,
-        marginLeft: 12,
+        color: theme.primary,
+        marginLeft: 8,
       },
       subtitle: {
         fontSize: 16,
         fontFamily: 'Nunito-Medium',
-        color: theme.colors.textSecondary,
+        color: theme.secondary,
         lineHeight: 22,
       },
       timeRangeContainer: {
         flexDirection: 'row',
-        paddingHorizontal: 20,
-        marginBottom: 24,
+        paddingHorizontal: 12,
+        marginBottom: 16,
       },
       timeRangeButton: {
         flex: 1,
-        paddingVertical: 12,
-        paddingHorizontal: 16,
+        paddingVertical: 10,
+        paddingHorizontal: 12,
         borderWidth: 1,
-        borderColor: theme.colors.border,
-        backgroundColor: theme.colors.cardBackground,
+        borderColor: theme.border,
+        backgroundColor: theme.card,
         alignItems: 'center',
-        marginHorizontal: 4,
+        marginHorizontal: 1,
         borderRadius: 12,
-        shadowColor: theme.colors.shadow,
+        shadowColor: theme.cardShadow,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: isDark ? 0.2 : 0.05,
         shadowRadius: 3,
@@ -103,8 +103,8 @@ const AnalyticsScreen = ({ navigation }) => {
       },
       timeRangeButtonActive: {
         borderWidth: 2,
-        borderColor: theme.colors.accent,
-        shadowColor: theme.colors.accent,
+        borderColor: theme.accent,
+        shadowColor: theme.accent,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.15,
         shadowRadius: 6,
@@ -113,60 +113,60 @@ const AnalyticsScreen = ({ navigation }) => {
       timeRangeText: {
         fontSize: 14,
         fontFamily: 'Nunito-Medium',
-        color: theme.colors.textSecondary,
+        color: theme.secondary,
       },
       timeRangeTextActive: {
-        color: theme.colors.accent,
+        color: theme.accent,
         fontFamily: 'Nunito-SemiBold',
       },
       summaryGrid: {
         flexDirection: 'row',
-        paddingHorizontal: 20,
-        marginBottom: 24,
-        gap: 12,
+        paddingHorizontal: 12,
+        marginBottom: 16,
+        gap: 6,
       },
       summaryCard: {
         flex: 1,
-        backgroundColor: theme.colors.cardBackground,
-        padding: 16,
+        backgroundColor: theme.card,
+        padding: 10,
         borderRadius: 16,
         alignItems: 'center',
-        shadowColor: theme.colors.shadow,
+        shadowColor: theme.cardShadow,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: isDark ? 0.2 : 0.1,
         shadowRadius: 8,
         elevation: 3,
       },
       summaryIcon: {
-        marginBottom: 8,
+        marginBottom: 4,
       },
       summaryNumber: {
-        fontSize: 24,
+        fontSize: 20,
         fontFamily: 'Nunito-Bold',
-        color: theme.colors.text,
-        marginBottom: 4,
+        color: theme.primary,
+        marginBottom: 2,
       },
       summaryLabel: {
         fontSize: 12,
         fontFamily: 'Nunito-Medium',
-        color: theme.colors.textSecondary,
+        color: theme.secondary,
       },
       growthPositive: {
-        color: theme.colors.success,
+        color: theme.success,
       },
       metricSelector: {
-        marginBottom: 24,
-        paddingHorizontal: 20,
+        marginBottom: 16,
+        paddingHorizontal: 12,
       },
       metricButton: {
         paddingHorizontal: 20,
         paddingVertical: 12,
-        backgroundColor: theme.colors.cardBackground,
+        backgroundColor: theme.card,
         borderRadius: 25,
         borderWidth: 1,
-        borderColor: theme.colors.border,
-        marginRight: 8,
-        shadowColor: theme.colors.shadow,
+        borderColor: theme.border,
+        marginRight: 6,
+        shadowColor: theme.cardShadow,
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: isDark ? 0.2 : 0.05,
         shadowRadius: 3,
@@ -183,19 +183,19 @@ const AnalyticsScreen = ({ navigation }) => {
       metricButtonText: {
         fontSize: 14,
         fontFamily: 'Nunito-Medium',
-        color: theme.colors.textSecondary,
+        color: theme.secondary,
       },
       metricButtonTextActive: {
-        color: theme.colors.buttonText,
+        color: theme.buttonText,
         fontFamily: 'Nunito-SemiBold',
       },
       chartContainer: {
-        backgroundColor: theme.colors.cardBackground,
-        marginHorizontal: 20,
-        marginBottom: 24,
-        padding: 20,
+        backgroundColor: theme.card,
+        marginHorizontal: 16,
+        marginBottom: 20,
+        padding: 16,
         borderRadius: 16,
-        shadowColor: theme.colors.shadow,
+        shadowColor: theme.cardShadow,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: isDark ? 0.2 : 0.1,
         shadowRadius: 8,
@@ -205,12 +205,12 @@ const AnalyticsScreen = ({ navigation }) => {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 12,
       },
       chartTitle: {
-        fontSize: 18,
+        fontSize: 17,
         fontFamily: 'Nunito-Bold',
-        color: theme.colors.text,
+        color: theme.primary,
       },
       chartBadge: {
         paddingHorizontal: 12,
@@ -220,28 +220,28 @@ const AnalyticsScreen = ({ navigation }) => {
       chartBadgeText: {
         fontSize: 12,
         fontFamily: 'Nunito-SemiBold',
-        color: theme.colors.buttonText,
+        color: theme.buttonText,
       },
       chartPlaceholder: {
         alignItems: 'center',
-        paddingVertical: 30,
-        backgroundColor: isDark ? theme.colors.background : theme.colors.subCard,
+        paddingVertical: 24,
+        backgroundColor: isDark ? theme.background : theme.border,
         borderRadius: 12,
         marginBottom: 20,
       },
       chartIcon: {
-        marginBottom: 12,
+        marginBottom: 10,
       },
       chartPlaceholderText: {
-        fontSize: 16,
+        fontSize: 15,
         fontFamily: 'Nunito-SemiBold',
-        color: theme.colors.text,
+        color: theme.primary,
         marginBottom: 4,
       },
       chartSubtext: {
         fontSize: 12,
         fontFamily: 'Nunito-Regular',
-        color: theme.colors.textSecondary,
+        color: theme.secondary,
         textAlign: 'center',
       },
       barChart: {
@@ -271,36 +271,36 @@ const AnalyticsScreen = ({ navigation }) => {
       barLabel: {
         fontSize: 12,
         fontFamily: 'Nunito-Medium',
-        color: theme.colors.textSecondary,
+        color: theme.secondary,
         marginBottom: 4,
       },
       barValue: {
         fontSize: 10,
         fontFamily: 'Nunito-SemiBold',
-        color: theme.colors.text,
+        color: theme.primary,
       },
       insightsContainer: {
-        backgroundColor: theme.colors.cardBackground,
-        marginHorizontal: 20,
-        marginBottom: 24,
-        padding: 20,
+        backgroundColor: theme.card,
+        marginHorizontal: 16,
+        marginBottom: 20,
+        padding: 16,
         borderRadius: 16,
-        shadowColor: theme.colors.shadow,
+        shadowColor: theme.cardShadow,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: isDark ? 0.2 : 0.1,
         shadowRadius: 8,
         elevation: 3,
       },
       insightsTitle: {
-        fontSize: 18,
+        fontSize: 17,
         fontFamily: 'Nunito-Bold',
-        color: theme.colors.text,
-        marginBottom: 16,
+        color: theme.primary,
+        marginBottom: 12,
       },
       insightItem: {
         flexDirection: 'row',
         alignItems: 'flex-start',
-        paddingVertical: 12,
+        paddingVertical: 10,
       },
       insightIcon: {
         width: 40,
@@ -308,41 +308,41 @@ const AnalyticsScreen = ({ navigation }) => {
         borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 12,
+        marginRight: 10,
         // Specific colors for icons are kept, but backgrounds are adjusted
       },
       insightText: {
         flex: 1,
       },
       insightTitle: {
-        fontSize: 16,
+        fontSize: 15,
         fontFamily: 'Nunito-SemiBold',
-        color: theme.colors.text,
-        marginBottom: 4,
+        color: theme.primary,
+        marginBottom: 2,
       },
       insightDescription: {
         fontSize: 14,
         fontFamily: 'Nunito-Regular',
-        color: theme.colors.textSecondary,
+        color: theme.secondary,
         lineHeight: 20,
       },
       statsContainer: {
-        backgroundColor: theme.colors.cardBackground,
-        marginHorizontal: 20,
-        marginBottom: 40,
-        padding: 20,
+        backgroundColor: theme.card,
+        marginHorizontal: 16,
+        marginBottom: 30,
+        padding: 16,
         borderRadius: 16,
-        shadowColor: theme.colors.shadow,
+        shadowColor: theme.cardShadow,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: isDark ? 0.2 : 0.1,
         shadowRadius: 8,
         elevation: 3,
       },
       statsTitle: {
-        fontSize: 18,
+        fontSize: 17,
         fontFamily: 'Nunito-Bold',
-        color: theme.colors.text,
-        marginBottom: 16,
+        color: theme.primary,
+        marginBottom: 12,
       },
       statsGrid: {
         flexDirection: 'row',
@@ -353,20 +353,18 @@ const AnalyticsScreen = ({ navigation }) => {
         flex: 1,
       },
       statNumber: {
-        fontSize: 20,
+        fontSize: 18,
         fontFamily: 'Nunito-Bold',
-        color: theme.colors.accent, // Use theme accent color
-        marginBottom: 4,
+        color: theme.accent, // Use theme accent color
+        marginBottom: 2,
       },
       statLabel: {
         fontSize: 12,
         fontFamily: 'Nunito-Medium',
-        color: theme.colors.textSecondary,
+        color: theme.secondary,
         textAlign: 'center',
       },
     });
-
-
 
   return (
     <View style={styles.container}>
@@ -435,12 +433,7 @@ const AnalyticsScreen = ({ navigation }) => {
             <View style={styles.summaryIcon}>
               <GrowthIcon />
             </View>
-            <Text
-              style={[
-                styles.summaryNumber,
-                styles.growthPositive,
-              ]}
-            >
+            <Text style={[styles.summaryNumber, styles.growthPositive]}>
               {analyticsData.summary.growth}
             </Text>
             <Text style={styles.summaryLabel}>Growth</Text>
@@ -468,8 +461,7 @@ const AnalyticsScreen = ({ navigation }) => {
               <Text
                 style={[
                   styles.metricButtonText,
-                  selectedMetric === key &&
-                    styles.metricButtonTextActive,
+                  selectedMetric === key && styles.metricButtonTextActive,
                 ]}
               >
                 {metric.label}
@@ -500,9 +492,7 @@ const AnalyticsScreen = ({ navigation }) => {
             <View style={styles.chartIcon}>
               <ChartIcon />
             </View>
-            <Text style={styles.chartPlaceholderText}>
-              Performance Trends
-            </Text>
+            <Text style={styles.chartPlaceholderText}>Performance Trends</Text>
             <Text style={styles.chartSubtext}>
               Showing {timeRange}ly trends for{' '}
               {metrics[selectedMetric].label.toLowerCase()}
@@ -563,9 +553,7 @@ const AnalyticsScreen = ({ navigation }) => {
               <InsightIcon type="improvement" />
             </View>
             <View style={styles.insightText}>
-              <Text style={styles.insightTitle}>
-                Area for Improvement
-              </Text>
+              <Text style={styles.insightTitle}>Area for Improvement</Text>
               <Text style={styles.insightDescription}>
                 Focus on {analyticsData.summary.improvementArea} techniques to
                 enhance client engagement

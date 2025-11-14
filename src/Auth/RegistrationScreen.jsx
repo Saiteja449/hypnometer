@@ -53,6 +53,11 @@ const RegistrationScreen = ({ navigation }) => {
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Email is invalid';
     }
+    if (!formData.phone.trim()) {
+      newErrors.phone = 'Phone number is required';
+    } else if (!/^\d{10}$/.test(formData.phone)) {
+      newErrors.phone = 'Phone number must be 10 digits';
+    }
     if (!formData.password) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 8) {
@@ -78,9 +83,13 @@ const RegistrationScreen = ({ navigation }) => {
         password: formData.password,
         role: 'user',
       };
-      const { success, errors: apiErrors } = await registerUser(payload);
-      if (success) {
-        navigation.replace('DashboardScreen');
+      const { success, user, errors: apiErrors } = await registerUser(payload);
+      if (success && user) {
+        if (!user.status) {
+          navigation.replace('PendingApprovalScreen');
+        } else {
+          navigation.replace('DashboardScreen');
+        }
       } else {
         if (apiErrors) {
           const newErrors = {};
@@ -123,16 +132,25 @@ const RegistrationScreen = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.header}>
-          <Text style={styles.title}>Personal Information</Text>
-          <Text style={styles.subtitle}>Tell us about yourself</Text>
+        {/* Hero Section */}
+        <View style={styles.heroSection}>
+          <View style={styles.heroCircle}>
+            <UserIcon />
+          </View>
+          <Text style={styles.heroTitle}>Join Our Community</Text>
+          <Text style={styles.heroSubtitle}>Create your account to get started</Text>
         </View>
 
-        <View style={styles.formSection}>
-          <View style={styles.nameRow}>
-            {/* First Name Input */}
-            <View style={styles.halfInput}>
-              <View style={styles.inputContainer}>
+        {/* Form Card */}
+        <View style={styles.formCard}>
+          {/* Section 1: Basic Info */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Basic Information</Text>
+            
+            <View style={styles.nameRow}>
+              {/* First Name Input */}
+              <View style={styles.halfInput}>
+                <Text style={styles.inputLabel}>First Name</Text>
                 <View
                   style={[
                     styles.inputWrapper,
@@ -144,7 +162,7 @@ const RegistrationScreen = ({ navigation }) => {
                   </View>
                   <TextInput
                     style={styles.textInput}
-                    placeholder="First Name"
+                    placeholder="John"
                     value={formData.firstName}
                     onChangeText={text => updateFormData('firstName', text)}
                     placeholderTextColor={theme.secondary}
@@ -154,11 +172,10 @@ const RegistrationScreen = ({ navigation }) => {
                   <Text style={styles.errorText}>{errors.firstName}</Text>
                 )}
               </View>
-            </View>
 
-            {/* Last Name Input */}
-            <View style={styles.halfInput}>
-              <View style={styles.inputContainer}>
+              {/* Last Name Input */}
+              <View style={styles.halfInput}>
+                <Text style={styles.inputLabel}>Last Name</Text>
                 <View
                   style={[
                     styles.inputWrapper,
@@ -170,7 +187,7 @@ const RegistrationScreen = ({ navigation }) => {
                   </View>
                   <TextInput
                     style={styles.textInput}
-                    placeholder="Last Name"
+                    placeholder="Doe"
                     value={formData.lastName}
                     onChangeText={text => updateFormData('lastName', text)}
                     placeholderTextColor={theme.secondary}
@@ -183,125 +200,148 @@ const RegistrationScreen = ({ navigation }) => {
             </View>
           </View>
 
-          {/* Email Input */}
-          <View style={styles.inputContainer}>
-            <View
-              style={[styles.inputWrapper, errors.email && styles.inputError]}
-            >
-              <View style={styles.inputIcon}>
-                <EmailIcon />
-              </View>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Email Address"
-                value={formData.email}
-                onChangeText={text => updateFormData('email', text)}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                placeholderTextColor={theme.secondary}
-              />
-            </View>
-            {errors.email && (
-              <Text style={styles.errorText}>{errors.email}</Text>
-            )}
-          </View>
+          {/* Divider */}
+          <View style={styles.divider} />
 
-          {/* Phone Input */}
-          <View style={styles.inputContainer}>
-            <View
-              style={[styles.inputWrapper, errors.phone && styles.inputError]}
-            >
-              <View style={styles.inputIcon}>
-                <PhoneIcon />
-              </View>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Phone Number (Optional)"
-                value={formData.phone}
-                onChangeText={text => updateFormData('phone', text)}
-                keyboardType="phone-pad"
-                placeholderTextColor={theme.secondary}
-              />
-            </View>
-            {errors.phone && (
-              <Text style={styles.errorText}>{errors.phone}</Text>
-            )}
-          </View>
-
-          {/* Password Input */}
-          <View style={styles.inputContainer}>
-            <View
-              style={[
-                styles.inputWrapper,
-                errors.password && styles.inputError,
-              ]}
-            >
-              <View style={styles.inputIcon}>
-                <LockIcon />
-              </View>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Password"
-                value={formData.password}
-                onChangeText={text => updateFormData('password', text)}
-                secureTextEntry={!showPassword}
-                placeholderTextColor={theme.secondary}
-              />
-              <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
-                style={styles.eyeIcon}
+          {/* Section 2: Contact Info */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Contact Information</Text>
+            
+            {/* Email Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputLabel}>Email Address</Text>
+              <View
+                style={[styles.inputWrapper, errors.email && styles.inputError]}
               >
-                <EyeIcon open={!showPassword} />
-              </TouchableOpacity>
-            </View>
-            {errors.password && (
-              <Text style={styles.errorText}>{errors.password}</Text>
-            )}
-          </View>
-
-          {/* Confirm Password Input */}
-          <View style={styles.inputContainer}>
-            <View
-              style={[
-                styles.inputWrapper,
-                errors.confirmPassword && styles.inputError,
-              ]}
-            >
-              <View style={styles.inputIcon}>
-                <LockIcon />
+                <View style={styles.inputIcon}>
+                  <EmailIcon />
+                </View>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="your.email@example.com"
+                  value={formData.email}
+                  onChangeText={text => updateFormData('email', text)}
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                  placeholderTextColor={theme.secondary}
+                />
               </View>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Confirm Password"
-                value={formData.confirmPassword}
-                onChangeText={text => updateFormData('confirmPassword', text)}
-                secureTextEntry={!showConfirmPassword}
-                placeholderTextColor={theme.secondary}
-              />
-              <TouchableOpacity
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                style={styles.eyeIcon}
-              >
-                <EyeIcon open={!showConfirmPassword} />
-              </TouchableOpacity>
+              {errors.email && (
+                <Text style={styles.errorText}>{errors.email}</Text>
+              )}
             </View>
-            {errors.confirmPassword && (
-              <Text style={styles.errorText}>{errors.confirmPassword}</Text>
-            )}
+
+            {/* Phone Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputLabel}>Phone Number</Text>
+              <View
+                style={[styles.inputWrapper, errors.phone && styles.inputError]}
+              >
+                <View style={styles.inputIcon}>
+                  <PhoneIcon />
+                </View>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="9876543210"
+                  value={formData.phone}
+                  onChangeText={text => updateFormData('phone', text)}
+                  keyboardType="number-pad"
+                  maxLength={10}
+                  placeholderTextColor={theme.secondary}
+                />
+              </View>
+              {errors.phone && (
+                <Text style={styles.errorText}>{errors.phone}</Text>
+              )}
+            </View>
           </View>
 
-          <TouchableOpacity
-            style={styles.signUpButton}
-            onPress={handleSignUp}
-            disabled={isLoading}
-          >
-            {isLoading ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.signUpButtonText}>Create Account</Text>
-            )}
-          </TouchableOpacity>
+          {/* Divider */}
+          <View style={styles.divider} />
+
+          {/* Section 3: Security */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Security</Text>
+            
+            {/* Password Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputLabel}>Password</Text>
+              <View
+                style={[
+                  styles.inputWrapper,
+                  errors.password && styles.inputError,
+                ]}
+              >
+                <View style={styles.inputIcon}>
+                  <LockIcon />
+                </View>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChangeText={text => updateFormData('password', text)}
+                  secureTextEntry={!showPassword}
+                  placeholderTextColor={theme.secondary}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={styles.eyeIcon}
+                >
+                  <EyeIcon open={!showPassword} />
+                </TouchableOpacity>
+              </View>
+              {errors.password && (
+                <Text style={styles.errorText}>{errors.password}</Text>
+              )}
+              <Text style={styles.helperText}>Minimum 8 characters</Text>
+            </View>
+
+            {/* Confirm Password Input */}
+            <View style={styles.inputFieldContainer}>
+              <Text style={styles.inputLabel}>Confirm Password</Text>
+              <View
+                style={[
+                  styles.inputWrapper,
+                  errors.confirmPassword && styles.inputError,
+                ]}
+              >
+                <View style={styles.inputIcon}>
+                  <LockIcon />
+                </View>
+                <TextInput
+                  style={styles.textInput}
+                  placeholder="••••••••"
+                  value={formData.confirmPassword}
+                  onChangeText={text => updateFormData('confirmPassword', text)}
+                  secureTextEntry={!showConfirmPassword}
+                  placeholderTextColor={theme.secondary}
+                />
+                <TouchableOpacity
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  style={styles.eyeIcon}
+                >
+                  <EyeIcon open={!showConfirmPassword} />
+                </TouchableOpacity>
+              </View>
+              {errors.confirmPassword && (
+                <Text style={styles.errorText}>{errors.confirmPassword}</Text>
+              )}
+            </View>
+          </View>
         </View>
+
+        {/* Sign Up Button */}
+        <TouchableOpacity
+          style={styles.signUpButton}
+          onPress={handleSignUp}
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.signUpButtonText}>Create Account</Text>
+          )}
+        </TouchableOpacity>
 
         {/* Footer */}
         <View style={styles.footer}>
@@ -330,52 +370,105 @@ const getStyles = theme =>
       flex: 1,
     },
     scrollContent: {
-      padding: 20,
-      paddingBottom: 40,
+      padding: 16,
+      paddingBottom: 20,
     },
-    header: {
-      marginBottom: 30,
+    heroSection: {
       alignItems: 'center',
+      marginBottom: 20,
+      marginTop: 16,
     },
-    title: {
-      fontSize: 28,
+    heroCircle: {
+      width: 80,
+      height: 80,
+      borderRadius: 40,
+      backgroundColor: theme.accent,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: 12,
+      shadowColor: theme.accent,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    heroTitle: {
+      fontSize: 20,
       fontFamily: 'Nunito-Bold',
       color: theme.primary,
       textAlign: 'center',
-      marginBottom: 8,
+      marginBottom: 4,
     },
-    subtitle: {
+    heroSubtitle: {
       fontSize: 16,
-      fontFamily: 'Nunito-Medium',
+      fontFamily: 'Nunito-Regular',
       color: theme.secondary,
       textAlign: 'center',
-      lineHeight: 22,
     },
-    formSection: {
-      gap: 16,
+    formCard: {
+      backgroundColor: theme.card,
+      borderRadius: 16,
+      padding: 16,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: theme.border,
+      shadowColor: theme.cardShadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.08,
+      shadowRadius: 6,
+      elevation: 3,
+    },
+    sectionContainer: {
+      marginBottom: 8,
+    },
+    sectionTitle: {
+      fontSize: 14,
+      fontFamily: 'Nunito-SemiBold',
+      color: theme.primary,
+      marginBottom: 12,
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
+    divider: {
+      height: 1,
+      backgroundColor: theme.border,
+      marginVertical: 12,
     },
     nameRow: {
-      flexDirection: 'row',
-      gap: 12,
+      flexDirection: 'column',
+      gap: 6,
     },
     halfInput: {
       flex: 1,
     },
-    inputContainer: {
+    inputFieldContainer: {
       marginBottom: 8,
+    },
+    inputLabel: {
+      fontSize: 13,
+      fontFamily: 'Nunito-SemiBold',
+      color: theme.primary,
+      marginBottom: 6,
+    },
+    optionalBadge: {
+      fontSize: 11,
+      fontFamily: 'Nunito-Regular',
+      color: theme.secondary,
+      fontStyle: 'italic',
     },
     inputWrapper: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: theme.card,
-      borderWidth: 1,
+      backgroundColor: theme.background,
+      borderWidth: 1.5,
       borderColor: theme.border,
-      borderRadius: 12,
-      paddingHorizontal: 16,
+      borderRadius: 10,
+      paddingHorizontal: 12,
+      minHeight: 40,
       shadowColor: theme.cardShadow,
       shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.05,
-      shadowRadius: 3,
+      shadowOpacity: 0.04,
+      shadowRadius: 2,
       elevation: 1,
     },
     inputError: {
@@ -383,34 +476,43 @@ const getStyles = theme =>
       backgroundColor: '#FEF2F2',
     },
     inputIcon: {
-      marginRight: 12,
+      marginRight: 0,
+      justifyContent: 'center',
     },
     textInput: {
       flex: 1,
-      fontSize: 16,
+      fontSize: 15,
       fontFamily: 'Nunito-Regular',
       color: theme.primary,
-      paddingVertical: 14,
+      paddingVertical: 10,
     },
     eyeIcon: {
-      padding: 4,
+      padding: 6,
+      marginLeft: 2,
     },
     errorText: {
       color: '#EF4444',
       fontSize: 12,
       fontFamily: 'Nunito-Medium',
-      marginTop: 6,
-      marginLeft: 4,
+      marginTop: 4,
+      marginLeft: 2,
+    },
+    helperText: {
+      color: theme.secondary,
+      fontSize: 12,
+      fontFamily: 'Nunito-Regular',
+      marginTop: 4,
+      marginLeft: 2,
     },
     signUpButton: {
       backgroundColor: theme.accent,
-      paddingVertical: 16,
+      paddingVertical: 12,
       borderRadius: 12,
       alignItems: 'center',
-      marginTop: 8,
+      marginBottom: 12,
       shadowColor: theme.accent,
       shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.3,
+      shadowOpacity: 0.35,
       shadowRadius: 8,
       elevation: 4,
     },
@@ -418,10 +520,11 @@ const getStyles = theme =>
       fontSize: 16,
       fontFamily: 'Nunito-SemiBold',
       color: '#FFFFFF',
+      letterSpacing: 0.5,
     },
     footer: {
-      marginTop: 30,
       alignItems: 'center',
+      paddingVertical: 12,
     },
     footerText: {
       fontSize: 14,

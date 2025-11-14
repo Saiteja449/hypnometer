@@ -136,9 +136,9 @@ const AllSessionsScreen = ({ navigation, route }) => {
 
   const getStatusColor = (status, hasFeedback) => {
     if (status === 'completed') {
-      return hasFeedback ? theme.colors.success : theme.colors.warning;
+      return hasFeedback ? theme.success : theme.warning;
     }
-    return theme.colors.secondary;
+    return theme.secondary;
   };
 
   const getStatusText = (status, hasFeedback) => {
@@ -148,31 +148,29 @@ const AllSessionsScreen = ({ navigation, route }) => {
     return 'In Progress';
   };
 
-  const styles = useMemo(() => getStyles(theme, isDark), [theme, isDark]);
-
   const getStyles = (theme, isDark) =>
     StyleSheet.create({
       container: {
         flex: 1,
-        backgroundColor: theme.colors.background,
+        backgroundColor: theme.background,
       },
       content: {
         flex: 1,
-        padding: 16,
+        padding: 10,
       },
       searchContainer: {
-        marginBottom: 16,
+        marginBottom: 10,
       },
       searchInput: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: theme.colors.cardBackground,
+        backgroundColor: theme.card,
         borderWidth: 1,
-        borderColor: theme.colors.border,
+        borderColor: theme.border,
         borderRadius: 12,
-        paddingHorizontal: 16,
-        paddingVertical: 6,
-        shadowColor: theme.colors.shadow,
+        paddingHorizontal: 12,
+        paddingVertical: 4,
+        shadowColor: theme.cardShadow,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: isDark ? 0.3 : 0.05,
         shadowRadius: 6,
@@ -180,77 +178,76 @@ const AllSessionsScreen = ({ navigation, route }) => {
       },
       searchTextInput: {
         flex: 1,
-        fontSize: 16,
+        fontSize: 15,
         fontFamily: 'Nunito-Regular',
-        color: theme.colors.text,
-        marginLeft: 12,
+        color: theme.primary,
+        marginLeft: 8,
         backgroundColor: 'transparent',
       },
       filterContainer: {
-        marginBottom: 16,
+        marginBottom: 10,
       },
       filterContent: {
-        paddingHorizontal: 4,
+        paddingHorizontal: 2,
       },
       filterTab: {
-        paddingHorizontal: 20,
-        paddingVertical: 8,
-        backgroundColor: theme.colors.cardBackground,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        backgroundColor: theme.card,
         borderRadius: 8,
-        marginRight: 8,
-        minWidth: 100,
+        marginRight: 6,
         alignItems: 'center',
+        justifyContent: 'center',
         borderWidth: 1,
-        borderColor: theme.colors.border,
+        borderColor: theme.border,
       },
       filterTabActive: {
-        backgroundColor: theme.colors.accent,
-        borderColor: theme.colors.accent,
-        paddingHorizontal: 22,
+        backgroundColor: theme.accent,
+        borderColor: theme.accent,
       },
       filterTabText: {
         fontSize: 14,
         fontFamily: 'Nunito-SemiBold',
-        color: theme.colors.textSecondary,
-        lineHeight: 18,
+        color: theme.secondary,
       },
       filterTabTextActive: {
-        color: theme.colors.buttonText,
+        color: theme.buttonText,
+        fontFamily: 'Nunito-Bold',
       },
       resultsHeader: {
-        marginBottom: 16,
-        paddingHorizontal: 4,
+        marginBottom: 10,
+        paddingHorizontal: 2,
       },
       resultsText: {
         fontSize: 14,
         fontFamily: 'Nunito-Medium',
-        color: theme.colors.textSecondary,
+        color: theme.secondary,
       },
       listContent: {
         flexGrow: 1,
-        paddingBottom: 20,
+        paddingBottom: 12,
       },
       sessionCardWrapper: {
-        marginBottom: 16,
+        marginBottom: 10,
         borderRadius: 16,
         padding: 1,
         backgroundColor: 'transparent',
       },
       sessionCardWrapperGlow: {
         backgroundColor: isDark
-          ? theme.colors.accent + '20'
-          : theme.colors.accent + '10',
-        shadowColor: theme.colors.accent,
+          ? theme.accent + '20'
+          : theme.accent + '10',
+        shadowColor: theme.accent,
         shadowOffset: { width: 0, height: 0 },
         shadowOpacity: isDark ? 0.4 : 0.2,
         shadowRadius: 5,
         elevation: 3,
       },
       sessionCard: {
-        backgroundColor: theme.colors.cardBackground,
+        backgroundColor: theme.card,
         borderRadius: 15,
-        padding: 20,
-        shadowColor: theme.colors.shadow,
+        padding: 14,
+        shadowColor: theme.cardShadow,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: isDark ? 0.3 : 0.15,
         shadowRadius: 10,
@@ -262,25 +259,25 @@ const AllSessionsScreen = ({ navigation, route }) => {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: 12,
+        marginBottom: 8,
       },
       sessionInfo: {
         flex: 1,
       },
       sessionTitle: {
-        fontSize: 18,
+        fontSize: 16,
         fontFamily: 'Nunito-Bold',
-        color: theme.colors.text,
-        marginBottom: 4,
+        color: theme.primary,
+        marginBottom: 2,
       },
       therapistName: {
         fontSize: 14,
         fontFamily: 'Nunito-SemiBold',
-        color: theme.colors.accent,
+        color: theme.accent,
       },
       statusBadge: {
-        paddingHorizontal: 10,
-        paddingVertical: 6,
+        paddingHorizontal: 8,
+        paddingVertical: 4,
         borderRadius: 10,
         minWidth: 100,
         alignItems: 'center',
@@ -288,82 +285,82 @@ const AllSessionsScreen = ({ navigation, route }) => {
       statusText: {
         fontSize: 12,
         fontFamily: 'Nunito-Bold',
-        color: theme.colors.buttonText,
+        color: theme.buttonText,
       },
       sessionDetails: {
-        marginBottom: 16,
+        marginBottom: 12,
         borderTopWidth: 1,
-        borderTopColor: theme.colors.border,
-        paddingTop: 12,
+        borderTopColor: theme.border,
+        paddingTop: 8,
       },
       detailRow: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 6,
+        marginBottom: 4,
       },
       detailLabel: {
         fontSize: 14,
         fontFamily: 'Nunito-Medium',
-        color: theme.colors.textSecondary,
+        color: theme.secondary,
       },
       detailValue: {
         fontSize: 14,
         fontFamily: 'Nunito-SemiBold',
-        color: theme.colors.text,
+        color: theme.primary,
       },
       ratingContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 4,
+        gap: 2,
       },
       ratingText: {
         fontSize: 14,
         fontFamily: 'Nunito-Bold',
-        color: theme.colors.text,
+        color: theme.primary,
       },
       feedbackSection: {
         backgroundColor: isDark ? '#1F2937' : '#F8FAFF',
-        padding: 12,
+        padding: 8,
         borderRadius: 10,
-        marginBottom: 16,
+        marginBottom: 12,
         borderLeftWidth: 4,
-        borderLeftColor: theme.colors.accent,
+        borderLeftColor: theme.accent,
       },
       feedbackLabel: {
         fontSize: 12,
         fontFamily: 'Nunito-Bold',
-        color: theme.colors.accent,
-        marginBottom: 4,
+        color: theme.accent,
+        marginBottom: 2,
       },
       feedbackText: {
         fontSize: 14,
         fontFamily: 'Nunito-Regular',
-        color: theme.colors.text,
+        color: theme.primary,
         lineHeight: 20,
       },
       progressSection: {
-        marginTop: 8,
+        marginTop: 6,
       },
       progressHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 6,
+        marginBottom: 4,
       },
       progressLabel: {
         fontSize: 12,
         fontFamily: 'Nunito-Medium',
-        color: theme.colors.textSecondary,
+        color: theme.secondary,
       },
       progressPercentage: {
         fontSize: 14,
         fontFamily: 'Nunito-Bold',
-        color: theme.colors.text,
+        color: theme.primary,
       },
       progressBar: {
         height: 8,
-        backgroundColor: theme.colors.border,
+        backgroundColor: theme.border,
         borderRadius: 4,
         overflow: 'hidden',
       },
@@ -373,25 +370,27 @@ const AllSessionsScreen = ({ navigation, route }) => {
       },
       emptyContainer: {
         alignItems: 'center',
-        paddingVertical: 60,
-        paddingHorizontal: 20,
+        paddingVertical: 40,
+        paddingHorizontal: 16,
       },
       emptyTitle: {
-        fontSize: 18,
+        fontSize: 16,
         fontFamily: 'Nunito-Bold',
-        color: theme.colors.text,
-        marginTop: 16,
-        marginBottom: 8,
+        color: theme.primary,
+        marginTop: 12,
+        marginBottom: 6,
         textAlign: 'center',
       },
       emptyDescription: {
         fontSize: 14,
-        color: theme.colors.textSecondary,
+        color: theme.secondary,
         fontFamily: 'Nunito-Regular',
         textAlign: 'center',
         lineHeight: 20,
       },
     });
+
+  const styles = useMemo(() => getStyles(theme, isDark), [theme, isDark]);
 
 
 
@@ -445,7 +444,7 @@ const AllSessionsScreen = ({ navigation, route }) => {
                 <Text style={styles.detailLabel}>Rating:</Text>
                 <View style={styles.ratingContainer}>
                   <Text style={styles.ratingText}>{item.rating}/5</Text>
-                  <StarIcon size={16} color={theme.colors.warning} />
+                  <StarIcon size={16} color={theme.warning} />
                 </View>
               </View>
             )}
@@ -477,10 +476,10 @@ const AllSessionsScreen = ({ navigation, route }) => {
                     width: `${item.progress}%`,
                     backgroundColor:
                       item.progress > 70
-                        ? theme.colors.success
+                        ? theme.success
                         : item.progress > 40
-                        ? theme.colors.warning
-                        : theme.colors.error,
+                        ? theme.warning
+                        : theme.danger,
                   },
                 ]}
               />
@@ -506,7 +505,7 @@ const AllSessionsScreen = ({ navigation, route }) => {
   return (
     <View style={styles.container}>
       <StatusBar
-        backgroundColor={theme.colors.accent}
+        backgroundColor={theme.accent}
         barStyle={isDark ? 'light-content' : 'light-content'}
       />
       <CustomHeader
@@ -517,13 +516,13 @@ const AllSessionsScreen = ({ navigation, route }) => {
       <View style={styles.content}>
         <View style={styles.searchContainer}>
           <View style={styles.searchInput}>
-            <SearchIcon color={theme.colors.textSecondary} />
+            <SearchIcon color={theme.secondary} />
             <TextInput
               style={styles.searchTextInput}
               placeholder="Search sessions, therapists, notes..."
               value={searchQuery}
               onChangeText={setSearchQuery}
-              placeholderTextColor={theme.colors.textSecondary}
+              placeholderTextColor={theme.secondary}
             />
           </View>
         </View>
@@ -554,7 +553,6 @@ const AllSessionsScreen = ({ navigation, route }) => {
                   filter === tab.key && styles.filterTabTextActive,
                 ]}
                 numberOfLines={1}
-                ellipsizeMode="clip"
               >
                 {tab.label}
               </Text>
@@ -578,8 +576,8 @@ const AllSessionsScreen = ({ navigation, route }) => {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={theme.colors.accent}
-              colors={[theme.colors.accent]}
+              tintColor={theme.accent}
+              colors={[theme.accent]}
             />
           }
           ListEmptyComponent={renderEmptyComponent}

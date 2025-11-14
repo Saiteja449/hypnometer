@@ -37,7 +37,7 @@ const SplashScreen = ({ navigation }) => {
       alignItems: 'center',
     },
     logoText: {
-      fontSize: 48,
+      fontSize: 24,
       fontFamily: 'Nunito-Bold', // Assuming Nunito-Bold is available
       color: theme.accent,
       letterSpacing: 2,

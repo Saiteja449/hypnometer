@@ -13,17 +13,13 @@ export const AppProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const registerUser = async userData => {
-    console.log(
-      'Registering user with payload:',
-      JSON.stringify(userData, null, 2),
-    );
     setIsLoading(true);
     try {
       const response = await axios.post(`${API_BASE_URL}register`, userData);
       if (response.data) {
-        setUser(response.data.user);
-        setIsLoading(false);
-        return { success: true, errors: null };
+        const user = response.data;
+        await AsyncStorage.setItem('user', JSON.stringify(user));
+        return { success: true, errors: null, user };
       } else {
         setIsLoading(false);
         return {

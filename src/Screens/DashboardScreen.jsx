@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, ScrollView, RefreshControl, StyleSheet } from 'react-native';
 import ProfileHeader from '../Components/ProfileHeader';
 import QuickActions from '../Components/QuickActions';
@@ -68,23 +68,23 @@ const DashboardScreen = ({ navigation }) => {
     setTimeout(() => setRefreshing(false), 1000);
   };
 
-  const styles = useMemo(() => getStyles(theme), [theme]);
-
   const getStyles = theme =>
     StyleSheet.create({
       screenContainer: {
         flex: 1,
-        backgroundColor: theme.colors.background,
+        backgroundColor: theme.background,
       },
       scrollViewContent: {
-        paddingHorizontal: 16,
-        paddingTop: 16,
-        paddingBottom: 40,
+        paddingHorizontal: 12,
+        paddingTop: 12,
+        paddingBottom: 30,
       },
       componentWrapper: {
-        marginBottom: 16,
+        marginBottom: 12,
       },
     });
+
+  const styles = getStyles(theme);
 
   return (
     <View style={styles.screenContainer}>
@@ -94,9 +94,9 @@ const DashboardScreen = ({ navigation }) => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={theme.colors.accent}
-            colors={[theme.colors.accent]}
-            progressBackgroundColor={theme.colors.cardBackground}
+            tintColor={theme.accent}
+            colors={[theme.accent]}
+            progressBackgroundColor={theme.card}
           />
         }
         showsVerticalScrollIndicator={false}

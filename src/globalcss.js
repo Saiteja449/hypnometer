@@ -41,12 +41,12 @@ export const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
   },
-  avatarText: {
-    color: '#FFFFFF',
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  verifiedBadge: {
+      avatarText: {
+        color: '#FFFFFF',
+        fontSize: 20,
+        fontWeight: 'bold',
+        fontFamily: 'Nunito-Bold',
+      },  verifiedBadge: {
     position: 'absolute',
     bottom: 0,
     right: 0,
@@ -78,10 +78,11 @@ export const styles = StyleSheet.create({
     marginBottom: 4,
   },
   userName: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#2D3748',
     marginRight: 8,
+    fontFamily: 'Nunito-Bold',
   },
   editButton: {
     padding: 6,
@@ -130,7 +131,7 @@ export const styles = StyleSheet.create({
   ratingText: {
     fontSize: 12,
     color: '#718096',
-    marginTop: 4,
+    marginTop: 2,
   },
   skillsContainer: {
     marginBottom: 24,
@@ -315,13 +316,13 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
   },
   skillContainer: {
-    marginBottom: 15,
+    marginBottom: 12,
   },
   skillHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 6,
   },
   skillInfo: {
     flexDirection: 'row',
@@ -329,7 +330,7 @@ export const styles = StyleSheet.create({
   },
   skillIcon: {
     fontSize: 16,
-    marginRight: 8,
+    marginRight: 6,
   },
   skillName: {
     fontSize: 14,
@@ -352,7 +353,7 @@ export const styles = StyleSheet.create({
   },
   progressBarContainer: {
     position: 'relative',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   progressBarBackground: {
     height: 8,
@@ -392,21 +393,21 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#f8f9fa',
-    padding: 8,
+    padding: 6,
     borderRadius: 8,
-    margin: 2,
+    margin: 1,
   },
   compactSmall: {
-    padding: 6,
+    padding: 4,
   },
   compactMedium: {
-    padding: 8,
+    padding: 6,
   },
   compactLarge: {
-    padding: 12,
+    padding: 10,
   },
   compactIcon: {
-    marginRight: 8,
+    marginRight: 6,
   },
   compactIconText: {
     fontSize: 14,
@@ -418,7 +419,7 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '500',
     color: '#333',
-    marginBottom: 4,
+    marginBottom: 2,
   },
   compactProgressBar: {
     height: 4,
@@ -434,7 +435,7 @@ export const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
     color: '#8641f4',
-    marginLeft: 8,
+    marginLeft: 6,
     minWidth: 25,
     textAlign: 'right',
   },

@@ -160,9 +160,9 @@ const SessionCard = ({
   const cardStyles = StyleSheet.create({
     container: {
       backgroundColor: theme.card,
-      padding: 16,
+      padding: 12,
       borderRadius: 16,
-      marginBottom: 12,
+      marginBottom: 8,
       borderWidth: 1,
       borderColor: theme.border,
       shadowColor: isDark ? '#000' : theme.cardShadow,
@@ -172,8 +172,8 @@ const SessionCard = ({
       elevation: 3,
     },
     compactContainer: {
-      padding: 12,
-      marginBottom: 8,
+      padding: 8,
+      marginBottom: 6,
     },
     title: {
       fontSize: 16,
@@ -184,12 +184,12 @@ const SessionCard = ({
     },
     ratingBadge: {
       backgroundColor: theme.background, // Use background for badge color
-      paddingHorizontal: 8,
-      paddingVertical: 4,
+      paddingHorizontal: 6,
+      paddingVertical: 2,
       borderRadius: 8,
       borderWidth: 1,
       borderColor: theme.border, // Dynamic border color
-      marginLeft: 8,
+      marginLeft: 6,
     },
     ratingNumber: {
       fontSize: 14,
@@ -203,9 +203,9 @@ const SessionCard = ({
     },
     notesContainer: {
       backgroundColor: isDark ? theme.border : theme.background, // Subtle contrast
-      padding: 8,
+      padding: 6,
       borderRadius: 8,
-      marginBottom: 8,
+      marginBottom: 6,
     },
     notes: {
       fontSize: 12,
@@ -216,13 +216,13 @@ const SessionCard = ({
     ratingsBreakdown: {
       borderTopWidth: 1,
       borderTopColor: theme.border, // Dynamic border color
-      paddingTop: 8,
+      paddingTop: 6,
     },
     skillLabel: {
       fontSize: 10,
       color: theme.tertiary, // Tertiary/lighter text color
       fontFamily: 'Nunito-Medium',
-      marginBottom: 2,
+      marginBottom: 0,
     },
     skillRating: {
       fontSize: 12,
@@ -233,17 +233,17 @@ const SessionCard = ({
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: isDark ? '#1C2E4A' : '#F0F9FF', // Specific blue background for link
-      padding: 12,
+      padding: 10,
       borderRadius: 8,
       borderWidth: 1,
       borderColor: isDark ? '#2D4464' : '#E0F2FE',
-      gap: 8,
+      gap: 6,
     },
     feedbackLinkText: {
       fontSize: 14,
       fontFamily: 'Nunito-SemiBold',
       color: isDark ? '#93C5FD' : '#0369A1', // Light blue text for contrast
-      marginBottom: 2,
+      marginBottom: 0,
     },
     feedbackLinkSubtext: {
       fontSize: 11,
@@ -362,10 +362,10 @@ const SessionCard = ({
 
 const cardStaticStyles = StyleSheet.create({
   header: {
-    marginBottom: 12,
+    marginBottom: 8,
   },
   titleSection: {
-    gap: 8,
+    gap: 6,
   },
   titleRow: {
     flexDirection: 'row',
@@ -375,11 +375,11 @@ const cardStaticStyles = StyleSheet.create({
   typeStatusRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
   typeBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 2,
     borderRadius: 6,
   },
   typeText: {
@@ -391,10 +391,10 @@ const cardStaticStyles = StyleSheet.create({
   statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
     borderRadius: 6,
-    gap: 2,
+    gap: 1,
   },
   statusIcon: {
     fontSize: 8,
@@ -409,13 +409,13 @@ const cardStaticStyles = StyleSheet.create({
   metaContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
-    marginBottom: 8,
+    gap: 12,
+    marginBottom: 6,
   },
   metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
+    gap: 2,
   },
   skillsGrid: {
     flexDirection: 'row',

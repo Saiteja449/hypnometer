@@ -263,15 +263,15 @@ const getStyles = theme =>
       flex: 1,
     },
     scrollContent: {
-      padding: 24,
-      paddingBottom: 40,
+      padding: 16,
+      paddingBottom: 20,
     },
     header: {
-      marginBottom: 32,
+      marginBottom: 20,
       alignItems: 'center',
     },
     title: {
-      fontSize: 28,
+      fontSize: 20,
       fontFamily: 'Nunito-Bold',
       color: theme.primary,
       textAlign: 'center',
@@ -327,10 +327,10 @@ const getStyles = theme =>
       color: '#FFFFFF',
     },
     formSection: {
-      gap: 20,
+      gap: 16,
     },
     inputContainer: {
-      marginBottom: 8,
+      marginBottom: 6,
     },
     label: {
       fontSize: 14,
@@ -357,14 +357,14 @@ const getStyles = theme =>
       backgroundColor: '#FEF2F2',
     },
     inputIcon: {
-      marginRight: 12,
+      marginRight: 8,
     },
     textInput: {
       flex: 1,
       fontSize: 16,
       fontFamily: 'Nunito-Regular',
       color: theme.primary,
-      paddingVertical: 14,
+      paddingVertical: 10,
     },
     errorText: {
       color: '#EF4444',
@@ -375,10 +375,10 @@ const getStyles = theme =>
     },
     loginButton: {
       backgroundColor: theme.accent,
-      paddingVertical: 16,
+      paddingVertical: 12,
       borderRadius: 12,
       alignItems: 'center',
-      marginTop: 8,
+      marginTop: 6,
       shadowColor: theme.accent,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.3,
@@ -395,7 +395,7 @@ const getStyles = theme =>
       color: '#FFFFFF',
     },
     footer: {
-      marginTop: 24,
+      marginTop: 16,
       alignItems: 'center',
     },
     footerText: {
@@ -409,10 +409,10 @@ const getStyles = theme =>
     },
     otpHeader: {
       alignItems: 'center',
-      marginBottom: 32,
+      marginBottom: 20,
     },
     otpTitle: {
-      fontSize: 24,
+      fontSize: 20,
       fontFamily: 'Nunito-Bold',
       color: theme.primary,
       marginBottom: 8,
@@ -431,17 +431,17 @@ const getStyles = theme =>
     otpContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 20,
+      marginBottom: 16,
     },
     otpInput: {
-      width: 60,
-      height: 60,
+      width: 50,
+      height: 50,
       borderWidth: 2,
       borderColor: theme.border,
       borderRadius: 12,
       backgroundColor: theme.card,
       textAlign: 'center',
-      fontSize: 20,
+      fontSize: 18,
       fontFamily: 'Nunito-Bold',
       color: theme.primary,
       shadowColor: theme.cardShadow,
@@ -457,7 +457,7 @@ const getStyles = theme =>
     otpActions: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 20,
+      marginBottom: 16,
     },
     resendButton: {
       padding: 8,
@@ -477,7 +477,7 @@ const getStyles = theme =>
     },
     verifyButton: {
       backgroundColor: theme.accent,
-      paddingVertical: 16,
+      paddingVertical: 12,
       borderRadius: 12,
       alignItems: 'center',
       shadowColor: theme.accent,
@@ -497,7 +497,7 @@ const getStyles = theme =>
       margin: 20,
       backgroundColor: theme.card,
       borderRadius: 20,
-      padding: 35,
+      padding: 20,
       alignItems: 'center',
       shadowColor: '#000',
       shadowOffset: {
@@ -510,14 +510,14 @@ const getStyles = theme =>
       width: '80%',
     },
     modalTitle: {
-      marginBottom: 15,
+      marginBottom: 10,
       textAlign: 'center',
-      fontSize: 20,
+      fontSize: 18,
       fontFamily: 'Nunito-Bold',
       color: theme.primary,
     },
     modalMessage: {
-      marginBottom: 20,
+      marginBottom: 15,
       textAlign: 'center',
       fontSize: 16,
       fontFamily: 'Nunito-Regular',
@@ -527,11 +527,11 @@ const getStyles = theme =>
       flexDirection: 'row',
       justifyContent: 'space-around',
       width: '100%',
-      marginTop: 10,
+      marginTop: 8,
     },
     modalButton: {
       borderRadius: 10,
-      padding: 12,
+      padding: 10,
       elevation: 2,
       backgroundColor: theme.accent,
       minWidth: 100,
