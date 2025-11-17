@@ -351,7 +351,7 @@ const RegistrationScreen = ({ navigation }) => {
               style={styles.loginLink}
               onPress={() => navigation.navigate('LoginScreen')}
             >
-              Sign In
+              Log In
             </Text>
           </Text>
         </View>

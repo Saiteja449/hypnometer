@@ -15,6 +15,7 @@ import CustomHeader from '../Components/CustomHeader';
 import { useTheme } from '../Context/ThemeContext';
 import EmailIcon from '../Icons/EmailIcon';
 import LockIcon from '../Icons/LockIcon';
+import EyeIcon from '../Icons/EyeIcon';
 
 import { useApp } from '../Context/AppContext';
 
@@ -31,6 +32,8 @@ const LoginScreen = ({ navigation }) => {
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
 
   // State for custom modal
   const [modalVisible, setModalVisible] = useState(false);
@@ -161,7 +164,7 @@ const LoginScreen = ({ navigation }) => {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <CustomHeader title="Sign In" showThemeToggle={false} />
+      <CustomHeader title="Log In" showThemeToggle={false} />
       <ScrollView
         style={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
@@ -213,10 +216,16 @@ const LoginScreen = ({ navigation }) => {
                 placeholder="Enter your password"
                 value={formData.password}
                 onChangeText={text => updateFormData('password', text)}
-                secureTextEntry
+                secureTextEntry={!showPassword}
                 placeholderTextColor={theme.secondary}
                 editable={!isLoading}
               />
+              <TouchableOpacity
+                onPress={() => setShowPassword(!showPassword)}
+                style={styles.eyeIcon}
+              >
+                <EyeIcon open={!showPassword} />
+              </TouchableOpacity>
             </View>
             {errors.password && (
               <Text style={styles.errorText}>{errors.password}</Text>
@@ -358,6 +367,10 @@ const getStyles = theme =>
     },
     inputIcon: {
       marginRight: 8,
+    },
+    eyeIcon: {
+      padding: 6,
+      marginLeft: 2,
     },
     textInput: {
       flex: 1,

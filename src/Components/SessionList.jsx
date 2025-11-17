@@ -12,6 +12,7 @@ import Svg, { Path, Circle, Defs, Stop } from 'react-native-svg';
 
 import { useTheme } from '../Context/ThemeContext';
 import SessionCard from '../Components/SessionCard';
+import { fontFamily } from '../utils/common';
 
 const StaticColors = {
   accentGradient: ['#8A2BE2', '#4C51BF'],
@@ -72,8 +73,8 @@ const SessionList = ({
       gap: 6,
     },
     sectionTitle: {
-      fontSize: 18,
-      fontFamily: 'Nunito-Bold',
+      fontSize: 16,
+      fontFamily: fontFamily.Nunito_Bold,
       color: theme.primary,
     },
     sessionCountBadge: {
@@ -85,8 +86,8 @@ const SessionList = ({
       alignItems: 'center',
     },
     sessionCountText: {
-      fontSize: 13,
-      fontFamily: 'Nunito-Bold',
+      fontSize: 11,
+      fontFamily: fontFamily.Nunito_Bold,
       color: '#FFFFFF',
     },
     viewAllButton: {
@@ -101,8 +102,8 @@ const SessionList = ({
       borderColor: theme.border,
     },
     viewAllText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-SemiBold',
+      fontSize: 12,
+      fontFamily: fontFamily.Nunito_SemiBold,
       color: theme.accent,
     },
     listContent: {
@@ -117,8 +118,8 @@ const SessionList = ({
       paddingHorizontal: 16,
     },
     emptyTitle: {
-      fontSize: 18,
-      fontFamily: 'Nunito-Bold',
+      fontSize: 14,
+      fontFamily: fontFamily.Nunito_Bold,
       color: theme.primary,
       marginTop: 12,
       marginBottom: 6,
@@ -127,7 +128,7 @@ const SessionList = ({
     emptyDescription: {
       fontSize: 14,
       color: theme.secondary,
-      fontFamily: 'Nunito-Regular',
+      fontFamily: fontFamily.Nunito_Regular,
       textAlign: 'center',
       lineHeight: 20,
       marginBottom: 16,
@@ -145,7 +146,7 @@ const SessionList = ({
     createSessionText: {
       color: '#FFFFFF',
       fontSize: 15,
-      fontFamily: 'Nunito-Bold',
+      fontFamily: fontFamily.Nunito_Bold,
     },
     loadingContainer: {
       alignItems: 'center',
@@ -154,7 +155,7 @@ const SessionList = ({
     loadingText: {
       fontSize: 14,
       color: theme.secondary,
-      fontFamily: 'Nunito-Regular',
+      fontFamily: fontFamily.Nunito_Regular,
       marginTop: 8,
     },
   });

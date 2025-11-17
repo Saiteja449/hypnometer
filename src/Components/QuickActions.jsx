@@ -6,6 +6,7 @@ import Svg, { Path } from 'react-native-svg';
 import { useTheme } from '../Context/ThemeContext';
 import SessionIcon from '../Icons/SessionIcon';
 import ChartIcon from '../Icons/ChartIcon';
+import { fontFamily } from '../utils/common';
 
 const ActionGradients = {
   newSession: ['#7A40F2', '#A673FF'],
@@ -59,7 +60,7 @@ const QuickActions = ({ navigation }) => {
   const dynamicStyles = StyleSheet.create({
     actionsContainer: {
       backgroundColor: theme.card,
-      padding: 12,
+      padding: 10,
       borderRadius: 20,
       shadowColor: isDark ? theme.cardShadow : theme.cardShadow,
       shadowOffset: { width: 0, height: 5 },
@@ -68,28 +69,27 @@ const QuickActions = ({ navigation }) => {
       elevation: 10,
     },
     sectionHeader: {
-      marginBottom: 16,
+      marginBottom: 14,
     },
     sectionTitle: {
-      fontSize: 20,
-      fontWeight: 'bold',
+      fontSize: 18,
+      fontFamily: fontFamily.Nunito_Bold,
       color: theme.primary, // Dynamic
-      marginBottom: 2,
+      marginBottom: 0,
     },
     sectionSubtitle: {
-      fontSize: 14,
+      fontSize: 12,
       color: theme.secondary, // Dynamic
-      fontWeight: '500',
+      fontFamily: fontFamily.Nunito_Medium,
     },
     actionsList: {
-      gap: 12,
+      gap: 10,
     },
     actionCard: {
       borderRadius: 16,
-      padding: 16,
+      padding: 14,
       position: 'relative',
       overflow: 'hidden',
-      minHeight: 100,
     },
     actionCardContent: {
       position: 'relative',
@@ -110,27 +110,27 @@ const QuickActions = ({ navigation }) => {
       backgroundColor: 'rgba(255,255,255,0.15)',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: 12,
+      marginRight: 10,
     },
     actionTextContainer: {
       flex: 1,
     },
     actionCardTitle: {
-      fontSize: 17,
-      fontWeight: 'bold',
+      fontSize: 15,
+      fontFamily: fontFamily.Nunito_Bold,
       color: '#FFFFFF',
-      marginBottom: 2,
+      marginBottom: 0,
     },
     actionDescription: {
-      fontSize: 13,
+      fontSize: 11,
       color: 'rgba(255,255,255,0.8)',
-      fontWeight: '400',
+      fontFamily: fontFamily.Nunito_Regular,
     },
     actionArrow: {
       backgroundColor: 'rgba(0,0,0,0.2)',
-      padding: 8,
+      padding: 6,
       borderRadius: 12,
-      marginLeft: 8,
+      marginLeft: 6,
     },
     cardDecoration: {
       position: 'absolute',

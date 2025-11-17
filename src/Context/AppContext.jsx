@@ -81,7 +81,7 @@ export const AppProvider = ({ children }) => {
         };
       }
     } catch (error) {
-      console.error('An error occurred during login:', error);
+      console.error('An error occurred during login:', error.response.data);
 
       setIsLoading(false);
 

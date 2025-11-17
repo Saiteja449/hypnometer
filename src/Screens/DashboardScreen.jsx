@@ -88,7 +88,7 @@ const DashboardScreen = ({ navigation }) => {
 
   return (
     <View style={styles.screenContainer}>
-      <CustomHeader title="Dashboard" />
+      <CustomHeader title="Dashboard" showLogoutButton={true} showThemeToggle={true} />
       <ScrollView
         refreshControl={
           <RefreshControl

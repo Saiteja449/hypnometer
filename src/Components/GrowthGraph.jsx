@@ -16,6 +16,7 @@ import Svg, {
   Stop,
 } from 'react-native-svg';
 import { useTheme } from '../Context/ThemeContext';
+import { fontFamily } from '../utils/common';
 
 const GrowthGraph = () => {
   const { theme, isDark } = useTheme();
@@ -24,6 +25,8 @@ const GrowthGraph = () => {
 
   const timeRanges = ['1W', '1M', '3M', '1Y'];
   const [selectedRange, setSelectedRange] = React.useState('1M');
+
+  const ActiveRangeGradient = ['#8A2BE2', '#E28A2B']; // Violet to Gold
 
   const getChartData = () => {
     const data = {
@@ -92,8 +95,8 @@ const GrowthGraph = () => {
       strokeWidth: 1,
     },
     propsForLabels: {
-      fontSize: 12,
-      fontFamily: 'Nunito-Medium',
+      fontSize: 10,
+      fontFamily: fontFamily.Nunito_Medium,
     },
   };
 
@@ -140,7 +143,7 @@ const GrowthGraph = () => {
   const dynamicStyles = StyleSheet.create({
     graphContainer: {
       backgroundColor: theme.card,
-      padding: 12,
+      padding: 10,
       borderRadius: 20,
       shadowColor: isDark ? theme.cardShadow : theme.cardShadow,
       shadowOffset: { width: 0, height: 4 },
@@ -154,36 +157,36 @@ const GrowthGraph = () => {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
-      marginBottom: 12,
+      marginBottom: 10,
     },
     sectionTitle: {
-      fontSize: 18,
+      fontSize: 16,
       fontFamily: 'Nunito-Bold',
       color: theme.primary,
-      marginBottom: 2,
+      marginBottom: 0,
     },
     graphSubtitle: {
-      fontSize: 14,
+      fontSize: 12,
       color: theme.secondary,
       fontFamily: 'Nunito-Medium',
     },
     currentScore: {
       alignItems: 'center',
       backgroundColor: isDark ? theme.background : '#F8FAFF',
-      paddingHorizontal: 8,
-      paddingVertical: 6,
+      paddingHorizontal: 6,
+      paddingVertical: 4,
       borderRadius: 12,
       borderWidth: 1,
       borderColor: theme.border,
     },
     scoreValue: {
-      fontSize: 17,
+      fontSize: 15,
       fontFamily: 'Nunito-Bold',
       color: theme.accent,
       marginBottom: 0,
     },
     scoreLabel: {
-      fontSize: 12,
+      fontSize: 10,
       color: theme.secondary,
       fontFamily: 'Nunito-Medium',
     },
@@ -191,53 +194,62 @@ const GrowthGraph = () => {
       flexDirection: 'row',
       backgroundColor: isDark ? theme.background : '#F7FAFC',
       padding: 2,
-      borderRadius: 12,
-      marginBottom: 12,
+      borderRadius: 14, // Adjusted borderRadius
+      marginBottom: 10,
       borderWidth: 1,
       borderColor: theme.border,
     },
     timeRangeButton: {
       flex: 1,
-      paddingVertical: 6,
+      paddingVertical: 4,
       paddingHorizontal: 2,
-      borderRadius: 8,
+      borderRadius: 10,
       alignItems: 'center',
+      justifyContent: 'center',
     },
+        timeRangeButtonActiveGradient: {
+          flex: 1,
+          width: '100%',
+          height: '100%',
+          alignItems: 'center',
+          justifyContent: 'center',
+          shadowColor: theme.cardShadow,
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.2,
+          shadowRadius: 4,
+          elevation: 3,
+        },
     timeRangeButtonActive: {
-      backgroundColor: theme.card,
-      shadowColor: theme.cardShadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 2,
-      elevation: 2,
+      // This style is no longer directly applied to TouchableOpacity
+      // It will be used for the gradient's styling if needed, but primarily the gradient itself handles the visual
     },
     timeRangeText: {
-      fontSize: 12,
-      fontFamily: 'Nunito-Medium',
+      fontSize: 10,
+      fontFamily: fontFamily.Nunito_Medium,
       color: theme.secondary,
     },
     timeRangeTextActive: {
-      color: theme.accent,
-      fontFamily: 'Nunito-Bold',
+      color: '#000000',
+      fontFamily: fontFamily.Nunito_Bold,
     },
     chartWrapper: {
       alignItems: 'center',
-      marginBottom: 12,
+      marginBottom: 10,
     },
     chart: {
       borderRadius: 16,
-      marginVertical: 6,
+      marginVertical: 4,
     },
     metricsContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 12,
-      gap: 8,
+      marginBottom: 10,
+      gap: 6,
     },
     metricCard: {
       flex: 1,
       backgroundColor: isDark ? theme.background : '#F8FAFF',
-      padding: 10,
+      padding: 8,
       borderRadius: 12,
       borderWidth: 1,
       borderColor: theme.border,
@@ -246,22 +258,22 @@ const GrowthGraph = () => {
     metricHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: 2,
+      marginBottom: 0,
     },
     metricLabel: {
-      fontSize: 12,
+      fontSize: 10,
       color: theme.secondary,
       fontFamily: 'Nunito-Medium',
-      marginRight: 2,
+      marginRight: 0,
     },
     metricValue: {
-      fontSize: 15,
+      fontSize: 13,
       fontFamily: 'Nunito-Bold',
       color: theme.primary,
     },
     performanceIndicator: {
       backgroundColor: isDark ? '#332700' : '#FFF9E6',
-      padding: 12,
+      padding: 10,
       borderRadius: 12,
       borderWidth: 1,
       borderColor: isDark ? '#665100' : '#FFE999',
@@ -270,7 +282,7 @@ const GrowthGraph = () => {
       height: 6,
       backgroundColor: theme.border,
       borderRadius: 3,
-      marginBottom: 6,
+      marginBottom: 4,
       overflow: 'hidden',
     },
     performanceFill: {
@@ -279,7 +291,7 @@ const GrowthGraph = () => {
       borderRadius: 3,
     },
     performanceText: {
-      fontSize: 14,
+      fontSize: 12,
       fontFamily: 'Nunito-SemiBold',
       color: isDark ? '#FFD700' : '#D97706',
       textAlign: 'center',
@@ -304,21 +316,22 @@ const GrowthGraph = () => {
       <View style={dynamicStyles.timeRangeContainer}>
         {timeRanges.map(range => (
           <TouchableOpacity
-            key={range}
-            style={[
-              dynamicStyles.timeRangeButton,
-              selectedRange === range && dynamicStyles.timeRangeButtonActive,
-            ]}
+            key={range} // Add padding styles here if you didn't add them to dynamicStyles.timeRangeButton
+            style={dynamicStyles.timeRangeButton}
             onPress={() => setSelectedRange(range)}
           >
-            <Text
-              style={[
-                dynamicStyles.timeRangeText,
-                selectedRange === range && dynamicStyles.timeRangeTextActive,
-              ]}
-            >
-              {range}
-            </Text>
+            {selectedRange === range ? (
+              <LinearGradient
+                colors={ActiveRangeGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={dynamicStyles.timeRangeButtonActiveGradient}
+              >
+                <Text style={dynamicStyles.timeRangeTextActive}>{range}</Text> 
+              </LinearGradient>
+            ) : (
+              <Text style={dynamicStyles.timeRangeText}>{range}</Text>
+            )}
           </TouchableOpacity>
         ))}
       </View>

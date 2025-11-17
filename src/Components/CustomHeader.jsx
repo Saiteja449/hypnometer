@@ -7,8 +7,12 @@ import {
   Dimensions,
 } from 'react-native';
 import Svg, { Path, Circle, Rect } from 'react-native-svg';
-import ChartIcon from '../Icons/ChartIcon';
+import { fontFamily } from '../utils/common';
 import SessionIcon from '../Icons/SessionIcon';
+import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CommonActions } from '@react-navigation/native';
+import LogoutIcon from '../Icons/LogoutIcon';
 
 import { useTheme } from '../Context/ThemeContext';
 
@@ -22,16 +26,27 @@ const CustomHeader = ({
   showBorder = true,
   centerTitle = false,
   showThemeToggle = true,
+  showLogoutButton = false,
 }) => {
   const { theme, isDark, toggleTheme } = useTheme();
+  const navigation = useNavigation();
 
+  const handleLogout = async () => {
+    await AsyncStorage.clear();
+    navigation.dispatch(
+      CommonActions.reset({
+        index: 0,
+        routes: [{ name: 'SplashScreen' }],
+      }),
+    );
+  };
   const backgroundColor = theme.card;
   const titleColor = theme.primary;
   const subtitleColor = theme.secondary;
   const borderColor = theme.border;
 
   const hasLeftIcon = showBackButton && onBackPress;
-  const hasRightIcon = showThemeToggle;
+  const hasRightIcon = showThemeToggle || showLogoutButton;
   const shouldCenterTitle = centerTitle || (!hasLeftIcon && !hasRightIcon);
 
   const BackIcon = () => (
@@ -111,6 +126,11 @@ const CustomHeader = ({
 
       <View style={styles.rightSection}>
         {showThemeToggle && <ThemeToggleIcon />}
+        {showLogoutButton && (
+          <TouchableOpacity onPress={handleLogout} style={styles.rightButton}>
+            <LogoutIcon color={titleColor} size={22} />
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
@@ -189,9 +209,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   rightSection: {
-    width: 30,
-    alignItems: 'flex-end',
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
   },
   backButton: {
     padding: 2,
@@ -201,11 +221,11 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 17,
-    fontFamily: 'Nunito-Bold',
+    fontFamily: fontFamily.Nunito_Bold,
   },
   subtitle: {
     fontSize: 13,
-    fontFamily: 'Nunito-Medium',
+    fontFamily: fontFamily.Nunito_Medium,
     marginTop: 0,
     textAlign: 'left',
   },

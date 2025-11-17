@@ -7,10 +7,10 @@ import {
   Dimensions,
   StyleSheet,
 } from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
+import { fontFamily } from '../utils/common';
 import Svg, { Path, Circle, Rect, G, Polygon } from 'react-native-svg';
-
 import { useTheme } from '../Context/ThemeContext';
+import LinearGradient from 'react-native-linear-gradient';
 
 const { width } = Dimensions.get('window');
 
@@ -168,11 +168,6 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       backgroundColor: theme.background, // Dynamic
       padding: 12,
       borderRadius: 20,
-      shadowColor: isDark ? theme.cardShadow : '#000', // Dynamic shadow logic
-      shadowOffset: { width: 0, height: 10 },
-      shadowOpacity: isDark ? 0.8 : 0.15,
-      shadowRadius: 15,
-      elevation: 10,
     },
     separator: {
       height: 1,
@@ -207,7 +202,7 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       color: theme.primary,
       fontSize: 20,
       fontWeight: '700',
-      fontFamily: 'Nunito-Bold',
+      fontFamily: fontFamily.Nunito_ExtraBold,
     },
     profileInfo: {
       flex: 1,
@@ -218,19 +213,19 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       marginBottom: 2,
     },
     userName: {
-      fontSize: 20,
-      fontWeight: 'bold',
+      fontSize: 16,
       color: theme.primary, // Dynamic
       marginRight: 8,
+      fontFamily: fontFamily.Nunito_Bold,
     },
     editButton: {
       padding: 4,
     },
     userTitle: {
-      fontSize: 15,
+      fontSize: 12,
       color: theme.secondary, // Dynamic
       marginBottom: 8,
-      fontWeight: '500',
+      fontFamily: fontFamily.Nunito_Medium,
     },
     ratingContainer: {
       flexDirection: 'row',
@@ -248,8 +243,8 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       marginRight: 8,
     },
     overallRating: {
-      fontSize: 16,
-      fontWeight: 'bold',
+      fontSize: 12,
+      fontFamily: fontFamily.Nunito_Bold,
       color: StaticColors.ratingStar, // Static
       marginLeft: 6,
     },
@@ -257,12 +252,11 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       fontSize: 14,
       color: theme.secondary, // Dynamic
       marginLeft: 2,
-      fontWeight: '500',
+      fontFamily: fontFamily.Nunito_Medium,
     },
     ratingText: {
-      fontSize: 14,
-      color: theme.secondary, // Dynamic
-      fontWeight: '400',
+      fontSize: 12,
+      fontFamily: fontFamily.Nunito_Regular,
     },
     skillsContainer: {
       // No change
@@ -274,9 +268,9 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       marginBottom: 16,
     },
     sectionTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      color: theme.primary, // Dynamic
+      fontSize: 16,
+      fontFamily: fontFamily.Nunito_Bold,
+      color: theme.primary,
     },
     skillPill: {
       backgroundColor: theme.card, // Dynamic
@@ -287,9 +281,9 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       borderColor: theme.border,
     },
     skillPillText: {
-      fontSize: 12,
+      fontSize: 10,
       color: theme.secondary, // Dynamic
-      fontWeight: '600',
+      fontFamily: fontFamily.Nunito_SemiBold,
       textTransform: 'uppercase',
     },
     singleColumnSkillsGrid: {},
@@ -306,11 +300,11 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      marginBottom: 8,
+      marginBottom: 6,
     },
     barSkillName: {
-      fontSize: 16,
-      fontWeight: '600',
+      fontSize: 14,
+      fontFamily: fontFamily.Nunito_SemiBold,
       color: theme.primary, // Dynamic
       flex: 1,
     },
@@ -319,22 +313,22 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       alignItems: 'baseline',
     },
     barRatingNumber: {
-      fontSize: 16,
-      fontWeight: 'bold',
+      fontSize: 12,
+      fontFamily: fontFamily.Nunito_Bold,
       color: theme.accent, // Dynamic
     },
     barRatingMax: {
-      fontSize: 14,
+      fontSize: 12,
       color: theme.secondary, // Dynamic
       marginLeft: 0,
-      fontWeight: '400',
+      fontFamily: fontFamily.Nunito_Regular,
     },
     progressBarContainer: {
-      marginBottom: 6,
+      marginBottom: 4,
       position: 'relative',
     },
     progressBarBackground: {
-      height: 10,
+      height: 8,
       backgroundColor: theme.border,
       borderRadius: 5,
       overflow: 'hidden',
@@ -350,11 +344,11 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
     skillLevelContainer: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginTop: 4,
+      marginTop: 2,
     },
     skillLevel: {
-      fontSize: 14,
-      fontWeight: 'bold',
+      fontSize: 10,
+      fontFamily: fontFamily.Nunito_Bold,
       textTransform: 'uppercase',
       marginLeft: 4,
     },
@@ -362,11 +356,11 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
     statsContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 8,
+      marginBottom: 0,
     },
     statCard: {
       width: '31%',
-      padding: 20,
+      padding: 10,
       borderRadius: 16,
       alignItems: 'center',
       shadowColor: '#000',
@@ -376,17 +370,15 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       elevation: 6,
     },
     statNumber: {
-      fontSize: 20,
-      fontWeight: 'bold',
+      fontSize: 14,
       color: '#FFFFFF',
-      marginTop: 10,
-      marginBottom: 2,
-      fontFamily: 'Nunito-Bold',
+      marginTop: 4,
+      fontFamily: fontFamily.Nunito_ExtraBold,
     },
     statLabel: {
-      fontSize: 14,
+      fontSize: 12,
       color: 'rgba(255,255,255,0.9)',
-      fontWeight: '600',
+      fontFamily: fontFamily.Nunito_SemiBold,
       marginBottom: 2,
       textAlign: 'center',
     },
@@ -394,7 +386,7 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       fontSize: 10,
       color: 'rgba(255,255,255,0.7)',
       textAlign: 'center',
-      fontWeight: '400',
+      fontFamily: fontFamily.Nunito_Regular,
     },
   });
 
