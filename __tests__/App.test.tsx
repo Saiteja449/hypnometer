@@ -85,6 +85,15 @@ jest.mock('@react-navigation/native-stack', () => ({
   }),
 }));
 
+// Mock react-native-svg
+jest.mock('react-native-svg', () => ({
+  Svg: 'Svg',
+  Path: 'Path',
+  Circle: 'Circle',
+  Rect: 'Rect',
+  G: 'G', // Add other commonly used SVG components if needed
+}));
+
 // Mock AppContext
 jest.mock('../src/Context/AppContext', () => ({
   useApp: () => ({
@@ -118,7 +127,7 @@ jest.mock('../src/Context/ThemeContext', () => ({
 }));
 
 // Mock all screen components
-jest.mock('../src/Screens/SplashScreen', () => 'SplashScreen');
+jest.mock('../src/Auth/SplashScreen', () => 'SplashScreen');
 jest.mock('../src/Auth/LoginScreen', () => 'LoginScreen');
 jest.mock('../src/Auth/RegistrationScreen', () => 'RegistrationScreen');
 jest.mock('../src/Auth/PendingApprovalScreen', () => 'PendingApprovalScreen');

@@ -13,7 +13,7 @@ const SkillMeter = ({ skill, rating, showLabel = true, showRating = true }) => {
       duration: 1000,
       useNativeDriver: false,
     }).start();
-  }, [rating]);
+  }, [rating, progressAnim]);
 
   const getSkillIcon = skillName => {
     const icons = {

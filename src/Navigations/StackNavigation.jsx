@@ -11,6 +11,10 @@ import LoginScreen from '../Auth/LoginScreen';
 import AdminDashboard from '../Screens/Admin/AdminDashboard';
 import AllSessionsScreen from '../Screens/AllSessionsScreen';
 import SplashScreen from '../Auth/SplashScreen';
+import { useApp } from '../Context/AppContext';
+import BlockedScreen from '../Auth/BlockedScreen';
+import RejectedScreen from '../Auth/RejectedScreen';
+
 const Stack = createNativeStackNavigator();
 
 const StackNavigation = () => {
@@ -32,11 +36,10 @@ const StackNavigation = () => {
       <Stack.Screen component={AdminDashboard} name="AdminDashboard" />
       <Stack.Screen name="NewSessionScreen" component={NewSessionScreen} />
       <Stack.Screen name="AnalyticsScreen" component={AnalyticsScreen} />
-      <Stack.Screen
-        name="SelfAssessmentScreen"
-        component={SelfAssessment}
-      />
+      <Stack.Screen name="SelfAssessmentScreen" component={SelfAssessment} />
       <Stack.Screen name="AllSessionsScreen" component={AllSessionsScreen} />
+      <Stack.Screen name="BlockedScreen" component={BlockedScreen} />
+      <Stack.Screen name="RejectedScreen" component={RejectedScreen} />
     </Stack.Navigator>
   );
 };

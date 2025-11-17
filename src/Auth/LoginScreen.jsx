@@ -23,7 +23,7 @@ const { width } = Dimensions.get('window');
 
 const LoginScreen = ({ navigation }) => {
   const { theme } = useTheme();
-  const { loginUser } = useApp();
+  const { login } = useApp();
   const styles = getStyles(theme);
 
   const [formData, setFormData] = useState({
@@ -78,6 +78,44 @@ const LoginScreen = ({ navigation }) => {
 
     if (Object.keys(newErrors).length > 0) {
       return;
+    }
+
+    setIsLoading(true);
+    try {
+      const user = await login(formData.email, formData.password);
+      if (user) {
+        if (user.role === 'admin') {
+          navigation.navigate('AdminDashboard');
+        } else {
+          switch (user.status) {
+            case 'Approved':
+              navigation.navigate('DashboardScreen');
+              break;
+            case null:
+              navigation.navigate('PendingApprovalScreen');
+              break;
+            case 'Blocked':
+              navigation.navigate('BlockedScreen');
+              break;
+            case 'Rejected':
+              navigation.navigate('RejectedScreen');
+              break;
+            default:
+              setModalTitle('Login Failed');
+              setModalMessage('Unknown user status.');
+              setModalButtons([{ text: 'OK' }]);
+              setModalVisible(true);
+              break;
+          }
+        }
+      }
+    } catch (error) {
+      setModalTitle('Login Failed');
+      setModalMessage(error.message || 'An unexpected error occurred.');
+      setModalButtons([{ text: 'OK' }]);
+      setModalVisible(true);
+    } finally {
+      setIsLoading(false);
     }
   };
 

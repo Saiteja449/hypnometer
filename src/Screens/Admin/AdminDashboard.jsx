@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,12 +9,12 @@ import {
   TextInput,
   RefreshControl,
   Dimensions,
-  Modal,
   Image,
 } from 'react-native';
 
 import CustomHeader from '../../Components/CustomHeader';
 import { useTheme } from '../../Context/ThemeContext';
+import { useApp } from '../../Context/AppContext';
 import AdminIcon from '../../Icons/AdminIcon';
 import ApprovedIcon from '../../Icons/ApprovedIcon';
 import BlockedIcon from '../../Icons/BlockedIcon';
@@ -23,120 +23,72 @@ import PendingIcon from '../../Icons/PendingIcon';
 import RejectedIcon from '../../Icons/RejectedIcon';
 import SearchIcon from '../../Icons/SearchIcon';
 import SettingsIcon from '../../Icons/SettingsIcon';
-import UsersIcon from '../../Icons/UsersIcon';
 
 const { width } = Dimensions.get('window');
 
-const AdminDashboard = ({ navigation }) => {
+const AdminDashboard = () => {
   const { theme, isDark } = useTheme();
+  const { allUsers, fetchAllUsers, user } = useApp();
   const styles = getStyles(theme, isDark);
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedTab, setSelectedTab] = useState('pending');
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
 
-  // Admin profile data
+  console.log('user', user);
   const adminProfile = {
-    name: 'Admin User',
-    email: 'admin123@gmail.com',
+    name: `${user?.first_name} ${user?.last_name}`,
+    email: user?.email,
     role: 'Platform Administrator',
-    profilePhoto: null, // You can add a profile image URL here
+    profilePhoto: null,
   };
 
-  // Mock data - In real app, this would come from your backend
-  const mockUsers = [
-    {
-      id: 1,
-      firstName: 'John',
-      lastName: 'Doe',
-      email: 'john.doe@example.com',
-      phone: '+1 (555) 123-4567',
-      qualification: 'Certified Hypnotherapist',
-      yearsOfExperience: '5',
-      specialization: ['Anxiety', 'Stress'],
-      licenseNumber: 'HT123456',
-      bio: 'Experienced hypnotherapist specializing in anxiety and stress management.',
-      status: 'pending', // pending, approved, rejected, blocked
-      signupDate: '2024-01-15',
-      profilePhoto: null,
-    },
-    {
-      id: 2,
-      firstName: 'Sarah',
-      lastName: 'Wilson',
-      email: 'sarah.wilson@example.com',
-      phone: '+1 (555) 987-6543',
-      qualification: 'Clinical Hypnotherapist',
-      yearsOfExperience: '8',
-      specialization: ['Weight Loss', 'Confidence'],
-      licenseNumber: 'HT789012',
-      bio: 'Dedicated to helping clients achieve their weight loss and confidence goals.',
-      status: 'pending',
-      signupDate: '2024-01-14',
-      profilePhoto: null,
-    },
-    {
-      id: 3,
-      firstName: 'Mike',
-      lastName: 'Johnson',
-      email: 'mike.johnson@example.com',
-      phone: '+1 (555) 456-7890',
-      qualification: 'Therapeutic Hypnotist',
-      yearsOfExperience: '3',
-      specialization: ['Smoking', 'Sleep'],
-      licenseNumber: 'HT345678',
-      bio: 'Specialized in smoking cessation and sleep disorder treatments.',
-      status: 'approved',
-      signupDate: '2024-01-10',
-      profilePhoto: null,
-    },
-    {
-      id: 4,
-      firstName: 'Emily',
-      lastName: 'Chen',
-      email: 'emily.chen@example.com',
-      phone: '+1 (555) 234-5678',
-      qualification: 'Hypnosis Practitioner',
-      yearsOfExperience: '6',
-      specialization: ['Pain Management', 'Phobias'],
-      licenseNumber: 'HT901234',
-      bio: 'Focused on pain management and phobia treatment through hypnosis.',
-      status: 'rejected',
-      signupDate: '2024-01-12',
-      profilePhoto: null,
-    },
-    {
-      id: 5,
-      firstName: 'David',
-      lastName: 'Brown',
-      email: 'david.brown@example.com',
-      phone: '+1 (555) 345-6789',
-      qualification: 'Master Hypnotherapist',
-      yearsOfExperience: '12',
-      specialization: ['Performance', 'Regression'],
-      licenseNumber: 'HT567890',
-      bio: 'Master hypnotherapist with extensive experience in performance enhancement.',
-      status: 'blocked',
-      signupDate: '2024-01-08',
-      profilePhoto: null,
-    },
-  ];
+  const loadUsers = useCallback(async () => {
+    try {
+      await fetchAllUsers();
+    } catch (error) {
+      console.error('Failed to load users:', error);
+      Alert.alert('Error', 'Failed to load users. Please try again later.');
+    }
+  }, [fetchAllUsers]);
 
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, [loadUsers]);
+
+  useEffect(() => {
+    const formattedUsers = allUsers.map(user => ({
+      ...user,
+      firstName: user.first_name || 'N/A',
+      lastName: user.last_name || '',
+      status: user.status === null ? 'pending' : user.status,
+    }));
+    setUsers(formattedUsers);
+  }, [allUsers]);
+
+  const filterUsers = useCallback(() => {
+    let filtered = users;
+
+    if (selectedTab !== 'all') {
+      filtered = filtered.filter(user => user.status === selectedTab);
+    }
+
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        user =>
+          `${user.firstName} ${user.lastName}`.toLowerCase().includes(query) ||
+          user.email.toLowerCase().includes(query),
+      );
+    }
+
+    setFilteredUsers(filtered);
+  }, [users, searchQuery, selectedTab]);
 
   useEffect(() => {
     filterUsers();
-  }, [users, searchQuery, selectedTab]);
-
-  const loadUsers = () => {
-    // Simulate API call
-    setUsers(mockUsers);
-  };
+  }, [filterUsers]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -144,27 +96,14 @@ const AdminDashboard = ({ navigation }) => {
     setTimeout(() => setRefreshing(false), 1000);
   };
 
-  const filterUsers = () => {
-    let filtered = users;
+  const handleUpdateStatus = (userId, newStatus) => {
+    setUsers(
+      users.map(user =>
+        user.id === userId ? { ...user, status: newStatus } : user,
+      ),
+    );
 
-    // Filter by tab
-    if (selectedTab !== 'all') {
-      filtered = filtered.filter(user => user.status === selectedTab);
-    }
-
-    // Filter by search query
-    if (searchQuery) {
-      filtered = filtered.filter(
-        user =>
-          `${user.firstName} ${user.lastName}`
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          user.qualification.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
-    }
-
-    setFilteredUsers(filtered);
+    console.log(`API Call: Setting user ${userId} status to ${newStatus}`);
   };
 
   const handleApprove = userId => {
@@ -172,7 +111,7 @@ const AdminDashboard = ({ navigation }) => {
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Approve',
-        onPress: () => updateUserStatus(userId, 'approved'),
+        onPress: () => handleUpdateStatus(userId, 'approved'),
       },
     ]);
   };
@@ -180,20 +119,14 @@ const AdminDashboard = ({ navigation }) => {
   const handleReject = userId => {
     Alert.alert('Reject User', 'Are you sure you want to reject this user?', [
       { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Reject',
-        onPress: () => updateUserStatus(userId, 'rejected'),
-      },
+      { text: 'Reject', onPress: () => handleUpdateStatus(userId, 'rejected') },
     ]);
   };
 
   const handleBlock = userId => {
     Alert.alert('Block User', 'Are you sure you want to block this user?', [
       { text: 'Cancel', style: 'cancel' },
-      {
-        text: 'Block',
-        onPress: () => updateUserStatus(userId, 'blocked'),
-      },
+      { text: 'Block', onPress: () => handleUpdateStatus(userId, 'blocked') },
     ]);
   };
 
@@ -202,20 +135,9 @@ const AdminDashboard = ({ navigation }) => {
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Unblock',
-        onPress: () => updateUserStatus(userId, 'approved'),
+        onPress: () => handleUpdateStatus(userId, 'approved'),
       },
     ]);
-  };
-
-  const updateUserStatus = (userId, status) => {
-    setUsers(
-      users.map(user => (user.id === userId ? { ...user, status } : user)),
-    );
-  };
-
-  const viewUserDetails = user => {
-    setSelectedUser(user);
-    setModalVisible(true);
   };
 
   const getStatusColor = status => {
@@ -244,7 +166,7 @@ const AdminDashboard = ({ navigation }) => {
       case 'blocked':
         return 'Blocked';
       default:
-        return status;
+        return 'N/A';
     }
   };
 
@@ -263,11 +185,14 @@ const AdminDashboard = ({ navigation }) => {
       <ScrollView
         style={styles.content}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.accent}
+          />
         }
         showsVerticalScrollIndicator={false}
       >
-        {/* Admin Profile Section */}
         <View style={styles.profileSection}>
           <View style={styles.profileHeader}>
             <View style={styles.profileInfo}>
@@ -278,20 +203,20 @@ const AdminDashboard = ({ navigation }) => {
                     style={styles.avatarImage}
                   />
                 ) : (
-                  <AdminIcon color={theme.accent} />
+                  <AdminIcon color={theme.accent} size={30} />
                 )}
               </View>
               <View style={styles.profileDetails}>
                 <Text style={styles.profileName}>{adminProfile.name}</Text>
                 <View style={styles.emailContainer}>
-                  <EmailIconAdmin color={theme.secondary} />
+                  <EmailIconAdmin color={theme.secondary} size={14} />
                   <Text style={styles.profileEmail}>{adminProfile.email}</Text>
                 </View>
                 <Text style={styles.profileRole}>{adminProfile.role}</Text>
               </View>
             </View>
             <TouchableOpacity style={styles.settingsButton}>
-              <SettingsIcon color={theme.accent} />
+              <SettingsIcon color={theme.accent} size={20} />
             </TouchableOpacity>
           </View>
 
@@ -311,10 +236,9 @@ const AdminDashboard = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Search Bar */}
         <View style={styles.searchContainer}>
           <View style={styles.searchInput}>
-            <SearchIcon color={theme.secondary} />
+            <SearchIcon color={theme.secondary} size={20} />
             <TextInput
               style={styles.searchTextInput}
               placeholder="Search users by name, email"
@@ -325,7 +249,6 @@ const AdminDashboard = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Tabs */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -349,7 +272,14 @@ const AdminDashboard = ({ navigation }) => {
             style={[styles.tab, selectedTab === 'pending' && styles.tabActive]}
             onPress={() => setSelectedTab('pending')}
           >
-            <PendingIcon color={getStatusColor('pending')} />
+            <PendingIcon
+              color={
+                selectedTab === 'pending'
+                  ? theme.buttonText
+                  : getStatusColor('pending')
+              }
+              size={16}
+            />
             <Text
               style={[
                 styles.tabText,
@@ -364,7 +294,14 @@ const AdminDashboard = ({ navigation }) => {
             style={[styles.tab, selectedTab === 'approved' && styles.tabActive]}
             onPress={() => setSelectedTab('approved')}
           >
-            <ApprovedIcon color={getStatusColor('approved')} />
+            <ApprovedIcon
+              color={
+                selectedTab === 'approved'
+                  ? theme.buttonText
+                  : getStatusColor('approved')
+              }
+              size={16}
+            />
             <Text
               style={[
                 styles.tabText,
@@ -379,7 +316,14 @@ const AdminDashboard = ({ navigation }) => {
             style={[styles.tab, selectedTab === 'rejected' && styles.tabActive]}
             onPress={() => setSelectedTab('rejected')}
           >
-            <RejectedIcon color={getStatusColor('rejected')} />
+            <RejectedIcon
+              color={
+                selectedTab === 'rejected'
+                  ? theme.buttonText
+                  : getStatusColor('rejected')
+              }
+              size={16}
+            />
             <Text
               style={[
                 styles.tabText,
@@ -394,7 +338,14 @@ const AdminDashboard = ({ navigation }) => {
             style={[styles.tab, selectedTab === 'blocked' && styles.tabActive]}
             onPress={() => setSelectedTab('blocked')}
           >
-            <BlockedIcon color={getStatusColor('blocked')} />
+            <BlockedIcon
+              color={
+                selectedTab === 'blocked'
+                  ? theme.buttonText
+                  : getStatusColor('blocked')
+              }
+              size={16}
+            />
             <Text
               style={[
                 styles.tabText,
@@ -406,7 +357,6 @@ const AdminDashboard = ({ navigation }) => {
           </TouchableOpacity>
         </ScrollView>
 
-        {/* Users List */}
         <View style={styles.usersList}>
           {filteredUsers.length === 0 ? (
             <View style={styles.emptyState}>
@@ -427,9 +377,6 @@ const AdminDashboard = ({ navigation }) => {
                       {user.firstName} {user.lastName}
                     </Text>
                     <Text style={styles.userEmail}>{user.email}</Text>
-                    <Text style={styles.userQualification}>
-                      {user.qualification}
-                    </Text>
                   </View>
                   <View
                     style={[
@@ -445,31 +392,18 @@ const AdminDashboard = ({ navigation }) => {
 
                 <View style={styles.userDetails}>
                   <Text style={styles.detailText}>
-                    <Text style={styles.detailLabel}>Experience: </Text>
-                    {user.yearsOfExperience} years
-                  </Text>
-                  <Text style={styles.detailText}>
-                    <Text style={styles.detailLabel}>Specializations: </Text>
-                    {user.specialization.join(', ')}
-                  </Text>
-                  <Text style={styles.detailText}>
-                    <Text style={styles.detailLabel}>License: </Text>
-                    {user.licenseNumber}
+                    <Text style={styles.detailLabel}>Phone: </Text>
+                    {user.phone || 'N/A'}
                   </Text>
                   <Text style={styles.detailText}>
                     <Text style={styles.detailLabel}>Signup Date: </Text>
-                    {user.signupDate}
+                    {user.created_at
+                      ? new Date(user.created_at).toLocaleDateString()
+                      : 'N/A'}
                   </Text>
                 </View>
 
                 <View style={styles.actions}>
-                  <TouchableOpacity
-                    style={styles.viewButton}
-                    onPress={() => viewUserDetails(user)}
-                  >
-                    <Text style={styles.viewButtonText}>View Details</Text>
-                  </TouchableOpacity>
-
                   <View style={styles.actionButtons}>
                     {user.status === 'pending' && (
                       <>
@@ -506,8 +440,7 @@ const AdminDashboard = ({ navigation }) => {
                       </TouchableOpacity>
                     )}
 
-                    {(user.status === 'rejected' ||
-                      user.status === 'blocked') && (
+                    {user.status === 'rejected' && (
                       <TouchableOpacity
                         style={[styles.actionButton, styles.approveButton]}
                         onPress={() => handleApprove(user.id)}
@@ -522,140 +455,6 @@ const AdminDashboard = ({ navigation }) => {
           )}
         </View>
       </ScrollView>
-
-      {/* User Details Modal */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            {selectedUser && (
-              <>
-                <View style={styles.modalHeader}>
-                  <Text style={styles.modalTitle}>User Details</Text>
-                  <TouchableOpacity onPress={() => setModalVisible(false)}>
-                    <Text style={styles.closeButton}>✕</Text>
-                  </TouchableOpacity>
-                </View>
-
-                <ScrollView style={styles.modalBody}>
-                  <Text style={styles.modalUserName}>
-                    {selectedUser.firstName} {selectedUser.lastName}
-                  </Text>
-                  <Text style={styles.modalEmail}>{selectedUser.email}</Text>
-
-                  <View style={styles.detailSection}>
-                    <Text style={styles.sectionTitle}>
-                      Personal Information
-                    </Text>
-                    <Text style={styles.detailItem}>
-                      Phone: {selectedUser.phone}
-                    </Text>
-                    <Text style={styles.detailItem}>
-                      Qualification: {selectedUser.qualification}
-                    </Text>
-                    <Text style={styles.detailItem}>
-                      Experience: {selectedUser.yearsOfExperience} years
-                    </Text>
-                    <Text style={styles.detailItem}>
-                      License: {selectedUser.licenseNumber}
-                    </Text>
-                  </View>
-
-                  <View style={styles.detailSection}>
-                    <Text style={styles.sectionTitle}>Specializations</Text>
-                    <View style={styles.specializations}>
-                      {selectedUser.specialization.map((spec, index) => (
-                        <View key={index} style={styles.specTag}>
-                          <Text style={styles.specText}>{spec}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  </View>
-
-                  <View style={styles.detailSection}>
-                    <Text style={styles.sectionTitle}>Bio</Text>
-                    <Text style={styles.bioText}>{selectedUser.bio}</Text>
-                  </View>
-
-                  <View style={styles.detailSection}>
-                    <Text style={styles.sectionTitle}>Account Information</Text>
-                    <Text style={styles.detailItem}>
-                      Signup Date: {selectedUser.signupDate}
-                    </Text>
-                    <Text style={styles.detailItem}>
-                      Status:{' '}
-                      <Text
-                        style={{ color: getStatusColor(selectedUser.status) }}
-                      >
-                        {getStatusText(selectedUser.status)}
-                      </Text>
-                    </Text>
-                  </View>
-                </ScrollView>
-
-                <View style={styles.modalActions}>
-                  {selectedUser.status === 'pending' && (
-                    <>
-                      <TouchableOpacity
-                        style={[styles.modalButton, styles.modalApproveButton]}
-                        onPress={() => {
-                          handleApprove(selectedUser.id);
-                          setModalVisible(false);
-                        }}
-                      >
-                        <Text style={styles.modalApproveButtonText}>
-                          Approve
-                        </Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={[styles.modalButton, styles.modalRejectButton]}
-                        onPress={() => {
-                          handleReject(selectedUser.id);
-                          setModalVisible(false);
-                        }}
-                      >
-                        <Text style={styles.modalRejectButtonText}>Reject</Text>
-                      </TouchableOpacity>
-                    </>
-                  )}
-
-                  {selectedUser.status === 'approved' && (
-                    <TouchableOpacity
-                      style={[styles.modalButton, styles.modalBlockButton]}
-                      onPress={() => {
-                        handleBlock(selectedUser.id);
-                        setModalVisible(false);
-                      }}
-                    >
-                      <Text style={styles.modalBlockButtonText}>
-                        Block User
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {selectedUser.status === 'blocked' && (
-                    <TouchableOpacity
-                      style={[styles.modalButton, styles.modalApproveButton]}
-                      onPress={() => {
-                        handleUnblock(selectedUser.id);
-                        setModalVisible(false);
-                      }}
-                    >
-                      <Text style={styles.modalApproveButtonText}>
-                        Unblock User
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </>
-            )}
-          </View>
-        </View>
-      </Modal>
     </View>
   );
 };
@@ -752,6 +551,7 @@ const getStyles = (theme, isDark) =>
     },
     profileStat: {
       alignItems: 'center',
+      flex: 1,
     },
     profileStatNumber: {
       fontSize: 18,
@@ -760,43 +560,6 @@ const getStyles = (theme, isDark) =>
       marginBottom: 1,
     },
     profileStatLabel: {
-      fontSize: 12,
-      fontFamily: 'Nunito-Medium',
-      color: theme.secondary,
-    },
-    statsContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 24,
-    },
-    statCard: {
-      flex: 1,
-      backgroundColor: theme.card,
-      padding: 16,
-      borderRadius: 12,
-      alignItems: 'center',
-      marginHorizontal: 4,
-      shadowColor: isDark ? theme.cardShadow : '#000',
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: isDark ? theme.cardShadowOpacity : 0.1,
-      shadowRadius: 4,
-      elevation: 2,
-    },
-    statIcon: {
-      width: 40,
-      height: 40,
-      borderRadius: 20,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginBottom: 8,
-    },
-    statNumber: {
-      fontSize: 18,
-      fontFamily: 'Nunito-Bold',
-      color: theme.primary,
-      marginBottom: 4,
-    },
-    statLabel: {
       fontSize: 12,
       fontFamily: 'Nunito-Medium',
       color: theme.secondary,
@@ -812,7 +575,7 @@ const getStyles = (theme, isDark) =>
       borderColor: theme.border,
       borderRadius: 12,
       paddingHorizontal: 12,
-      paddingVertical: 6,
+      paddingVertical: 8,
     },
     searchTextInput: {
       flex: 1,
@@ -820,6 +583,7 @@ const getStyles = (theme, isDark) =>
       fontFamily: 'Nunito-Regular',
       color: theme.primary,
       marginLeft: 10,
+      paddingVertical: 0,
     },
     tabsContainer: {
       marginBottom: 16,
@@ -831,7 +595,7 @@ const getStyles = (theme, isDark) =>
       paddingVertical: 10,
       backgroundColor: theme.card,
       borderRadius: 8,
-      marginRight: 6,
+      marginRight: 8,
       borderWidth: 1,
       borderColor: theme.border,
     },
@@ -843,7 +607,7 @@ const getStyles = (theme, isDark) =>
       fontSize: 14,
       fontFamily: 'Nunito-SemiBold',
       color: theme.secondary,
-      marginLeft: 4,
+      marginLeft: 6,
     },
     tabTextActive: {
       color: theme.buttonText,
@@ -856,6 +620,7 @@ const getStyles = (theme, isDark) =>
       padding: 30,
       borderRadius: 12,
       alignItems: 'center',
+      marginTop: 10,
     },
     emptyStateText: {
       fontSize: 16,
@@ -866,8 +631,8 @@ const getStyles = (theme, isDark) =>
     userCard: {
       backgroundColor: theme.card,
       borderRadius: 12,
-      padding: 14,
-      marginBottom: 10,
+      padding: 16,
+      marginBottom: 12,
       shadowColor: isDark ? theme.cardShadow : '#000',
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: isDark ? theme.cardShadowOpacity : 0.1,
@@ -882,6 +647,7 @@ const getStyles = (theme, isDark) =>
     },
     userInfo: {
       flex: 1,
+      marginRight: 10,
     },
     userName: {
       fontSize: 18,
@@ -893,58 +659,51 @@ const getStyles = (theme, isDark) =>
       fontSize: 14,
       fontFamily: 'Nunito-Regular',
       color: theme.secondary,
-      marginBottom: 2,
+      marginBottom: 4,
     },
-    userQualification: {
-      fontSize: 14,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.accent,
-    },
+
     statusBadge: {
-      paddingHorizontal: 6,
-      paddingVertical: 3,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
       borderRadius: 6,
+      alignSelf: 'flex-start',
     },
     statusText: {
       fontSize: 12,
       fontFamily: 'Nunito-SemiBold',
       color: theme.buttonText,
+      textTransform: 'uppercase',
     },
     userDetails: {
+      borderTopWidth: 1,
+      borderTopColor: theme.border,
+      paddingTop: 10,
       marginBottom: 10,
     },
     detailText: {
       fontSize: 14,
       fontFamily: 'Nunito-Regular',
       color: theme.primary,
-      marginBottom: 2,
+      marginBottom: 4,
     },
+
     detailLabel: {
       fontFamily: 'Nunito-SemiBold',
       color: theme.primary,
     },
     actions: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-end',
       alignItems: 'center',
-    },
-    viewButton: {
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-    },
-    viewButtonText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.accent,
     },
     actionButtons: {
       flexDirection: 'row',
-      gap: 6,
+      gap: 10,
     },
     actionButton: {
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-      borderRadius: 6,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 8,
     },
     approveButton: {
       backgroundColor: theme.success,
@@ -956,142 +715,17 @@ const getStyles = (theme, isDark) =>
       backgroundColor: theme.secondary,
     },
     approveButtonText: {
-      fontSize: 12,
+      fontSize: 13,
       fontFamily: 'Nunito-SemiBold',
       color: theme.buttonText,
     },
     rejectButtonText: {
-      fontSize: 12,
+      fontSize: 13,
       fontFamily: 'Nunito-SemiBold',
       color: theme.buttonText,
     },
     blockButtonText: {
-      fontSize: 12,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.buttonText,
-    },
-    modalContainer: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      padding: 16,
-    },
-    modalContent: {
-      backgroundColor: theme.card,
-      borderRadius: 16,
-      width: '100%',
-      maxHeight: '80%',
-      shadowColor: isDark ? theme.cardShadow : '#000',
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: isDark ? theme.cardShadowOpacity : 0.3,
-      shadowRadius: 8,
-      elevation: 8,
-    },
-    modalHeader: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      padding: 16,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.border,
-    },
-    modalTitle: {
-      fontSize: 18,
-      fontFamily: 'Nunito-Bold',
-      color: theme.primary,
-    },
-    closeButton: {
-      fontSize: 18,
-      color: theme.secondary,
-      padding: 4,
-    },
-    modalBody: {
-      padding: 20,
-    },
-    modalUserName: {
-      fontSize: 20,
-      fontFamily: 'Nunito-Bold',
-      color: theme.primary,
-      marginBottom: 2,
-    },
-    modalEmail: {
-      fontSize: 16,
-      fontFamily: 'Nunito-Regular',
-      color: theme.secondary,
-      marginBottom: 16,
-    },
-    detailSection: {
-      marginBottom: 16,
-    },
-    sectionTitle: {
-      fontSize: 16,
-      fontFamily: 'Nunito-Bold',
-      color: theme.primary,
-      marginBottom: 6,
-    },
-    detailItem: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Regular',
-      color: theme.primary,
-      marginBottom: 2,
-    },
-    specializations: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 6,
-    },
-    specTag: {
-      backgroundColor: isDark ? theme.background : '#F6EEFF',
-      paddingHorizontal: 10,
-      paddingVertical: 5,
-      borderRadius: 16,
-    },
-    specText: {
-      fontSize: 12,
-      fontFamily: 'Nunito-Medium',
-      color: theme.accent,
-    },
-    bioText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Regular',
-      color: theme.primary,
-      lineHeight: 20,
-    },
-    modalActions: {
-      flexDirection: 'row',
-      padding: 16,
-      borderTopWidth: 1,
-      borderTopColor: theme.border,
-      gap: 10,
-    },
-    modalButton: {
-      flex: 1,
-      paddingVertical: 10,
-      borderRadius: 8,
-      alignItems: 'center',
-    },
-    modalApproveButton: {
-      backgroundColor: theme.success,
-    },
-    modalRejectButton: {
-      backgroundColor: theme.danger,
-    },
-    modalBlockButton: {
-      backgroundColor: theme.secondary,
-    },
-    modalApproveButtonText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.buttonText,
-    },
-    modalRejectButtonText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.buttonText,
-    },
-    modalBlockButtonText: {
-      fontSize: 14,
+      fontSize: 13,
       fontFamily: 'Nunito-SemiBold',
       color: theme.buttonText,
     },

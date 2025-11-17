@@ -19,90 +19,92 @@ import { useTheme } from '../Context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
+const ALL_SESSIONS_MOCK_DATA = [
+  {
+    id: '1',
+    title: 'Anxiety Management Session',
+    therapist: 'Dr. Sarah Wilson',
+    date: '2024-01-15',
+    duration: '45 mins',
+    status: 'completed',
+    rating: 4.5,
+    feedback:
+      'Great progress shown in managing anxiety triggers. Client demonstrated improved coping mechanisms.',
+    notes: 'Focused on breathing techniques and cognitive restructuring.',
+    progress: 85,
+  },
+  {
+    id: '2',
+    title: 'Stress Relief Therapy',
+    therapist: 'Dr. Mike Johnson',
+    date: '2024-01-12',
+    duration: '60 mins',
+    status: 'completed',
+    rating: 5,
+    feedback:
+      'Excellent session. Client showed remarkable improvement in stress management.',
+    notes: 'Introduced progressive muscle relaxation techniques.',
+    progress: 90,
+  },
+  {
+    id: '3',
+    title: 'Sleep Disorder Consultation',
+    therapist: 'Dr. Emily Chen',
+    date: '2024-01-10',
+    duration: '30 mins',
+    status: 'pending',
+    rating: null,
+    feedback: null,
+    notes: 'Initial assessment completed. Waiting for client feedback.',
+    progress: 60,
+  },
+  {
+    id: '4',
+    title: 'Confidence Building',
+    therapist: 'Dr. David Brown',
+    date: '2024-01-08',
+    duration: '50 mins',
+    status: 'completed',
+    rating: 4,
+    feedback:
+      'Good progress in self-confidence. More work needed on public speaking anxiety.',
+    notes: 'Role-playing exercises for social situations.',
+    progress: 75,
+  },
+  {
+    id: '5',
+    title: 'Pain Management Session',
+    therapist: 'Dr. Sarah Wilson',
+    date: '2024-01-05',
+    duration: '45 mins',
+    status: 'completed',
+    rating: 4.8,
+    feedback:
+      'Significant reduction in reported pain levels. Client responding well to techniques.',
+    notes: 'Focused on visualization and mindfulness.',
+    progress: 88,
+  },
+  {
+    id: '6',
+    title: 'Phobia Treatment',
+    therapist: 'Dr. Mike Johnson',
+    date: '2024-01-03',
+    duration: '55 mins',
+    status: 'pending',
+    rating: null,
+    feedback: null,
+    notes: 'Systematic desensitization in progress.',
+    progress: 45,
+  },
+];
+
 const AllSessionsScreen = ({ navigation, route }) => {
   const { theme, isDark } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [filter, setFilter] = useState('all');
   const [refreshing, setRefreshing] = useState(false);
 
-  const allSessions = [
-    {
-      id: '1',
-      title: 'Anxiety Management Session',
-      therapist: 'Dr. Sarah Wilson',
-      date: '2024-01-15',
-      duration: '45 mins',
-      status: 'completed',
-      rating: 4.5,
-      feedback:
-        'Great progress shown in managing anxiety triggers. Client demonstrated improved coping mechanisms.',
-      notes: 'Focused on breathing techniques and cognitive restructuring.',
-      progress: 85,
-    },
-    {
-      id: '2',
-      title: 'Stress Relief Therapy',
-      therapist: 'Dr. Mike Johnson',
-      date: '2024-01-12',
-      duration: '60 mins',
-      status: 'completed',
-      rating: 5,
-      feedback:
-        'Excellent session. Client showed remarkable improvement in stress management.',
-      notes: 'Introduced progressive muscle relaxation techniques.',
-      progress: 90,
-    },
-    {
-      id: '3',
-      title: 'Sleep Disorder Consultation',
-      therapist: 'Dr. Emily Chen',
-      date: '2024-01-10',
-      duration: '30 mins',
-      status: 'pending',
-      rating: null,
-      feedback: null,
-      notes: 'Initial assessment completed. Waiting for client feedback.',
-      progress: 60,
-    },
-    {
-      id: '4',
-      title: 'Confidence Building',
-      therapist: 'Dr. David Brown',
-      date: '2024-01-08',
-      duration: '50 mins',
-      status: 'completed',
-      rating: 4,
-      feedback:
-        'Good progress in self-confidence. More work needed on public speaking anxiety.',
-      notes: 'Role-playing exercises for social situations.',
-      progress: 75,
-    },
-    {
-      id: '5',
-      title: 'Pain Management Session',
-      therapist: 'Dr. Sarah Wilson',
-      date: '2024-01-05',
-      duration: '45 mins',
-      status: 'completed',
-      rating: 4.8,
-      feedback:
-        'Significant reduction in reported pain levels. Client responding well to techniques.',
-      notes: 'Focused on visualization and mindfulness.',
-      progress: 88,
-    },
-    {
-      id: '6',
-      title: 'Phobia Treatment',
-      therapist: 'Dr. Mike Johnson',
-      date: '2024-01-03',
-      duration: '55 mins',
-      status: 'pending',
-      rating: null,
-      feedback: null,
-      notes: 'Systematic desensitization in progress.',
-      progress: 45,
-    },
-  ];
+  const allSessions = ALL_SESSIONS_MOCK_DATA;
 
   const filteredSessions = useMemo(() => {
     let filtered = allSessions;

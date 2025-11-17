@@ -305,12 +305,6 @@ export const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 3,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
   seeAllText: {
     color: '#8641f4',
     fontWeight: '600',
@@ -337,19 +331,10 @@ export const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#333',
   },
-  ratingContainer: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
   ratingNumber: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#8641f4',
-  },
-  ratingMax: {
-    fontSize: 12,
-    color: '#999',
-    marginLeft: 2,
   },
   progressBarContainer: {
     position: 'relative',
