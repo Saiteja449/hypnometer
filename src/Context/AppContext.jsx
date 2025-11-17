@@ -54,7 +54,32 @@ export const AppProvider = ({ children }) => {
       }
     },
     [logout],
-  ); // Dependency on logout
+  );
+
+  // Add the updateUserStatus function
+  const updateUserStatus = useCallback(async (userId, status) => {
+    try {
+      const response = await axios.post(`${API_BASE_URL}update-user-status`, {
+        user_id: userId,
+        status: status,
+      });
+
+      if (response.data && response.data.status) {
+        console.log('User status updated successfully:', response.data);
+        return { success: true, data: response.data };
+      } else {
+        throw new Error(
+          response.data.message || 'Failed to update user status',
+        );
+      }
+    } catch (error) {
+      console.error(
+        'Update user status error:',
+        error.response?.data || error.message,
+      );
+      throw error;
+    }
+  }, []);
 
   const login = async (email, password) => {
     setIsLoading(true);
@@ -64,7 +89,7 @@ export const AppProvider = ({ children }) => {
         password,
       });
       console.log('login response data', response.data);
-      // return
+
       if (response.data && response.data.status) {
         const { id } = response.data.user;
         await AsyncStorage.setItem('userId', id.toString());
@@ -75,7 +100,7 @@ export const AppProvider = ({ children }) => {
         throw new Error(response.data.message || 'Login failed');
       }
     } catch (error) {
-      console.error('Login error:', error.response.data || error.message);
+      console.error('Login error:', error.response?.data || error.message);
       throw error;
     } finally {
       setIsLoading(false);
@@ -99,7 +124,7 @@ export const AppProvider = ({ children }) => {
         setIsLoading(false);
       }
     }
-  }, [user]); // Dependency on 'user'
+  }, [user]);
 
   const checkUserSession = useCallback(async () => {
     try {
@@ -114,7 +139,7 @@ export const AppProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [getUserDetails]); 
+  }, [getUserDetails]);
 
   useEffect(() => {
     checkUserSession();
@@ -131,6 +156,7 @@ export const AppProvider = ({ children }) => {
         checkUserSession,
         allUsers,
         fetchAllUsers,
+        updateUserStatus, // Add this to the context value
       }}
     >
       {children}
