@@ -5,35 +5,41 @@ import QuickActions from '../Components/QuickActions';
 import GrowthGraph from '../Components/GrowthGraph';
 import SessionList from '../Components/SessionList';
 import CustomHeader from '../Components/CustomHeader';
+import UpdateProfileModal from '../Components/UpdateProfileModal'; // Import the new modal component
 
 import { useTheme } from '../Context/ThemeContext';
+import { useApp } from '../Context/AppContext'; // Import useApp to get user data
+import { TouchableOpacity, Text } from 'react-native'; // Import TouchableOpacity and Text
 
 const DashboardScreen = ({ navigation }) => {
   const { theme } = useTheme();
+  const { user, getUserDetails } = useApp();
 
   const [refreshing, setRefreshing] = useState(false);
   const [userData, setUserData] = useState(null);
   const [recentSessions, setRecentSessions] = useState([]);
+  const [showUpdateProfileModal, setShowUpdateProfileModal] = useState(false);
 
   useEffect(() => {
+    if (user) {
+      setUserData({
+        id: user.id,
+        name: `${user.first_name} ${user.last_name}`,
+        overallRating: user.overallRating || 0,
+        skills: user.skills || {},
+        totalSessions: user.totalSessions || 0,
+        monthlyGrowth: user.monthlyGrowth || '0%',
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        phone: user.phone,
+        profile_photo: user.profile_photo,
+      });
+    }
     loadDashboardData();
-  }, []);
+  }, [user]);
 
   const loadDashboardData = async () => {
-    setUserData({
-      name: 'Dr. Sarah Wilson',
-      overallRating: 4.3,
-      skills: {
-        creativity: 4.5,
-        expressiveness: 4.2,
-        submodalities: 4.0,
-        tonality: 4.4,
-        overall: 4.3,
-      },
-      totalSessions: 47,
-      monthlyGrowth: '+12%',
-    });
-
     setRecentSessions([
       {
         id: 1,
@@ -62,10 +68,16 @@ const DashboardScreen = ({ navigation }) => {
     ]);
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
+    await getUserDetails(user.id); // Refresh user data from AppContext
     loadDashboardData();
     setTimeout(() => setRefreshing(false), 1000);
+  };
+
+  const handleProfileUpdateSuccess = async () => {
+    await getUserDetails(user.id);
+    loadDashboardData();
   };
 
   const getStyles = theme =>
@@ -82,13 +94,31 @@ const DashboardScreen = ({ navigation }) => {
       componentWrapper: {
         marginBottom: 12,
       },
+      updateProfileButton: {
+        backgroundColor: theme.accent,
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 8,
+        alignSelf: 'center',
+        marginTop: 10,
+        marginBottom: 20,
+      },
+      updateProfileButtonText: {
+        color: '#FFFFFF',
+        fontFamily: 'Nunito-Bold',
+        fontSize: 16,
+      },
     });
 
   const styles = getStyles(theme);
 
   return (
     <View style={styles.screenContainer}>
-      <CustomHeader title="Dashboard" showLogoutButton={true} showThemeToggle={true} />
+      <CustomHeader
+        title="Dashboard"
+        showLogoutButton={true}
+        showThemeToggle={true}
+      />
       <ScrollView
         refreshControl={
           <RefreshControl
@@ -103,7 +133,10 @@ const DashboardScreen = ({ navigation }) => {
         contentContainerStyle={styles.scrollViewContent}
       >
         <View style={styles.componentWrapper}>
-          <ProfileHeader userData={userData} />
+          <ProfileHeader
+            userData={userData}
+            setShowUpdateProfileModal={setShowUpdateProfileModal}
+          />
         </View>
         <View style={styles.componentWrapper}>
           <QuickActions navigation={navigation} />
@@ -120,6 +153,15 @@ const DashboardScreen = ({ navigation }) => {
           />
         </View>
       </ScrollView>
+
+      {userData && (
+        <UpdateProfileModal
+          isVisible={showUpdateProfileModal}
+          onClose={() => setShowUpdateProfileModal(false)}
+          currentUser={userData}
+          onUpdateSuccess={handleProfileUpdateSuccess}
+        />
+      )}
     </View>
   );
 };

@@ -190,7 +190,8 @@ export const AppProvider = ({ children }) => {
         allUsers,
         fetchAllUsers,
         updateUserStatus,
-        register, // Add this to the context value
+        register,
+        getUserDetails, // Add this to the context value
       }}
     >
       {children}

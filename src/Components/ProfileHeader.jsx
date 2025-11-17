@@ -85,12 +85,12 @@ const DefaultIcon = ({ size = 14, color }) => (
   </Svg>
 );
 
-const ProfileHeader = ({ userData, onEditProfile }) => {
+const ProfileHeader = ({ userData, setShowUpdateProfileModal }) => {
   const { theme, isDark } = useTheme();
 
-  const name = 'Dr. Sarah Wilson';
-  const title = 'Certified Hypnotherapist';
-  const overallRating = 4.3;
+  const name = userData ? userData.name : 'John Doe';
+  const overallRating = userData ? userData.overallRating : 0;
+  const email = userData ? userData.email : '';
 
   if (!userData) return null;
   const BarSkillMeter = ({ skill, rating, level }) => {
@@ -249,7 +249,7 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
       marginLeft: 6,
     },
     ratingMax: {
-      fontSize: 14,
+      fontSize: 12,
       color: theme.secondary, // Dynamic
       marginLeft: 2,
       fontFamily: fontFamily.Nunito_Medium,
@@ -416,12 +416,12 @@ const ProfileHeader = ({ userData, onEditProfile }) => {
             <Text style={dynamicStyles.userName}>{name}</Text>
             <TouchableOpacity
               style={dynamicStyles.editButton}
-              onPress={onEditProfile}
+              onPress={() => setShowUpdateProfileModal(true)}
             >
               <EditIcon color={theme.accent} />
             </TouchableOpacity>
           </View>
-          <Text style={dynamicStyles.userTitle}>{title}</Text>
+          <Text style={dynamicStyles.userTitle}>{email}</Text>
 
           <View style={dynamicStyles.ratingContainer}>
             <View style={dynamicStyles.ratingBadge}>
