@@ -25,8 +25,6 @@ const PendingApprovalScreen = ({ navigation, route }) => {
   // Get user data from signup if needed
   const userData = route.params?.userData || {};
 
-
-
   return (
     <View style={styles.container}>
       <ScrollView
@@ -66,9 +64,10 @@ const PendingApprovalScreen = ({ navigation, route }) => {
           <Text style={styles.sectionTitle}>What to Expect Next</Text>
 
           <View style={styles.expectationItem}>
-                      <View style={styles.expectationIcon}>
-                        <DocumentIcon color={theme.accent} size={24} />
-                      </View>            <View style={styles.expectationContent}>
+            <View style={styles.expectationIcon}>
+              <DocumentIcon color={theme.accent} size={24} />
+            </View>{' '}
+            <View style={styles.expectationContent}>
               <Text style={styles.expectationTitle}>Document Verification</Text>
               <Text style={styles.expectationDescription}>
                 Our team is reviewing your qualifications and certifications
@@ -77,9 +76,10 @@ const PendingApprovalScreen = ({ navigation, route }) => {
           </View>
 
           <View style={styles.expectationItem}>
-                      <View style={styles.expectationIcon}>
-                        <CheckListIcon color={theme.accent} size={24} />
-                      </View>            <View style={styles.expectationContent}>
+            <View style={styles.expectationIcon}>
+              <CheckListIcon color={theme.accent} size={24} />
+            </View>{' '}
+            <View style={styles.expectationContent}>
               <Text style={styles.expectationTitle}>Background Check</Text>
               <Text style={styles.expectationDescription}>
                 Ensuring all professional requirements are met
@@ -88,9 +88,10 @@ const PendingApprovalScreen = ({ navigation, route }) => {
           </View>
 
           <View style={styles.expectationItem}>
-                      <View style={styles.expectationIcon}>
-                        <EmailIconPending color={theme.accent} size={24} />
-                      </View>            <View style={styles.expectationContent}>
+            <View style={styles.expectationIcon}>
+              <EmailIconPending color={theme.accent} size={24} />
+            </View>{' '}
+            <View style={styles.expectationContent}>
               <Text style={styles.expectationTitle}>Notification</Text>
               <Text style={styles.expectationDescription}>
                 You'll receive an email once your account is approved
@@ -157,233 +158,236 @@ const PendingApprovalScreen = ({ navigation, route }) => {
   );
 };
 
-const getStyles = (theme) => StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: theme.background,
-  },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 80, // Space for fixed footer
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: 20,
-    marginTop: 16,
-  },
-  iconContainer: {
-    marginBottom: 16,
-  },
-  title: {
-    fontSize: 20,
-    fontFamily: 'Nunito-Bold',
-    color: theme.primary,
-    textAlign: 'center',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    fontFamily: 'Nunito-Regular',
-    color: theme.secondary,
-    textAlign: 'center',
-    lineHeight: 22,
-  },
-  statusCard: {
-    backgroundColor: theme.card,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 20,
-    shadowColor: theme.cardShadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  statusHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  statusTitle: {
-    fontSize: 18,
-    fontFamily: 'Nunito-SemiBold',
-    color: theme.primary,
-    marginLeft: 12,
-  },
-  progressContainer: {
-    alignItems: 'center',
-  },
-  progressBar: {
-    width: '100%',
-    height: 6,
-    backgroundColor: theme.border,
-    borderRadius: 3,
-    marginBottom: 8,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    width: '60%',
-    height: '100%',
-    backgroundColor: theme.accent,
-    borderRadius: 3,
-  },
-  statusText: {
-    fontSize: 14,
-    fontFamily: 'Nunito-Regular',
-    color: theme.secondary,
-    textAlign: 'center',
-  },
-  expectationsSection: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontFamily: 'Nunito-Bold',
-    color: theme.primary,
-    marginBottom: 12,
-  },
-  expectationItem: {
-    flexDirection: 'row',
-    backgroundColor: theme.card,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
-    shadowColor: theme.cardShadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  expectationIcon: {
-    marginRight: 8,
-  },
-  expectationContent: {
-    flex: 1,
-  },
-  expectationTitle: {
-    fontSize: 16,
-    fontFamily: 'Nunito-SemiBold',
-    color: theme.primary,
-    marginBottom: 2,
-  },
-  expectationDescription: {
-    fontSize: 14,
-    fontFamily: 'Nunito-Regular',
-    color: theme.secondary,
-    lineHeight: 20,
-  },
-  timelineSection: {
-    marginBottom: 20,
-  },
-  timeline: {
-    backgroundColor: theme.card,
-    borderRadius: 12,
-    padding: 16,
-    shadowColor: theme.cardShadow,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 1,
-  },
-  timelineItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  timelineDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#10B981', // Keep green for approved status
-    marginTop: 4,
-    marginRight: 8,
-  },
-  timelineDotPending: {
-    backgroundColor: theme.accent,
-  },
-  timelineDotFuture: {
-    backgroundColor: theme.border,
-  },
-  timelineContent: {
-    flex: 1,
-  },
-  timelineTitle: {
-    fontSize: 16,
-    fontFamily: 'Nunito-SemiBold',
-    color: theme.primary,
-    marginBottom: 0,
-  },
-  timelineTime: {
-    fontSize: 14,
-    fontFamily: 'Nunito-Regular',
-    color: theme.secondary,
-  },
-  supportSection: {
-    marginBottom: 20,
-  },
-  supportText: {
-    fontSize: 14,
-    fontFamily: 'Nunito-Regular',
-    color: theme.secondary,
-    marginBottom: 8,
-    lineHeight: 20,
-  },
-  supportContacts: {
-    backgroundColor: theme.card,
-    borderRadius: 12,
-    padding: 12,
-  },
-  contactItem: {
-    fontSize: 14,
-    fontFamily: 'Nunito-Medium',
-    color: theme.primary,
-    marginBottom: 4,
-  },
-  footer: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: theme.card,
-    padding: 16,
-    paddingBottom: 20,
-    borderTopWidth: 1,
-    borderTopColor: theme.border,
-    shadowColor: theme.cardShadow,
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  primaryButton: {
-    backgroundColor: theme.accent,
-    paddingVertical: 12,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 8,
-    shadowColor: theme.accent,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  primaryButtonText: {
-    fontSize: 16,
-    fontFamily: 'Nunito-SemiBold',
-    color: '#FFFFFF',
-  },
-  secondaryButton: { // This style is no longer used, but keeping it for now
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: theme.border,
-  },
-  secondaryButtonText: { // This style is no longer used, but keeping it for now
-    fontSize: 16,
-    fontFamily: 'Nunito-SemiBold',
-    color: theme.primary,
-  },
-});
+const getStyles = theme =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.background,
+    },
+    scrollContent: {
+      padding: 16,
+      paddingBottom: 80, // Space for fixed footer
+    },
+    header: {
+      alignItems: 'center',
+      marginBottom: 20,
+      marginTop: 16,
+    },
+    iconContainer: {
+      marginBottom: 16,
+    },
+    title: {
+      fontSize: 20,
+      fontFamily: 'Nunito-Bold',
+      color: theme.primary,
+      textAlign: 'center',
+      marginBottom: 8,
+    },
+    subtitle: {
+      fontSize: 16,
+      fontFamily: 'Nunito-Regular',
+      color: theme.secondary,
+      textAlign: 'center',
+      lineHeight: 22,
+    },
+    statusCard: {
+      backgroundColor: theme.card,
+      borderRadius: 16,
+      padding: 16,
+      marginBottom: 20,
+      shadowColor: theme.cardShadow,
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 3,
+    },
+    statusHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    statusTitle: {
+      fontSize: 18,
+      fontFamily: 'Nunito-SemiBold',
+      color: theme.primary,
+      marginLeft: 12,
+    },
+    progressContainer: {
+      alignItems: 'center',
+    },
+    progressBar: {
+      width: '100%',
+      height: 6,
+      backgroundColor: theme.border,
+      borderRadius: 3,
+      marginBottom: 8,
+      overflow: 'hidden',
+    },
+    progressFill: {
+      width: '60%',
+      height: '100%',
+      backgroundColor: theme.accent,
+      borderRadius: 3,
+    },
+    statusText: {
+      fontSize: 14,
+      fontFamily: 'Nunito-Regular',
+      color: theme.secondary,
+      textAlign: 'center',
+    },
+    expectationsSection: {
+      marginBottom: 20,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontFamily: 'Nunito-Bold',
+      color: theme.primary,
+      marginBottom: 12,
+    },
+    expectationItem: {
+      flexDirection: 'row',
+      backgroundColor: theme.card,
+      borderRadius: 12,
+      padding: 12,
+      marginBottom: 8,
+      shadowColor: theme.cardShadow,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 4,
+      elevation: 1,
+    },
+    expectationIcon: {
+      marginRight: 8,
+    },
+    expectationContent: {
+      flex: 1,
+    },
+    expectationTitle: {
+      fontSize: 16,
+      fontFamily: 'Nunito-SemiBold',
+      color: theme.primary,
+      marginBottom: 2,
+    },
+    expectationDescription: {
+      fontSize: 14,
+      fontFamily: 'Nunito-Regular',
+      color: theme.secondary,
+      lineHeight: 20,
+    },
+    timelineSection: {
+      marginBottom: 20,
+    },
+    timeline: {
+      backgroundColor: theme.card,
+      borderRadius: 12,
+      padding: 16,
+      shadowColor: theme.cardShadow,
+      shadowOffset: { width: 0, height: 1 },
+      shadowOpacity: 0.05,
+      shadowRadius: 4,
+      elevation: 1,
+    },
+    timelineItem: {
+      flexDirection: 'row',
+      alignItems: 'flex-start',
+      marginBottom: 16,
+    },
+    timelineDot: {
+      width: 12,
+      height: 12,
+      borderRadius: 6,
+      backgroundColor: '#10B981', // Keep green for approved status
+      marginTop: 4,
+      marginRight: 8,
+    },
+    timelineDotPending: {
+      backgroundColor: theme.accent,
+    },
+    timelineDotFuture: {
+      backgroundColor: theme.border,
+    },
+    timelineContent: {
+      flex: 1,
+    },
+    timelineTitle: {
+      fontSize: 16,
+      fontFamily: 'Nunito-SemiBold',
+      color: theme.primary,
+      marginBottom: 0,
+    },
+    timelineTime: {
+      fontSize: 14,
+      fontFamily: 'Nunito-Regular',
+      color: theme.secondary,
+    },
+    supportSection: {
+      marginBottom: 20,
+    },
+    supportText: {
+      fontSize: 14,
+      fontFamily: 'Nunito-Regular',
+      color: theme.secondary,
+      marginBottom: 8,
+      lineHeight: 20,
+    },
+    supportContacts: {
+      backgroundColor: theme.card,
+      borderRadius: 12,
+      padding: 12,
+    },
+    contactItem: {
+      fontSize: 14,
+      fontFamily: 'Nunito-Medium',
+      color: theme.primary,
+      marginBottom: 4,
+    },
+    footer: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: theme.card,
+      padding: 16,
+      paddingBottom: 20,
+      borderTopWidth: 1,
+      borderTopColor: theme.border,
+      shadowColor: theme.cardShadow,
+      shadowOffset: { width: 0, height: -2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 8,
+    },
+    primaryButton: {
+      backgroundColor: theme.accent,
+      paddingVertical: 12,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginBottom: 8,
+      shadowColor: theme.accent,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.3,
+      shadowRadius: 8,
+      elevation: 4,
+    },
+    primaryButtonText: {
+      fontSize: 16,
+      fontFamily: 'Nunito-SemiBold',
+      color: '#FFFFFF',
+    },
+    secondaryButton: {
+      // This style is no longer used, but keeping it for now
+      paddingVertical: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: theme.border,
+    },
+    secondaryButtonText: {
+      // This style is no longer used, but keeping it for now
+      fontSize: 16,
+      fontFamily: 'Nunito-SemiBold',
+      color: theme.primary,
+    },
+  });
 
 export default PendingApprovalScreen;

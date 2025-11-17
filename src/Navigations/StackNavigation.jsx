@@ -10,7 +10,7 @@ import PendingApprovalScreen from '../Auth/PendingApprovalScreen';
 import LoginScreen from '../Auth/LoginScreen';
 import AdminDashboard from '../Screens/Admin/AdminDashboard';
 import AllSessionsScreen from '../Screens/AllSessionsScreen';
-import SplashScreen from '../Screens/SplashScreen';
+import SplashScreen from '../Auth/SplashScreen';
 const Stack = createNativeStackNavigator();
 
 const StackNavigation = () => {

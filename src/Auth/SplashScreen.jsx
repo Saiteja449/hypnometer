@@ -5,29 +5,8 @@ import { useApp } from '../Context/AppContext';
 
 const SplashScreen = ({ navigation }) => {
   const { theme } = useTheme();
-  const { checkLoginStatus } = useApp();
   const fadeAnim = useRef(new Animated.Value(0)).current; // Initial value for opacity: 0
   const scaleAnim = useRef(new Animated.Value(0.5)).current; // Initial value for scale: 0.5
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 1500, // Fade in over 1.5 seconds
-        easing: Easing.ease,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 3, // Controls "bounciness"
-        tension: 40, // Controls speed
-        useNativeDriver: true,
-      }),
-    ]).start(() => {
-      // After animation, check login status
-      checkLoginStatus(navigation);
-    });
-  }, [fadeAnim, scaleAnim, checkLoginStatus, navigation]);
 
   const styles = StyleSheet.create({
     container: {

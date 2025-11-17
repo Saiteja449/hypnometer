@@ -5,7 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
-  Modal, 
+  Modal,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -34,77 +34,50 @@ const LoginScreen = ({ navigation }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-
   // State for custom modal
   const [modalVisible, setModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState('');
   const [modalMessage, setModalMessage] = useState('');
   const [modalButtons, setModalButtons] = useState([]);
 
-  const validateCredentials = () => {
-    const newErrors = {};
-
-    if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
-    } else if (
-      !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(formData.email.trim())
-    ) {
-      newErrors.email = 'Please enter a valid email';
+  const validateField = (field, value) => {
+    let error = '';
+    switch (field) {
+      case 'email':
+        if (!value.trim()) {
+          error = 'Email is required';
+        } else if (
+          !/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(value.trim())
+        ) {
+          error = 'Please enter a valid email';
+        }
+        break;
+      case 'password':
+        if (!value) {
+          error = 'Password is required';
+        } else if (value.length < 6) {
+          error = 'Password must be at least 6 characters';
+        }
+        break;
+      default:
+        break;
     }
-
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return error;
   };
 
   const handleLogin = async () => {
-    if (!validateCredentials()) {
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const response = await loginUser(
-        formData.email,
-        formData.password,
-        navigation,
-      );
-      if (!response.success) {
-        if (response.errors?.type === 'invalid_credentials') {
-          setModalTitle('Login Failed');
-          setModalMessage(
-            'Invalid credentials. Do you want to create a new account?',
-          );
-          setModalButtons([
-            { text: 'Cancel', style: 'cancel' },
-            {
-              text: 'Register',
-              onPress: () => navigation.navigate('RegistrationScreen'),
-            },
-          ]);
-          setModalVisible(true);
-        } else {
-          setModalTitle('Login Failed');
-          setModalMessage(
-            response.errors?.general ||
-              'An unexpected error occurred during login.',
-          );
-          setModalButtons([{ text: 'OK' }]);
-          setModalVisible(true);
-        }
+    const newErrors = {};
+    Object.keys(formData).forEach(field => {
+      const error = validateField(field, formData[field]);
+      if (error) {
+        newErrors[field] = error;
       }
-    } catch (error) {
-      setModalTitle('Error');
-      setModalMessage('An unexpected error occurred during login.');
-      setModalButtons([{ text: 'OK' }]);
-      setModalVisible(true);
-    } finally {
-      setIsLoading(false);
+    });
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      return;
     }
   };
 
@@ -113,10 +86,11 @@ const LoginScreen = ({ navigation }) => {
       ...formData,
       [field]: value,
     });
-
-    if (errors[field]) {
-      setErrors({ ...errors, [field]: '' });
-    }
+    const error = validateField(field, value);
+    setErrors({
+      ...errors,
+      [field]: error,
+    });
   };
 
   const renderModal = () => (
@@ -171,22 +145,22 @@ const LoginScreen = ({ navigation }) => {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
       >
-        <View style={styles.header}>
-          <Text style={styles.subtitle}>Access your account to continue</Text>
-        </View>
+        <View style={styles.formContainer}>
+          <View style={styles.header}>
+            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.subtitle}>
+              Log in to your account to continue.
+            </Text>
+          </View>
 
-        <View style={styles.formSection}>
-          <View style={styles.inputContainer}>
-            <Text style={styles.label}>Email Address</Text>
+          <View style={styles.inputGroup}>
+            <Text style={styles.label}>Email</Text>
             <View
               style={[styles.inputWrapper, errors.email && styles.inputError]}
             >
-              <View style={styles.inputIcon}>
-                <EmailIcon color={theme.accent} />
-              </View>
               <TextInput
                 style={styles.textInput}
-                placeholder="Enter your email"
+                placeholder="your.email@example.com"
                 value={formData.email}
                 onChangeText={text => updateFormData('email', text)}
                 keyboardType="email-address"
@@ -200,7 +174,7 @@ const LoginScreen = ({ navigation }) => {
             )}
           </View>
 
-          <View style={styles.inputContainer}>
+          <View style={styles.inputGroup}>
             <Text style={styles.label}>Password</Text>
             <View
               style={[
@@ -208,12 +182,9 @@ const LoginScreen = ({ navigation }) => {
                 errors.password && styles.inputError,
               ]}
             >
-              <View style={styles.inputIcon}>
-                <LockIcon color={theme.accent} />
-              </View>
               <TextInput
                 style={styles.textInput}
-                placeholder="Enter your password"
+                placeholder="••••••••"
                 value={formData.password}
                 onChangeText={text => updateFormData('password', text)}
                 secureTextEntry={!showPassword}
@@ -241,9 +212,10 @@ const LoginScreen = ({ navigation }) => {
             disabled={isLoading}
           >
             <Text style={styles.loginButtonText}>
-              {isLoading ? 'Logging in...' : 'Login'}
+              {isLoading ? 'Logging in...' : 'Log In'}
             </Text>
           </TouchableOpacity>
+
           <View style={styles.footer}>
             <Text style={styles.footerText}>
               Don't have an account?{' '}
@@ -257,7 +229,7 @@ const LoginScreen = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
-      {renderModal()} {/* Render the custom modal */}
+      {renderModal()}
     </KeyboardAvoidingView>
   );
 };
@@ -272,18 +244,20 @@ const getStyles = theme =>
       flex: 1,
     },
     scrollContent: {
-      padding: 16,
-      paddingBottom: 20,
+      paddingHorizontal: 24,
+      paddingBottom: 32,
+    },
+    formContainer: {
+      marginTop: 24,
     },
     header: {
-      marginBottom: 20,
       alignItems: 'center',
+      marginBottom: 32,
     },
     title: {
-      fontSize: 20,
+      fontSize: 28,
       fontFamily: 'Nunito-Bold',
       color: theme.primary,
-      textAlign: 'center',
       marginBottom: 8,
     },
     subtitle: {
@@ -291,55 +265,9 @@ const getStyles = theme =>
       fontFamily: 'Nunito-Regular',
       color: theme.secondary,
       textAlign: 'center',
-      lineHeight: 22,
     },
-    loginTypeContainer: {
-      marginBottom: 32,
-    },
-    loginTypeToggle: {
-      flexDirection: 'row',
-      backgroundColor: theme.card,
-      borderRadius: 12,
-      padding: 4,
-      borderWidth: 1,
-      borderColor: theme.border,
-      shadowColor: theme.cardShadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.05,
-      shadowRadius: 3,
-      elevation: 1,
-    },
-    toggleButton: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingVertical: 12,
-      paddingHorizontal: 16,
-      borderRadius: 8,
-      gap: 8,
-    },
-    toggleButtonActive: {
-      backgroundColor: theme.accent,
-      shadowColor: theme.accent,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: 0.2,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    toggleButtonText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.secondary,
-    },
-    toggleButtonTextActive: {
-      color: '#FFFFFF',
-    },
-    formSection: {
-      gap: 16,
-    },
-    inputContainer: {
-      marginBottom: 6,
+    inputGroup: {
+      marginBottom: 16,
     },
     label: {
       fontSize: 14,
@@ -355,61 +283,44 @@ const getStyles = theme =>
       borderColor: theme.border,
       borderRadius: 12,
       paddingHorizontal: 16,
-      shadowColor: theme.cardShadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.05,
-      shadowRadius: 3,
-      elevation: 1,
+      height: 50,
     },
     inputError: {
       borderColor: '#EF4444',
-      backgroundColor: '#FEF2F2',
-    },
-    inputIcon: {
-      marginRight: 8,
-    },
-    eyeIcon: {
-      padding: 6,
-      marginLeft: 2,
     },
     textInput: {
       flex: 1,
       fontSize: 16,
       fontFamily: 'Nunito-Regular',
       color: theme.primary,
-      paddingVertical: 10,
+    },
+    eyeIcon: {
+      padding: 8,
     },
     errorText: {
       color: '#EF4444',
       fontSize: 12,
       fontFamily: 'Nunito-Medium',
-      marginTop: 6,
-      marginLeft: 4,
+      marginTop: 8,
     },
     loginButton: {
       backgroundColor: theme.accent,
-      paddingVertical: 12,
+      paddingVertical: 16,
       borderRadius: 12,
       alignItems: 'center',
-      marginTop: 6,
-      shadowColor: theme.accent,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.3,
-      shadowRadius: 8,
-      elevation: 4,
+      marginTop: 16,
     },
     loginButtonDisabled: {
       backgroundColor: '#C7B2F4',
-      shadowOpacity: 0.1,
     },
     loginButtonText: {
-      fontSize: 16,
-      fontFamily: 'Nunito-SemiBold',
+      fontSize: 18,
+      fontFamily: 'Nunito-Bold',
       color: '#FFFFFF',
     },
     footer: {
-      marginTop: 16,
       alignItems: 'center',
+      marginTop: 24,
     },
     footerText: {
       fontSize: 14,
@@ -418,93 +329,14 @@ const getStyles = theme =>
     },
     signUpLink: {
       color: theme.accent,
-      fontFamily: 'Nunito-SemiBold',
-    },
-    otpHeader: {
-      alignItems: 'center',
-      marginBottom: 20,
-    },
-    otpTitle: {
-      fontSize: 20,
       fontFamily: 'Nunito-Bold',
-      color: theme.primary,
-      marginBottom: 8,
-    },
-    otpSubtitle: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Regular',
-      color: theme.secondary,
-      textAlign: 'center',
-      lineHeight: 20,
-    },
-    phoneNumberHighlight: {
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.accent,
-    },
-    otpContainer: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 16,
-    },
-    otpInput: {
-      width: 50,
-      height: 50,
-      borderWidth: 2,
-      borderColor: theme.border,
-      borderRadius: 12,
-      backgroundColor: theme.card,
-      textAlign: 'center',
-      fontSize: 18,
-      fontFamily: 'Nunito-Bold',
-      color: theme.primary,
-      shadowColor: theme.cardShadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.05,
-      shadowRadius: 3,
-      elevation: 1,
-    },
-    otpInputFilled: {
-      borderColor: theme.accent,
-      backgroundColor: theme.card,
-    },
-    otpActions: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      marginBottom: 16,
-    },
-    resendButton: {
-      padding: 8,
-    },
-    resendButtonText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.accent,
-    },
-    changeNumberButton: {
-      padding: 8,
-    },
-    changeNumberButtonText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.secondary,
-    },
-    verifyButton: {
-      backgroundColor: theme.accent,
-      paddingVertical: 12,
-      borderRadius: 12,
-      alignItems: 'center',
-      shadowColor: theme.accent,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.3,
-      shadowRadius: 8,
-      elevation: 4,
     },
     // Modal Styles
     centeredView: {
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: 'rgba(0, 0, 0, 0.6)', // Dim background
+      backgroundColor: 'rgba(0, 0, 0, 0.6)',
     },
     modalView: {
       margin: 20,
