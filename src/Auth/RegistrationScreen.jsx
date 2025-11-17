@@ -14,8 +14,7 @@ import {
 } from 'react-native';
 import CustomHeader from '../Components/CustomHeader';
 import { useTheme } from '../Context/ThemeContext';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useApp } from '../Context/AppContext'; // Import useApp
 
 import UserIcon from '../Icons/UserIcon';
 import EmailIcon from '../Icons/EmailIcon';
@@ -27,6 +26,7 @@ const { width } = Dimensions.get('window');
 
 const RegistrationScreen = ({ navigation }) => {
   const { theme } = useTheme();
+  const { register } = useApp(); // Get register function and app loading state
   const styles = getStyles(theme);
 
   const [formData, setFormData] = useState({
@@ -41,7 +41,7 @@ const RegistrationScreen = ({ navigation }) => {
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Local loading state for the button
 
   const validateField = (field, value) => {
     let error = '';
@@ -98,6 +98,48 @@ const RegistrationScreen = ({ navigation }) => {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
+      setIsLoading(true);
+      try {
+        const result = await register({
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+          role: 'user',
+        });
+
+        if (result) {
+          switch (result.status) {
+            case 'Approved':
+              navigation.navigate('DashboardScreen');
+              break;
+            case null:
+              navigation.navigate('PendingApprovalScreen');
+              break;
+            case 'Blocked':
+              navigation.navigate('BlockedScreen');
+              break;
+            case 'Rejected':
+              navigation.navigate('RejectedScreen');
+              break;
+            default:
+              setModalTitle('Login Failed');
+              setModalMessage('Unknown user status.');
+              setModalButtons([{ text: 'OK' }]);
+              setModalVisible(true);
+              break;
+          }
+        }
+      } catch (error) {
+        console.error('Registration process error:', error);
+        Alert.alert(
+          'Error',
+          'An unexpected error occurred during registration.',
+        );
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 

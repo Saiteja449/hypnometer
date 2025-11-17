@@ -1,28 +1,22 @@
-import React from 'react';
-import Svg, { Path, Circle } from 'react-native-svg';
-import { useTheme } from '../Context/ThemeContext';
+import * as React from 'react';
+import Svg, { Circle, Line } from 'react-native-svg';
 
-const RejectedIcon = ({ color, size = 20 }) => {
-  const { theme } = useTheme();
-  const iconColor = color || theme.accent; // Default to accent, but rejected has specific color
-
+const RejectedIcon = ({ color = '#000000', size = 24, ...props }) => {
   return (
-    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
-      <Circle cx="12" cy="12" r="9" stroke="#EF4444" strokeWidth="2" /> {/* Hardcoded for rejected */}
-      <Path
-        d="M15 9L9 15"
-        stroke="#EF4444" // Hardcoded for rejected
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <Path
-        d="M9 9L15 15"
-        stroke="#EF4444" // Hardcoded for rejected
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+    <Svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      {...props}
+    >
+      <Circle cx="12" cy="12" r="10" />
+      <Line x1="15" y1="9" x2="9" y2="15" />
+      <Line x1="9" y1="9" x2="15" y2="15" />
     </Svg>
   );
 };

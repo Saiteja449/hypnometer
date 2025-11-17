@@ -107,6 +107,39 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const register = async userData => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(`${API_BASE_URL}register`, userData);
+      console.log('Registration response data:', response.data);
+      if (response.data && response.data.status) {
+        const { id } = response.data.user;
+        await AsyncStorage.setItem('userId', id.toString());
+        setUserId(id.toString());
+        const result = await getUserDetails(id.toString());
+        return result;
+      } else {
+        return {
+          success: false,
+          message: response.data.message || 'Registration failed',
+        };
+      }
+    } catch (error) {
+      console.error(
+        'Registration error:',
+        error.response?.data || error.message,
+      );
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ||
+          'Network error or server is unreachable',
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const fetchAllUsers = useCallback(async () => {
     if (user && user.role === 'admin') {
       setIsLoading(true);
@@ -156,7 +189,8 @@ export const AppProvider = ({ children }) => {
         checkUserSession,
         allUsers,
         fetchAllUsers,
-        updateUserStatus, // Add this to the context value
+        updateUserStatus,
+        register, // Add this to the context value
       }}
     >
       {children}

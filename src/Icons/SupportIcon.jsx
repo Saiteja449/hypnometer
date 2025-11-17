@@ -1,7 +1,7 @@
 import * as React from 'react';
-import Svg, { Circle, Line } from 'react-native-svg';
+import Svg, { Circle, Path } from 'react-native-svg';
 
-const BlockedIcon = ({ color = '#000000', size = 24, ...props }) => {
+const SupportIcon = ({ color = '#000000', size = 24, ...props }) => {
   return (
     <Svg
       width={size}
@@ -15,9 +15,10 @@ const BlockedIcon = ({ color = '#000000', size = 24, ...props }) => {
       {...props}
     >
       <Circle cx="12" cy="12" r="10" />
-      <Line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+      <Path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+      <Path d="M12 17h.01" />
     </Svg>
   );
 };
 
-export default BlockedIcon;
+export default SupportIcon;
