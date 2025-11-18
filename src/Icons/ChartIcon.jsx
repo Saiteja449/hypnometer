@@ -4,7 +4,7 @@ import { useTheme } from '../Context/ThemeContext';
 
 const ChartIcon = ({ size = 24, color }) => {
   const { theme } = useTheme();
-  const iconColor = color || theme.colors.accent;
+  const iconColor = color || theme.accent;
 
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

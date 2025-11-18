@@ -212,17 +212,13 @@ const UpdateProfileModal = ({
 
   return (
     <>
-      {/* Main Update Profile Modal */}
       <Modal
         animationType="slide"
         transparent={true}
         visible={isVisible}
         onRequestClose={onClose}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.centeredView}
-        >
+        <View style={styles.centeredView}>
           <View style={styles.modalView}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Update Profile</Text>
@@ -327,7 +323,7 @@ const UpdateProfileModal = ({
                 )}
               </View>
 
-              <View style={styles.inputGroup}>
+              {/* <View style={styles.inputGroup}>
                 <Text style={styles.label}>Profile Photo URL</Text>
                 <View style={styles.inputWrapper}>
                   <TextInput
@@ -340,36 +336,34 @@ const UpdateProfileModal = ({
                     placeholderTextColor={theme.secondary}
                   />
                 </View>
+              </View> */}
+              <View style={styles.buttonContainer}>
+                <TouchableOpacity
+                  style={[styles.button, styles.cancelButton]}
+                  onPress={onClose}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.cancelButtonText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.button,
+                    styles.saveButton,
+                    isLoading && styles.saveButtonDisabled,
+                  ]}
+                  onPress={handleUpdateProfile}
+                  disabled={isLoading}
+                >
+                  <Text style={styles.saveButtonText}>
+                    {isLoading ? 'Updating...' : 'Save Changes'}
+                  </Text>
+                </TouchableOpacity>
               </View>
             </ScrollView>
-
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity
-                style={[styles.button, styles.cancelButton]}
-                onPress={onClose}
-                disabled={isLoading}
-              >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.button,
-                  styles.saveButton,
-                  isLoading && styles.saveButtonDisabled,
-                ]}
-                onPress={handleUpdateProfile}
-                disabled={isLoading}
-              >
-                <Text style={styles.saveButtonText}>
-                  {isLoading ? 'Updating...' : 'Save Changes'}
-                </Text>
-              </TouchableOpacity>
-            </View>
           </View>
-        </KeyboardAvoidingView>
+        </View>
       </Modal>
 
-      {/* Success Modal */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -395,7 +389,6 @@ const UpdateProfileModal = ({
         </View>
       </Modal>
 
-      {/* Error Modal */}
       <Modal
         animationType="fade"
         transparent={true}
@@ -527,6 +520,7 @@ const getStyles = (theme, isDark) =>
       width: '100%',
       marginTop: 20,
       gap: 10,
+      marginBottom: 20,
     },
     button: {
       flex: 1,

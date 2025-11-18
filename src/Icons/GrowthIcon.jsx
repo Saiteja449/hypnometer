@@ -4,7 +4,7 @@ import { useTheme } from '../Context/ThemeContext';
 
 const GrowthIcon = ({ size = 20, color }) => {
   const { theme } = useTheme();
-  const iconColor = color || theme.colors.success;
+  const iconColor = color || theme.success;
 
   return (
     <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">

@@ -47,9 +47,6 @@ const AnalyticsScreen = ({ navigation }) => {
       { month: 'Jun', rating: 4.5 },
     ],
   };
-
-  const styles = useMemo(() => getStyles(theme, isDark), [theme, isDark]);
-
   const getStyles = (theme, isDark) =>
     StyleSheet.create({
       container: {
@@ -58,6 +55,7 @@ const AnalyticsScreen = ({ navigation }) => {
       },
       scrollView: {
         flex: 1,
+        padding: 12,
       },
       header: {
         padding: 12,
@@ -67,12 +65,14 @@ const AnalyticsScreen = ({ navigation }) => {
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 4,
+        justifyContent: 'center',
       },
       title: {
         fontSize: 20,
         fontFamily: 'Nunito-Bold',
         color: theme.primary,
         marginLeft: 8,
+        textAlign: 'center',
       },
       subtitle: {
         fontSize: 16,
@@ -93,7 +93,7 @@ const AnalyticsScreen = ({ navigation }) => {
         borderColor: theme.border,
         backgroundColor: theme.card,
         alignItems: 'center',
-        marginHorizontal: 1,
+        marginHorizontal: 6,
         borderRadius: 12,
         shadowColor: theme.cardShadow,
         shadowOffset: { width: 0, height: 1 },
@@ -365,6 +365,7 @@ const AnalyticsScreen = ({ navigation }) => {
         textAlign: 'center',
       },
     });
+  const styles = getStyles(theme, isDark);
 
   return (
     <View style={styles.container}>

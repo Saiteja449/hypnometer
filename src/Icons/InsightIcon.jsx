@@ -4,8 +4,8 @@ import { useTheme } from '../Context/ThemeContext';
 
 const InsightIcon = ({ type, size = 24 }) => {
   const { theme } = useTheme();
-  const successColor = theme.colors.success;
-  const warningColor = theme.colors.warning;
+  const successColor = theme.success;
+  const warningColor = theme.warning;
 
   if (type === 'strength') {
     return (
