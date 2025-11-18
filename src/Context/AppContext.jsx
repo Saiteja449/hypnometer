@@ -140,6 +140,65 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const sendOtp = async email => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(`${API_BASE_URL}send-password-otp`, {
+        email,
+      });
+      if (response.data && response.data.status) {
+        return { success: true, message: response.data.message };
+      } else {
+        return {
+          success: false,
+          message: response.data.message || 'Failed to send OTP',
+        };
+      }
+    } catch (error) {
+      console.error('Send OTP error:', error.response?.data || error.message);
+      return ({
+        success: false,
+        message:
+          error.response?.data?.message ||
+          'Network error or server is unreachable',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const resetPassword = async (email, newPassword, otp) => {
+    setIsLoading(true);
+    try {
+      const response = await axios.post(`${API_BASE_URL}update-password-otp`, {
+        email,
+        password: newPassword,
+        otp: otp,
+      });
+      if (response.data && response.data.status) {
+        return { success: true, message: response.data.message };
+      } else {
+        return {
+          success: false,
+          message: response.data.message || 'Failed to reset password',
+        };
+      }
+    } catch (error) {
+      console.error(
+        'Reset password error:',
+        error.response?.data || error.message,
+      );
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ||
+          'Network error or server is unreachable',
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const fetchAllUsers = useCallback(async () => {
     if (user && user.role === 'admin') {
       setIsLoading(true);
@@ -191,7 +250,9 @@ export const AppProvider = ({ children }) => {
         fetchAllUsers,
         updateUserStatus,
         register,
-        getUserDetails, // Add this to the context value
+        getUserDetails,
+        sendOtp,
+        resetPassword,
       }}
     >
       {children}

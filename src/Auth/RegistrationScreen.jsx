@@ -124,10 +124,7 @@ const RegistrationScreen = ({ navigation }) => {
               navigation.navigate('RejectedScreen');
               break;
             default:
-              setModalTitle('Login Failed');
-              setModalMessage('Unknown user status.');
-              setModalButtons([{ text: 'OK' }]);
-              setModalVisible(true);
+              Alert.alert('Login Failed', 'Unknown user status.');
               break;
           }
         }

@@ -14,33 +14,44 @@ import SplashScreen from '../Auth/SplashScreen';
 import { useApp } from '../Context/AppContext';
 import BlockedScreen from '../Auth/BlockedScreen';
 import RejectedScreen from '../Auth/RejectedScreen';
+import ForgotPasswordScreen from '../Auth/ForgotPasswordScreen'; // Import the new screen
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const Stack = createNativeStackNavigator();
 
 const StackNavigation = () => {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-      initialRouteName="SplashScreen"
-    >
-      <Stack.Screen name="SplashScreen" component={SplashScreen} />
-      <Stack.Screen component={LoginScreen} name="LoginScreen" />
-      <Stack.Screen component={RegistrationScreen} name="RegistrationScreen" />
-      <Stack.Screen
-        component={PendingApprovalScreen}
-        name="PendingApprovalScreen"
-      />
-      <Stack.Screen component={DashboardScreen} name="DashboardScreen" />
-      <Stack.Screen component={AdminDashboard} name="AdminDashboard" />
-      <Stack.Screen name="NewSessionScreen" component={NewSessionScreen} />
-      <Stack.Screen name="AnalyticsScreen" component={AnalyticsScreen} />
-      <Stack.Screen name="SelfAssessmentScreen" component={SelfAssessment} />
-      <Stack.Screen name="AllSessionsScreen" component={AllSessionsScreen} />
-      <Stack.Screen name="BlockedScreen" component={BlockedScreen} />
-      <Stack.Screen name="RejectedScreen" component={RejectedScreen} />
-    </Stack.Navigator>
+    <SafeAreaView style={{ flex: 1 }}>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+        initialRouteName="SplashScreen"
+      >
+        <Stack.Screen name="SplashScreen" component={SplashScreen} />
+        <Stack.Screen component={LoginScreen} name="LoginScreen" />
+        <Stack.Screen
+          component={RegistrationScreen}
+          name="RegistrationScreen"
+        />
+        <Stack.Screen
+          component={PendingApprovalScreen}
+          name="PendingApprovalScreen"
+        />
+        <Stack.Screen component={DashboardScreen} name="DashboardScreen" />
+        <Stack.Screen component={AdminDashboard} name="AdminDashboard" />
+        <Stack.Screen name="NewSessionScreen" component={NewSessionScreen} />
+        <Stack.Screen name="AnalyticsScreen" component={AnalyticsScreen} />
+        <Stack.Screen name="SelfAssessmentScreen" component={SelfAssessment} />
+        <Stack.Screen name="AllSessionsScreen" component={AllSessionsScreen} />
+        <Stack.Screen name="BlockedScreen" component={BlockedScreen} />
+        <Stack.Screen name="RejectedScreen" component={RejectedScreen} />
+        <Stack.Screen
+          name="ForgotPasswordScreen"
+          component={ForgotPasswordScreen}
+        />
+      </Stack.Navigator>
+    </SafeAreaView>
   );
 };
 

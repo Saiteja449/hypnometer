@@ -242,6 +242,13 @@ const LoginScreen = ({ navigation }) => {
           </View>
 
           <TouchableOpacity
+            onPress={() => navigation.navigate('ForgotPasswordScreen')}
+            style={styles.forgotPasswordButton}
+          >
+            <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
             style={[
               styles.loginButton,
               isLoading && styles.loginButtonDisabled,
@@ -340,6 +347,16 @@ const getStyles = theme =>
       fontSize: 12,
       fontFamily: 'Nunito-Medium',
       marginTop: 8,
+    },
+    forgotPasswordButton: {
+      alignSelf: 'flex-end',
+      marginTop: -10, // Adjust to position correctly below password input
+      marginBottom: 10,
+    },
+    forgotPasswordText: {
+      fontSize: 14,
+      fontFamily: 'Nunito-SemiBold',
+      color: theme.accent,
     },
     loginButton: {
       backgroundColor: theme.accent,
