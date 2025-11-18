@@ -19,6 +19,7 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [allUsers, setAllUsers] = useState([]);
+  const [sessions, setSessions] = useState([]);
 
   const logout = useCallback(async () => {
     setIsLoading(true);
@@ -156,12 +157,12 @@ export const AppProvider = ({ children }) => {
       }
     } catch (error) {
       console.error('Send OTP error:', error.response?.data || error.message);
-      return ({
+      return {
         success: false,
         message:
           error.response?.data?.message ||
           'Network error or server is unreachable',
-      });
+      };
     } finally {
       setIsLoading(false);
     }
@@ -199,6 +200,86 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const createSession = async sessionData => {
+    setIsLoading(true);
+    try {
+      if (!userId) {
+        throw new Error('User not authenticated. Please log in.');
+      }
+      const payload = {
+        ...sessionData,
+        user_id: userId,
+      };
+      console.log('Creating session with payload:', payload);
+      const response = await axios.post(
+        `${API_BASE_URL}create-session`,
+        payload,
+      );
+      console.log('RESPONSE', response.data);
+      if (response.data.success) {
+        console.log('RESPONSE', response.data);
+        return {
+          success: true,
+          message: response.data.message,
+          data: response.data.data,
+        };
+      } else {
+        return {
+          success: false,
+          message: response.data.message || 'Failed to create session',
+        };
+      }
+    } catch (error) {
+      console.error(
+        'Create session error:',
+        error.response?.data || error.message,
+      );
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ||
+          'Network error or server is unreachable',
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getSessions = useCallback(
+    async idParam => {
+      const uid = idParam || userId;
+      try {
+        if (!uid) {
+          throw new Error('User not authenticated. Please log in.');
+        }
+        setIsLoading(true);
+        console.log('Fetching sessions for userId:', uid);
+        const response = await axios.get(`${API_BASE_URL}sessions/${uid}`);
+        console.log('Sessions fetched successfully:', response.data);
+        if (response.data && response.data.success) {
+          setSessions(response.data.sessions);
+          return { success: true, data: response.data.sessions };
+        } else {
+          throw new Error(response.data.message || 'Failed to fetch sessions');
+        }
+      } catch (error) {
+        console.error(
+          'Get sessions error:',
+          error.response?.data || error.message,
+        );
+        return {
+          success: false,
+          message:
+            error.response?.data?.message ||
+            'Network error or server is unreachable',
+        };
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [userId],
+  );
+
   const fetchAllUsers = useCallback(async () => {
     if (user && user.role === 'admin') {
       setIsLoading(true);
@@ -234,8 +315,18 @@ export const AppProvider = ({ children }) => {
   }, [getUserDetails]);
 
   useEffect(() => {
-    checkUserSession();
-  }, [checkUserSession]);
+    (async () => {
+      try {
+        const storedUserId = await AsyncStorage.getItem('userId');
+        if (storedUserId) {
+          await checkUserSession();
+          await getSessions(storedUserId);
+        }
+      } catch (err) {
+        console.error('Startup session fetch error:', err);
+      }
+    })();
+  }, [checkUserSession, getSessions]);
 
   return (
     <AppContext.Provider
@@ -253,6 +344,9 @@ export const AppProvider = ({ children }) => {
         getUserDetails,
         sendOtp,
         resetPassword,
+        createSession,
+        sessions,
+        getSessions,
       }}
     >
       {children}

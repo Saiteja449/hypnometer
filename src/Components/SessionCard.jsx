@@ -17,18 +17,35 @@ const SessionCard = ({
 }) => {
   const { theme, isDark } = useTheme();
 
+  console.log('SESSION', session);
+
+  // Support both internal prop names and API response keys
   const {
     id,
     title,
     type,
     date,
-    avgRating,
+    average_rating,
     ratings = [],
     notes,
     feedbackLink,
     status = 'completed',
     clientName,
   } = session;
+
+  // Fallbacks for API field names
+  const sessionType = type || session.session_type || session.sessionType;
+  const sessionDate =
+    date ||
+    session.session_datetime ||
+    session.sessionDate ||
+    session.created_at;
+  const sessionAvgRating = average_rating;
+  const sessionFeedbackLink =
+    feedbackLink || session.feedback_link || session.feedbackLink;
+  const sessionClientName =
+    clientName || session.client_name || session.clientName;
+  const sessionRatings = ratings || session.ratings || [];
 
   const iconColor = theme.secondary;
   const accentColor = theme.accent;
@@ -137,7 +154,7 @@ const SessionCard = ({
   };
 
   const handleShareFeedback = () => {
-    if (feedbackLink) {
+    if (sessionFeedbackLink) {
       Alert.alert(
         'Share Feedback Link',
         'Copy this link to share with clients or peers for ratings:',
@@ -146,7 +163,7 @@ const SessionCard = ({
           {
             text: 'Copy Link',
             onPress: () => {
-              console.log('Copy link:', feedbackLink);
+              console.log('Copy link:', sessionFeedbackLink);
               Alert.alert('Success', 'Link copied to clipboard!');
             },
           },
@@ -155,7 +172,14 @@ const SessionCard = ({
     }
   };
 
-  const statusInfo = getStatusInfo(status);
+  // If API gives feedback_expires_at and it's in the future, mark as pending-feedback
+  const resolvedStatus =
+    session.feedback_expires_at &&
+    new Date(session.feedback_expires_at) > new Date()
+      ? 'pending-feedback'
+      : status;
+
+  const statusInfo = getStatusInfo(resolvedStatus);
 
   const cardStyles = StyleSheet.create({
     container: {
@@ -266,7 +290,9 @@ const SessionCard = ({
             </Text>
             <View style={cardStyles.ratingBadge}>
               <Text style={cardStyles.ratingNumber}>
-                {avgRating?.toFixed(1) || 'N/A'}
+                {average_rating == 0
+                  ? average_rating.toString().concat('.0')
+                  : average_rating.toString()}
               </Text>
             </View>
           </View>
@@ -275,10 +301,12 @@ const SessionCard = ({
             <View
               style={[
                 cardStaticStyles.typeBadge,
-                { backgroundColor: getSessionTypeColor(type) },
+                { backgroundColor: getSessionTypeColor(sessionType) },
               ]}
             >
-              <Text style={cardStaticStyles.typeText}>{type}</Text>
+              <Text style={cardStaticStyles.typeText}>
+                {sessionType || 'Session'}
+              </Text>
             </View>
 
             <View
@@ -297,15 +325,15 @@ const SessionCard = ({
       </View>
 
       <View style={cardStaticStyles.metaContainer}>
-        {clientName && (
+        {sessionClientName && (
           <View style={cardStaticStyles.metaItem}>
             <ClientIcon />
-            <Text style={cardStyles.metaText}>{clientName}</Text>
+            <Text style={cardStyles.metaText}>{sessionClientName}</Text>
           </View>
         )}
         <View style={cardStaticStyles.metaItem}>
           <CalendarIcon />
-          <Text style={cardStyles.metaText}>{formatDate(date)}</Text>
+          <Text style={cardStyles.metaText}>{formatDate(sessionDate)}</Text>
         </View>
       </View>
 
@@ -317,45 +345,49 @@ const SessionCard = ({
         </View>
       )}
 
-      {ratings.length > 0 && !compact && (
+      {sessionRatings.length > 0 && !compact && (
         <View style={cardStyles.ratingsBreakdown}>
           <View style={cardStaticStyles.skillsGrid}>
             <View style={cardStaticStyles.skillItem}>
               <Text style={cardStyles.skillLabel}>Creativity</Text>
               <Text style={cardStyles.skillRating}>
-                {ratings[0]?.toFixed(1)}
+                {sessionRatings[0]?.toFixed(1)}
               </Text>
             </View>
             <View style={cardStaticStyles.skillItem}>
               <Text style={cardStyles.skillLabel}>Express</Text>
               <Text style={cardStyles.skillRating}>
-                {ratings[1]?.toFixed(1)}
+                {sessionRatings[1]?.toFixed(1)}
               </Text>
             </View>
             <View style={cardStaticStyles.skillItem}>
               <Text style={cardStyles.skillLabel}>Submod</Text>
               <Text style={cardStyles.skillRating}>
-                {ratings[2]?.toFixed(1)}
+                {sessionRatings[2]?.toFixed(1)}
               </Text>
             </View>
           </View>
         </View>
       )}
 
-      {showFeedbackLink && feedbackLink && status === 'pending-feedback' && (
-        <TouchableOpacity
-          style={cardStyles.feedbackLinkContainer}
-          onPress={handleShareFeedback}
-        >
-          <ShareIcon />
-          <View style={cardStaticStyles.feedbackText}>
-            <Text style={cardStyles.feedbackLinkText}>Share Feedback Link</Text>
-            <Text style={cardStyles.feedbackLinkSubtext}>
-              Expires in 24 hours
-            </Text>
-          </View>
-        </TouchableOpacity>
-      )}
+      {showFeedbackLink &&
+        sessionFeedbackLink &&
+        status === 'pending-feedback' && (
+          <TouchableOpacity
+            style={cardStyles.feedbackLinkContainer}
+            onPress={handleShareFeedback}
+          >
+            <ShareIcon />
+            <View style={cardStaticStyles.feedbackText}>
+              <Text style={cardStyles.feedbackLinkText}>
+                Share Feedback Link
+              </Text>
+              <Text style={cardStyles.feedbackLinkSubtext}>
+                Expires in 24 hours
+              </Text>
+            </View>
+          </TouchableOpacity>
+        )}
     </TouchableOpacity>
   );
 };

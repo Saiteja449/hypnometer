@@ -13,7 +13,7 @@ import { TouchableOpacity, Text } from 'react-native'; // Import TouchableOpacit
 
 const DashboardScreen = ({ navigation }) => {
   const { theme } = useTheme();
-  const { user, getUserDetails } = useApp();
+  const { user, getUserDetails, sessions } = useApp();
 
   const [refreshing, setRefreshing] = useState(false);
   const [userData, setUserData] = useState(null);
@@ -146,7 +146,7 @@ const DashboardScreen = ({ navigation }) => {
         </View>
         <View style={styles.componentWrapper}>
           <SessionList
-            sessions={recentSessions}
+            sessions={sessions.slice(0, 2)}
             navigation={navigation}
             title="Recent Sessions"
             showViewAll={true}
