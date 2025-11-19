@@ -16,6 +16,7 @@ import Svg, {
   Stop,
 } from 'react-native-svg';
 import { useTheme } from '../Context/ThemeContext';
+import { useApp } from '../Context/AppContext';
 import { fontFamily } from '../utils/common';
 
 const GrowthGraph = () => {
@@ -28,29 +29,90 @@ const GrowthGraph = () => {
 
   const ActiveRangeGradient = ['#8A2BE2', '#E28A2B']; // Violet to Gold
 
-  const getChartData = () => {
-    const data = {
-      '1W': {
-        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-        data: [4.1, 4.3, 4.2, 4.4, 4.5, 4.3, 4.6],
-      },
-      '1M': {
-        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-        data: [3.2, 3.8, 4.1, 4.3, 4.2, 4.5],
-      },
-      '3M': {
-        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
-        data: [3.5, 4.0, 4.2, 4.4],
-      },
-      '1Y': {
-        labels: ['2023', '2024'],
-        data: [3.8, 4.3],
-      },
-    };
-    return data[selectedRange] || data['1M'];
+  const { sessions: contextSessions } = useApp();
+
+  // Helper: parse numeric rating from session object
+  const getSessionScore = session => {
+    // common keys where average score might exist
+    const v =
+      session.average_rating ||
+      session.average_rating ||
+      session.average_ratings ||
+      session.average ||
+      session.averageScore ||
+      null;
+    const parsed = parseFloat(v);
+    return Number.isFinite(parsed) ? parsed : null;
   };
 
-  const currentData = getChartData();
+  // Build buckets for the selected range and compute average score per bucket
+  const buildChartFromSessions = sessions => {
+    const now = new Date();
+    let buckets = [];
+    let labels = [];
+
+    if (selectedRange === '1W') {
+      // last 7 days (labels: Mon, Tue...)
+      for (let i = 6; i >= 0; i--) {
+        const day = new Date(now);
+        day.setDate(now.getDate() - i);
+        const start = new Date(day.setHours(0, 0, 0, 0));
+        const end = new Date(start);
+        end.setDate(start.getDate() + 1);
+        buckets.push({ start, end });
+        labels.push(start.toLocaleDateString(undefined, { weekday: 'short' }));
+      }
+    } else if (selectedRange === '1M') {
+      // last 6 weeks
+      for (let i = 5; i >= 0; i--) {
+        const start = new Date(now);
+        start.setDate(now.getDate() - i * 7);
+        start.setHours(0, 0, 0, 0);
+        const end = new Date(start);
+        end.setDate(start.getDate() + 7);
+        buckets.push({ start, end });
+        labels.push(`Wk ${6 - i}`);
+      }
+    } else if (selectedRange === '3M') {
+      // last 3 months, monthly buckets
+      for (let i = 2; i >= 0; i--) {
+        const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const end = new Date(start.getFullYear(), start.getMonth() + 1, 1);
+        buckets.push({ start, end });
+        labels.push(start.toLocaleDateString(undefined, { month: 'short' }));
+      }
+    } else {
+      // 1Y: last 12 months
+      for (let i = 11; i >= 0; i--) {
+        const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const end = new Date(start.getFullYear(), start.getMonth() + 1, 1);
+        buckets.push({ start, end });
+        labels.push(start.toLocaleDateString(undefined, { month: 'short' }));
+      }
+    }
+
+    const points = buckets.map(bucket => {
+      const bucketSessions = (sessions || []).filter(s => {
+        const sd = s.session_datetime
+          ? new Date(s.session_datetime)
+          : s.date
+          ? new Date(s.date)
+          : null;
+        if (!sd) return false;
+        return sd >= bucket.start && sd < bucket.end;
+      });
+      const scores = bucketSessions
+        .map(getSessionScore)
+        .filter(v => v !== null && !isNaN(v));
+      if (scores.length === 0) return 0;
+      const avg = scores.reduce((a, b) => a + b, 0) / scores.length;
+      return parseFloat(avg.toFixed(1));
+    });
+
+    return { labels, data: points };
+  };
+
+  const currentData = buildChartFromSessions(contextSessions || []);
 
   const chartLineColor = (opacity = 1) =>
     `rgba(${parseInt(theme.accent.slice(1, 3), 16)}, ${parseInt(
@@ -125,8 +187,13 @@ const GrowthGraph = () => {
   const calculateMetrics = () => {
     const data = currentData.data;
     const current = data[data.length - 1];
-    const previous = data[data.length - 2] || data[0];
-    const growth = ((current - previous) / previous) * 100;
+    const previous = data.length > 1 ? data[data.length - 2] : data[0] || 0;
+    let growth = 0;
+    if (previous && previous !== 0) {
+      growth = ((current - previous) / previous) * 100;
+    } else if (previous === 0 && current !== 0) {
+      growth = 100; // arbitrary positive growth from zero
+    }
     const trend = growth >= 0 ? 'up' : 'down';
 
     return {
@@ -201,27 +268,21 @@ const GrowthGraph = () => {
     },
     timeRangeButton: {
       flex: 1,
-      paddingVertical: 4,
-      paddingHorizontal: 2,
-      borderRadius: 10,
+      paddingVertical: 6,
+      paddingHorizontal: 6,
+      borderRadius: 12,
       alignItems: 'center',
       justifyContent: 'center',
+      marginHorizontal: 4,
     },
-        timeRangeButtonActiveGradient: {
-          flex: 1,
-          width: '100%',
-          height: '100%',
-          alignItems: 'center',
-          justifyContent: 'center',
-          shadowColor: theme.cardShadow,
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.2,
-          shadowRadius: 4,
-          elevation: 3,
-        },
     timeRangeButtonActive: {
-      // This style is no longer directly applied to TouchableOpacity
-      // It will be used for the gradient's styling if needed, but primarily the gradient itself handles the visual
+      flex: 1,
+      width: '100%',
+      height: '100%',
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 12,
+      backgroundColor: isDark ? '#4B0082' : '#FFD700',
     },
     timeRangeText: {
       fontSize: 10,
@@ -229,7 +290,7 @@ const GrowthGraph = () => {
       color: theme.secondary,
     },
     timeRangeTextActive: {
-      color: '#000000',
+      color: '#FFFFFF',
       fontFamily: fontFamily.Nunito_Bold,
     },
     chartWrapper: {
@@ -321,14 +382,9 @@ const GrowthGraph = () => {
             onPress={() => setSelectedRange(range)}
           >
             {selectedRange === range ? (
-              <LinearGradient
-                colors={ActiveRangeGradient}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={dynamicStyles.timeRangeButtonActiveGradient}
-              >
+              <View style={dynamicStyles.timeRangeButtonActive}>
                 <Text style={dynamicStyles.timeRangeTextActive}>{range}</Text> 
-              </LinearGradient>
+              </View>
             ) : (
               <Text style={dynamicStyles.timeRangeText}>{range}</Text>
             )}
