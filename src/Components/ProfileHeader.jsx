@@ -10,10 +10,10 @@ import { fontFamily } from '../utils/common';
 import Svg, { Path, Circle, Rect, G, Polygon } from 'react-native-svg';
 import { useTheme } from '../Context/ThemeContext';
 import LinearGradient from 'react-native-linear-gradient';
+import { useApp } from '../Context/AppContext';
 
 const { width } = Dimensions.get('window');
 
-// --- Static Values (Memoized outside render for optimization) ---
 const StaticGradients = {
   avatarRingGradient: ['#E28A2B', '#8A2BE2'], // Gold to Violet
   statsPrimaryGradient: ['#4C51BF', '#6B46C1'], // Deep Blue Gradient
@@ -28,8 +28,6 @@ const StaticColors = {
   proficient: '#f39c12', // Adjusted to a common Orange color
   beginner: '#e74c3c', // Adjusted to a common Red color
 };
-
-// --- SVG Icons (Memoized) ---
 
 const StarIcon = React.memo(
   ({ size = 16, color = StaticColors.ratingStar }) => (
@@ -57,7 +55,6 @@ const EditIcon = React.memo(({ size = 18, color }) => (
   </Svg>
 ));
 
-// Skill Level Icons
 const ExpertIcon = React.memo(({ size = 14, color = StaticColors.expert }) => (
   <Svg width={size} height={size} viewBox="0 0 24 24" fill={color}>
     <Circle cx="12" cy="12" r="10" />
@@ -96,21 +93,63 @@ const DefaultIcon = React.memo(({ size = 14, color }) => (
   </Svg>
 ));
 
-const ProfileHeader = ({ userData, setShowUpdateProfileModal }) => {
+const ProfileHeader = ({ setShowUpdateProfileModal }) => {
   const { theme, isDark } = useTheme();
+  const { user, sessions } = useApp();
+  console.log('user', user);
 
-  // Memoize styles to improve performance
   const styles = useMemo(() => createStyles(theme, isDark), [theme, isDark]);
 
-  const name = userData?.name || 'John Doe';
-  const overallRating = userData?.overallRating || 0;
-  const email = userData?.email || '';
+  const name = user?.name || 'John Doe';
+  const email = user?.email || '';
 
-  if (!userData) return null;
+  if (!user) return null;
 
-  // --- BarSkillMeter Sub-Component ---
+  const getLevelFromRating = rating => {
+    if (rating === null || rating === undefined) {
+      return 'N/A';
+    }
+    if (rating >= 9) {
+      return 'EXPERT';
+    } else if (rating >= 7) {
+      return 'ADVANCED';
+    } else if (rating >= 4) {
+      return 'PROFICIENT';
+    } else {
+      return 'BEGINNER';
+    }
+  };
+
+  const calculateOverallAvgRating = useMemo(() => {
+    const skills = [
+      user?.creativity,
+      user?.expressiveness,
+      user?.submodalities,
+      user?.tonality,
+    ];
+
+    const validRatings = skills.filter(
+      r => r !== null && r !== undefined && r >= 0 && r <= 10,
+    );
+
+    if (validRatings.length === 0) {
+      return user?.overallRating || 0;
+    }
+
+    const totalScore = validRatings.reduce((sum, current) => sum + current, 0);
+
+    const avgScore_0_10 = totalScore / validRatings.length;
+
+    const avgRating_0_5 = avgScore_0_10 / 2;
+
+    return avgRating_0_5;
+  }, [user, user?.overallRating]);
+
+  const finalOverallRating = calculateOverallAvgRating;
+  console.log('finalOverallRating', finalOverallRating);
+
   const BarSkillMeter = ({ skill, rating, level }) => {
-    const percentage = (rating / 5) * 100;
+    const percentage = (rating / 2) * 10;
 
     const getLevelColor = level => {
       switch (level) {
@@ -138,11 +177,9 @@ const ProfileHeader = ({ userData, setShowUpdateProfileModal }) => {
         case 'BEGINNER':
           return <BeginnerIcon />;
         default:
-          // Must pass theme color to DefaultIcon since it's not a StaticColor
           return <DefaultIcon color={theme.accent} />;
       }
     };
-
     const levelColor = getLevelColor(level);
 
     return (
@@ -150,7 +187,9 @@ const ProfileHeader = ({ userData, setShowUpdateProfileModal }) => {
         <View style={styles.barSkillHeader}>
           <Text style={styles.barSkillName}>{skill}</Text>
           <View style={styles.barSkillRating}>
-            <Text style={styles.barRatingNumber}>{rating.toFixed(1)}</Text>
+            <Text style={styles.barRatingNumber}>
+              {(rating / 2).toFixed(1)}
+            </Text>
             <Text style={styles.barRatingMax}>/5</Text>
           </View>
         </View>
@@ -179,7 +218,6 @@ const ProfileHeader = ({ userData, setShowUpdateProfileModal }) => {
       </View>
     );
   };
-  // --- End BarSkillMeter Sub-Component ---
 
   return (
     <View style={styles.profileContainer}>
@@ -224,7 +262,7 @@ const ProfileHeader = ({ userData, setShowUpdateProfileModal }) => {
             <View style={styles.ratingBadge}>
               <StarIcon size={16} />
               <Text style={styles.overallRating}>
-                {overallRating.toFixed(1)}
+                {finalOverallRating.toFixed(1)}
               </Text>
               <Text style={styles.ratingMax}>/5</Text>
             </View>
@@ -245,11 +283,26 @@ const ProfileHeader = ({ userData, setShowUpdateProfileModal }) => {
         </View>
 
         <View style={styles.singleColumnSkillsGrid}>
-          {/* Note: In a real app, these props would come from userData */}
-          <BarSkillMeter skill="Creativity" rating={4.5} level="EXPERT" />
-          <BarSkillMeter skill="Expressive" rating={4.2} level="ADVANCED" />
-          <BarSkillMeter skill="Submodali" rating={4.0} level="ADVANCED" />
-          <BarSkillMeter skill="Tonality" rating={4.4} level="ADVANCED" />
+          <BarSkillMeter
+            skill="Creativity"
+            rating={user?.creativity}
+            level={getLevelFromRating(user?.creativity)}
+          />
+          <BarSkillMeter
+            skill="Expressiveness"
+            rating={user?.expressiveness}
+            level={getLevelFromRating(user?.expressiveness)}
+          />
+          <BarSkillMeter
+            skill="Submodalities"
+            rating={user?.submodalities}
+            level={getLevelFromRating(user?.submodalities)}
+          />
+          <BarSkillMeter
+            skill="Tonality"
+            rating={user?.tonality}
+            level={getLevelFromRating(user?.tonality)}
+          />
         </View>
       </View>
 
@@ -265,7 +318,7 @@ const ProfileHeader = ({ userData, setShowUpdateProfileModal }) => {
           style={styles.statCard}
         >
           <ChartIcon />
-          <Text style={styles.statNumber}>47</Text>
+          <Text style={styles.statNumber}>{sessions?.length || 0}</Text>
           <Text style={styles.statLabel}>Total Sessions</Text>
           <Text style={styles.statSubtext}>Lifetime</Text>
         </LinearGradient>
@@ -278,7 +331,7 @@ const ProfileHeader = ({ userData, setShowUpdateProfileModal }) => {
           style={styles.statCard}
         >
           <TrendingIcon />
-          <Text style={styles.statNumber}>+12%</Text>
+          <Text style={styles.statNumber}>+0.0%</Text>
           <Text style={styles.statLabel}>Monthly Growth</Text>
           <Text style={styles.statSubtext}>This Month</Text>
         </LinearGradient>
@@ -291,7 +344,7 @@ const ProfileHeader = ({ userData, setShowUpdateProfileModal }) => {
           style={styles.statCard}
         >
           <StarIcon color="#FFFFFF" />
-          <Text style={styles.statNumber}>4.8</Text>
+          <Text style={styles.statNumber}>{finalOverallRating.toFixed(1)}</Text>
           <Text style={styles.statLabel}>Avg Rating</Text>
           <Text style={styles.statSubtext}>Last 30 days</Text>
         </LinearGradient>

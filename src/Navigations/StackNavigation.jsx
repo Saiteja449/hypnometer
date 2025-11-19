@@ -27,7 +27,7 @@ const StackNavigation = () => {
         screenOptions={{
           headerShown: false,
         }}
-        initialRouteName="BlockedScreen"
+        initialRouteName="SplashScreen"
       >
         <Stack.Screen name="SplashScreen" component={SplashScreen} />
         <Stack.Screen component={LoginScreen} name="LoginScreen" />
@@ -45,7 +45,10 @@ const StackNavigation = () => {
         <Stack.Screen name="AnalyticsScreen" component={AnalyticsScreen} />
         <Stack.Screen name="SelfAssessmentScreen" component={SelfAssessment} />
         <Stack.Screen name="AllSessionsScreen" component={AllSessionsScreen} />
-        <Stack.Screen name="SessionDetailScreen" component={SessionDetailScreen} />
+        <Stack.Screen
+          name="SessionDetailScreen"
+          component={SessionDetailScreen}
+        />
         <Stack.Screen name="BlockedScreen" component={BlockedScreen} />
         <Stack.Screen name="RejectedScreen" component={RejectedScreen} />
         <Stack.Screen

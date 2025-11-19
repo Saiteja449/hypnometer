@@ -39,8 +39,11 @@ export const AppProvider = ({ children }) => {
       try {
         const response = await axios.get(`${API_BASE_URL}get-user/${id}`);
         if (response.data && response.data.status) {
-          const userdata = response.data.data;
-          console.log('response.data.user', userdata);
+          const userdata = {
+            ...response.data.data,
+            ...response.data.averageRatings,
+          };
+          console.log('USER', userdata);
           setUser(userdata);
           return userdata;
         } else {
@@ -66,7 +69,7 @@ export const AppProvider = ({ children }) => {
       });
 
       if (response.data && response.data.status) {
-        console.log('User status updated successfully:', response.data);
+        // console.log('User status updated successfully:', response.data);
         return { success: true, data: response.data };
       } else {
         throw new Error(
@@ -89,7 +92,7 @@ export const AppProvider = ({ children }) => {
         email,
         password,
       });
-      console.log('login response data', response.data);
+      // console.log('login response data', response.data);
 
       if (response.data && response.data.status) {
         const { id } = response.data.user;
@@ -119,7 +122,7 @@ export const AppProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await axios.post(`${API_BASE_URL}register`, userData);
-      console.log('Registration response data:', response.data);
+      // console.log('Registration response data:', response.data);
       if (response.data && response.data.status) {
         const { id } = response.data.user;
         await AsyncStorage.setItem('userId', id.toString());
@@ -217,14 +220,13 @@ export const AppProvider = ({ children }) => {
         ...sessionData,
         user_id: userId,
       };
-      console.log('Creating session with payload:', payload);
+      // console.log('Creating session with payload:', payload);
       const response = await axios.post(
         `${API_BASE_URL}create-session`,
         payload,
       );
-      console.log('RESPONSE', response.data);
       if (response.data.success) {
-        console.log('RESPONSE', response.data);
+        // console.log('RESPONSE', response.data);
         return {
           success: true,
           message: response.data.message,
@@ -260,9 +262,9 @@ export const AppProvider = ({ children }) => {
           throw new Error('User not authenticated. Please log in.');
         }
         setIsLoading(true);
-        console.log('Fetching sessions for userId:', uid);
+        // console.log('Fetching sessions for userId:', uid);
         const response = await axios.get(`${API_BASE_URL}sessions/${uid}`);
-        console.log('Sessions fetched successfully:', response.data);
+        // console.log('Sessions fetched successfully:', response.data);
         if (response.data && response.data.success) {
           setSessions(response.data.sessions);
           return { success: true, data: response.data.sessions };
@@ -293,17 +295,20 @@ export const AppProvider = ({ children }) => {
     }
     try {
       setIsLoading(true);
-      console.log('Fetching ratings for sessionId:', sessionId);
+      // console.log('Fetching ratings for sessionId:', sessionId);
       const response = await axios.get(
         `${API_BASE_URL}sessions/${sessionId}/ratings`,
       );
-      console.log('Session ratings response:', response.data);
+      // console.log('Session ratings response:', response.data);
       if (response.data && (response.data.success || response.data.status)) {
         const ratings = response.data.ratings || response.data.data || null;
-        const session = response.data.session || response.data.data?.session || null;
+        const session =
+          response.data.session || response.data.data?.session || null;
         const average_ratings =
-          response.data.average_ratings || response.data.data?.average_ratings ||
-          response.data.average_rating || null;
+          response.data.average_ratings ||
+          response.data.data?.average_ratings ||
+          response.data.average_rating ||
+          null;
         return { success: true, data: { session, ratings, average_ratings } };
       } else {
         return {

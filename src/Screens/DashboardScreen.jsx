@@ -8,12 +8,13 @@ import CustomHeader from '../Components/CustomHeader';
 import UpdateProfileModal from '../Components/UpdateProfileModal'; // Import the new modal component
 
 import { useTheme } from '../Context/ThemeContext';
-import { useApp } from '../Context/AppContext'; // Import useApp to get user data
-import { TouchableOpacity, Text } from 'react-native'; // Import TouchableOpacity and Text
+import { useApp } from '../Context/AppContext';
 
 const DashboardScreen = ({ navigation }) => {
   const { theme } = useTheme();
   const { user, getUserDetails, sessions } = useApp();
+
+  console.log('DashboardScreen Rendered', user);
 
   const [refreshing, setRefreshing] = useState(false);
   const [userData, setUserData] = useState(null);

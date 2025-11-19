@@ -30,7 +30,7 @@ const SplashScreen = ({ navigation }) => {
   useEffect(() => {
     const timer = setTimeout(async () => {
       const user = await checkUserSession();
-      console.log('User', user);
+      // console.log('User', user);
       if (user) {
         if (user.role === 'admin') {
           navigation.replace('AdminDashboard');

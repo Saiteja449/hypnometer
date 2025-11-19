@@ -62,7 +62,7 @@ const AdminDashboard = () => {
   // Animation for dots
   const dotAnimation = new Animated.Value(0);
 
-  console.log('user', user);
+  // console.log('user', user);
   const adminProfile = {
     name: `${user?.first_name} ${user?.last_name}`,
     email: user?.email,
