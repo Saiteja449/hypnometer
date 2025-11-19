@@ -130,6 +130,54 @@ describe('Auth Screens', () => {
 
       expect(instance).toBeDefined();
     });
+
+    it('should show server error on invalid credentials', async () => {
+      // Use isolateModules + doMock so the mocked module is applied for this test only
+      let LoginScreenLocal;
+      jest.isolateModules(() => {
+        jest.doMock('../src/Context/AppContext', () => ({
+          useApp: () => ({
+            login: jest.fn(async () => {
+              throw { response: { data: { message: 'Invalid credentials' } } };
+            }),
+            isLoading: false,
+            user: null,
+          }),
+        }));
+
+        LoginScreenLocal = require('../src/Auth/LoginScreen').default;
+      });
+
+      const navigationMock = {
+        navigate: jest.fn(),
+        replace: jest.fn(),
+      };
+
+      let instance;
+      await ReactTestRenderer.act(async () => {
+        instance = ReactTestRenderer.create(<LoginScreenLocal navigation={navigationMock} />);
+      });
+
+      // Fill email and password
+      const textInputs = instance.root.findAllByType('TextInput');
+      expect(textInputs.length).toBeGreaterThanOrEqual(2);
+      textInputs[0].props.onChangeText('test@example.com');
+      textInputs[1].props.onChangeText('wrongpassword');
+
+      // Press login
+      const buttons = instance.root.findAllByType('TouchableOpacity');
+      // Last few touchables are modal buttons, find the first login-like button by label
+      const loginButton = buttons.find(b => b.props.children === 'Log In');
+      expect(loginButton).toBeDefined();
+
+      await ReactTestRenderer.act(async () => {
+        loginButton.props.onPress();
+      });
+
+      // Should show the server error message in modal
+      const invalidNodes = instance.root.findAllByProps({ children: 'Invalid credentials' });
+      expect(invalidNodes.length).toBeGreaterThan(0);
+    });
   });
 
   describe('RegistrationScreen', () => {

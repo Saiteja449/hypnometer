@@ -414,7 +414,7 @@ const AdminDashboard = () => {
 
   return (
     <View style={styles.container}>
-      <CustomHeader title="Admin Dashboard" />
+      <CustomHeader title="Admin Dashboard" showLogoutButton={true} />
 
       <ScrollView
         style={styles.content}

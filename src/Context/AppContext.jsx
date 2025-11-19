@@ -101,7 +101,14 @@ export const AppProvider = ({ children }) => {
         throw new Error(response.data.message || 'Login failed');
       }
     } catch (error) {
+      // If server returned a structured error (e.g., { status: false, message: '...' })
+      // prefer that message to provide a friendly error to UI consumers.
+      const serverMessage = error?.response?.data?.message;
       console.error('Login error:', error.response?.data || error.message);
+      if (serverMessage) {
+        // Wrap into a normal Error so consumer components can use error.message
+        throw new Error(serverMessage);
+      }
       throw error;
     } finally {
       setIsLoading(false);

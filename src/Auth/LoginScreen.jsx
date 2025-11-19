@@ -110,8 +110,13 @@ const LoginScreen = ({ navigation }) => {
         }
       }
     } catch (error) {
+      // Prefer the server-provided message (if available via axios error response),
+      // fall back to error.message or a generic message.
+      const serverMessage = error?.response?.data?.message;
+      const message = serverMessage || error?.message || 'An unexpected error occurred.';
+
       setModalTitle('Login Failed');
-      setModalMessage(error.message || 'An unexpected error occurred.');
+      setModalMessage(message);
       setModalButtons([{ text: 'OK' }]);
       setModalVisible(true);
     } finally {
