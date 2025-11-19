@@ -280,6 +280,50 @@ export const AppProvider = ({ children }) => {
     [userId],
   );
 
+  const getSessionRatings = useCallback(async sessionId => {
+    if (!sessionId) {
+      return { success: false, message: 'sessionId is required' };
+    }
+    try {
+      setIsLoading(true);
+      console.log('Fetching ratings for sessionId:', sessionId);
+      const response = await axios.get(
+        `${API_BASE_URL}sessions/${sessionId}/ratings`,
+      );
+      console.log('Session ratings response:', response.data);
+      if (response.data && (response.data.success || response.data.status)) {
+        const ratings = response.data.ratings || response.data.data || null;
+        const session = response.data.session || response.data.data?.session || null;
+        const average_ratings =
+          response.data.average_ratings || response.data.data?.average_ratings ||
+          response.data.average_rating || null;
+        return { success: true, data: { session, ratings, average_ratings } };
+      } else {
+        return {
+          success: false,
+          message: response.data?.message || 'Failed to fetch session ratings',
+        };
+      }
+    } catch (error) {
+      console.error(
+        'Get session ratings error:',
+        error.response?.data || error.message,
+      );
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ||
+          'Network error or server is unreachable',
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    getSessionRatings();
+  }, []);
+
   const fetchAllUsers = useCallback(async () => {
     if (user && user.role === 'admin') {
       setIsLoading(true);
@@ -347,6 +391,7 @@ export const AppProvider = ({ children }) => {
         createSession,
         sessions,
         getSessions,
+        getSessionRatings,
       }}
     >
       {children}

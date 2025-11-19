@@ -126,18 +126,18 @@ const AllSessionsScreen = ({ navigation, route }) => {
       const feedbackExpiresAt = new Date(session.feedback_expires_at);
       const now = new Date();
       const hoursSinceSession = (now - sessionDateTime) / (1000 * 60 * 60);
-      const isWithin24Hours = hoursSinceSession < 24;
-      const isFeedbackExpired = feedbackExpiresAt < now;
-      // IMPORTANT: Adjusting status logic slightly for clarity in display
+      const isWithinFeedbackWindow = feedbackExpiresAt > now; // still within 24h feedback window
+      // Status logic: keep session as 'pending_feedback' (active) until feedback expiry
       let status = 'completed';
-      if (!session.average_rating && isWithin24Hours && !isFeedbackExpired) {
+      if (isWithinFeedbackWindow) {
+        // Show as active/pending while feedback window is open, even if reviewed
         status = 'pending_feedback';
-      } else if (!session.average_rating && hoursSinceSession > 24) {
-        status = 'completed_no_feedback'; // New status for completed but no rating
       } else if (session.average_rating) {
         status = 'completed';
+      } else if (!session.average_rating && hoursSinceSession > 24) {
+        status = 'completed_no_feedback'; // Completed but no rating after window
       } else {
-        status = 'pending_other'; // Placeholder for future/scheduled sessions (if logic is expanded)
+        status = 'pending_other';
       }
 
       return {
@@ -160,7 +160,8 @@ const AllSessionsScreen = ({ navigation, route }) => {
         feedback_link: session.feedback_link,
         metaphor_theme: session.metaphor_theme,
         hoursSinceSession,
-        isFeedbackExpired,
+        feedback_expires_at: session.feedback_expires_at,
+        isFeedbackActive: isWithinFeedbackWindow,
       };
     });
   };
@@ -211,13 +212,12 @@ const AllSessionsScreen = ({ navigation, route }) => {
   // --- Style Helpers (Kept for consistency, adjusted logic slightly) ---
 
   const getStatusDisplay = (status, rating) => {
-    if (status === 'completed') {
-      return { text: 'Reviewed', color: '#10B981', background: '#D1FAE5' }; // Green for rated
-    }
+    // Simplified statuses: show 'Active' when within feedback window, otherwise 'Completed'
     if (status === 'pending_feedback') {
-      return { text: 'Action Needed', color: '#F59E0B', background: '#FEF3C7' }; // Amber for pending feedback
+      return { text: 'Active', color: '#7C3AED', background: '#F3E8FF' }; // Purple for active
     }
-    return { text: 'Completed', color: '#4B5563', background: '#E5E7EB' }; // Gray for completed without review
+    // For any completed-like status show 'Completed'
+    return { text: 'Completed', color: '#10B981', background: '#D1FAE5' }; // Green for completed
   };
 
   const getStyles = (theme, isDark) =>
@@ -241,7 +241,7 @@ const AllSessionsScreen = ({ navigation, route }) => {
         backgroundColor: theme.card,
         borderWidth: 1,
         borderColor: theme.border,
-        // borderRadius: 14,
+        borderRadius: 32,
         paddingHorizontal: 16,
         paddingVertical: 6,
       },
@@ -258,6 +258,9 @@ const AllSessionsScreen = ({ navigation, route }) => {
         paddingHorizontal: 0,
         flexDirection: 'row',
         marginBottom: 16,
+        borderRadius: 18,
+        gap: 6,
+        backgroundColor: isDark ? '#111827' : '#F3F4F6',
       },
       filterTab: {
         backgroundColor: theme.card,
@@ -266,6 +269,7 @@ const AllSessionsScreen = ({ navigation, route }) => {
         paddingVertical: 8,
         gap: 8,
         borderWidth: 1,
+        borderRadius: 18,
       },
       filterTabActive: {
         backgroundColor: theme.accent,
@@ -465,6 +469,12 @@ const AllSessionsScreen = ({ navigation, route }) => {
       <TouchableOpacity
         style={[styles.sessionCard, { borderLeftColor: cardBorderColor }]}
         activeOpacity={1}
+        onPress={() =>
+          navigation.navigate('SessionScreen', {
+            sessionId: item.id,
+            title: item.title,
+          })
+        }
       >
         {/* Session Title, Therapist, and Status */}
         <View style={styles.sessionHeader}>

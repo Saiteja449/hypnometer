@@ -10,6 +10,7 @@ import PendingApprovalScreen from '../Auth/PendingApprovalScreen';
 import LoginScreen from '../Auth/LoginScreen';
 import AdminDashboard from '../Screens/Admin/AdminDashboard';
 import AllSessionsScreen from '../Screens/AllSessionsScreen';
+import SessionScreen from '../Screens/SessionScreen';
 import SplashScreen from '../Auth/SplashScreen';
 import { useApp } from '../Context/AppContext';
 import BlockedScreen from '../Auth/BlockedScreen';
@@ -44,6 +45,7 @@ const StackNavigation = () => {
         <Stack.Screen name="AnalyticsScreen" component={AnalyticsScreen} />
         <Stack.Screen name="SelfAssessmentScreen" component={SelfAssessment} />
         <Stack.Screen name="AllSessionsScreen" component={AllSessionsScreen} />
+        <Stack.Screen name="SessionScreen" component={SessionScreen} />
         <Stack.Screen name="BlockedScreen" component={BlockedScreen} />
         <Stack.Screen name="RejectedScreen" component={RejectedScreen} />
         <Stack.Screen
