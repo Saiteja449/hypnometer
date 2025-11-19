@@ -370,6 +370,40 @@ export const AppProvider = ({ children }) => {
     }
   }, [getUserDetails]);
 
+  const getAnalyticsData = async period => {
+    if (!userId) {
+      return { success: false, message: 'User not authenticated' };
+    }
+    try {
+      setIsLoading(true);
+      const response = await axios.get(
+        `${API_BASE_URL}analytics/${userId}/sessions?period=${period}`,
+      );
+      console.log('Response', response.data);
+      if (response.data && response.data.success) {
+        return { success: true, data: response.data.sessions };
+      } else {
+        return {
+          success: false,
+          message: response.data.message || 'Failed to fetch analytics data',
+        };
+      }
+    } catch (error) {
+      console.error(
+        'Get analytics data error:',
+        error.response?.data || error.message,
+      );
+      return {
+        success: false,
+        message:
+          error.response?.data?.message ||
+          'Network error or server is unreachable',
+      };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     (async () => {
       try {
@@ -404,6 +438,7 @@ export const AppProvider = ({ children }) => {
         sessions,
         getSessions,
         getSessionRatings,
+        getAnalyticsData,
       }}
     >
       {children}
