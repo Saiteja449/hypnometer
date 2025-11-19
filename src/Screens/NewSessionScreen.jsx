@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -12,18 +12,410 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from 'react-native';
+// Assuming these imports are correct based on the original code structure
 import CustomHeader from '../Components/CustomHeader';
-
 import { useTheme } from '../Context/ThemeContext';
 import { useApp } from '../Context/AppContext';
 import CustomDateTimePicker from '../Components/CustomDateTimePicker';
 import ClockIcon from '../Icons/ClockIcon';
 import CalendarIcon from '../Icons/CalendarIcon';
 import LinearGradient from 'react-native-linear-gradient';
+import SuccessIcon from '../Icons/SuccessIcon';
+import InsightIcon from '../Icons/InsightIcon';
 
+// --- Static Values ---
+const SESSION_TYPES = [
+  'Anxiety',
+  'Confidence',
+  'Regression',
+  'Sleep',
+  'Pain Management',
+  'Smoking Cessation',
+];
+
+// --- Custom Stylesheet Creation Function (Optimized UI) ---
+const createStyles = (theme, isDark) => StyleSheet.create({
+  screenContainer: {
+    flex: 1,
+    backgroundColor: theme.background,
+  },
+  scrollContent: {
+    padding: 16,
+    paddingBottom: 40, // More breathing room at the bottom
+  },
+  header: {
+    marginBottom: 20,
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  subtitle: {
+    fontSize: 14, // Slightly smaller
+    fontFamily: 'Nunito-Medium',
+    color: theme.secondary,
+    textAlign: 'center',
+    lineHeight: 20,
+    maxWidth: 350,
+  },
+  inputContainer: {
+    marginBottom: 16, // Increased spacing between sections
+  },
+  label: {
+    fontSize: 15,
+    fontFamily: 'Nunito-SemiBold',
+    color: theme.primary,
+    marginBottom: 8,
+  },
+  // ✨ Modern Input Style
+  textInput: {
+    backgroundColor: isDark ? theme.card : '#FFFFFF', // Lighter background for inputs in light mode
+    borderWidth: 1,
+    borderColor: isDark ? theme.border : '#E5E7EB', // Subtle border
+    borderRadius: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    fontSize: 16, // Slightly larger font
+    fontFamily: 'Nunito-Regular',
+    color: theme.primary,
+    // Removed unnecessary shadows for cleaner look
+  },
+  inputError: {
+    borderColor: theme.danger,
+    backgroundColor: isDark ? '#3E2D2D' : '#FEF2F2',
+  },
+  errorText: {
+    color: theme.danger,
+    fontSize: 12,
+    fontFamily: 'Nunito-Medium',
+    marginTop: 6,
+    marginLeft: 4,
+  },
+  charCount: {
+    fontSize: 12,
+    fontFamily: 'Nunito-Regular',
+    color: theme.secondary,
+    textAlign: 'right',
+    marginTop: 4,
+  },
+  notesInput: {
+    minHeight: 140, // Taller notes field
+    textAlignVertical: 'top',
+    paddingTop: 12,
+  },
+  // ✨ Enhanced Radio Button Row
+  radioRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10, // Increased gap
+  },
+  radioItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 10,
+    backgroundColor: isDark ? theme.card : '#F3F4F6', // Light gray background
+    borderWidth: 1,
+    borderColor: theme.border,
+    
+  },
+  radioItemSelected: {
+    borderColor: theme.accent, // Highlight border
+    backgroundColor: isDark ? '#3A305D' : '#F1F0FF', // Subtle background color when selected
+  },
+  radioLabel: {
+    fontSize: 14,
+    fontFamily: 'Nunito-SemiBold', // Bolder label
+    color: theme.primary,
+  },
+  // Hidden radio elements for cleaner UI (relying on background/border change)
+  radioOuter: {
+    display: 'none', // Hide default radio circle
+  },
+  
+  datetimeContainer: {
+    flexDirection: 'row',
+    gap: 12, // Increased gap
+  },
+  // ✨ Modern Date/Time Button
+  datetimeButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: isDark ? theme.card : '#FFFFFF',
+    borderWidth: 1,
+    borderColor: isDark ? theme.border : '#E5E7EB',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 14, // Taller button
+    gap: 10,
+  },
+  datetimeText: {
+    fontSize: 15,
+    fontFamily: 'Nunito-SemiBold',
+    color: theme.primary,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 20, // Increased spacing before buttons
+    marginBottom: 20,
+  },
+  cancelButton: {
+    flex: 1,
+    backgroundColor: isDark ? theme.card : '#F3F4F6',
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: isDark ? theme.border : '#E5E7EB',
+  },
+  cancelButtonText: {
+    fontSize: 16,
+    fontFamily: 'Nunito-Bold',
+    color: theme.primary,
+  },
+  createButtonGradient: {
+    flex: 1,
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+    shadowColor: '#8B5CF6',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 6,
+  },
+  createButtonText: {
+    fontSize: 16,
+    fontFamily: 'Nunito-Bold',
+    color: '#FFFFFF',
+  },
+  createButtonDisabled: {
+    opacity: 0.6,
+    shadowOpacity: 0,
+    elevation: 0,
+  },
+  // ✨ Enhanced Info Footer
+  infoFooter: {
+    padding: 16,
+    backgroundColor: isDark ? '#16222C' : '#ECFDF5', // Lighter success tone
+    borderRadius: 10,
+    borderLeftWidth: 4,
+    borderLeftColor: theme.success,
+    marginBottom: 16,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+  },
+  infoText: {
+    flex: 1,
+    fontSize: 13,
+    fontFamily: 'Nunito-Regular',
+    color: isDark ? '#E5E7EB' : '#047857', // Darker text for readability in light background
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0, 0, 0, 0.65)', // Darker overlay
+  },
+  // ✨ Consistent Modal Card Style
+  resultContainer: {
+    backgroundColor: theme.card,
+    borderTopLeftRadius: 24, // Smoother corners
+    borderTopRightRadius: 24,
+    padding: 30, // More spacious
+    width: '100%',
+    alignSelf: 'center',
+    alignItems: 'center',
+  },
+  resultTitle: {
+    fontSize: 20, 
+    fontFamily: 'Nunito-Bold', 
+    color: theme.primary, 
+    marginBottom: 10, 
+    textAlign: 'center',
+  },
+  resultMessage: {
+    fontSize: 15, 
+    fontFamily: 'Nunito-Regular', 
+    color: theme.secondary, 
+    marginBottom: 20, 
+    textAlign: 'center',
+  },
+  modalButtonRow: { 
+    flexDirection: 'row', 
+    gap: 12, 
+    justifyContent: 'center' 
+  },
+  modalCancelButton: { 
+    paddingVertical: 12, 
+    paddingHorizontal: 20, 
+    borderRadius: 10, 
+    minWidth: 120, 
+    alignItems: 'center', 
+    backgroundColor: isDark ? theme.card : '#F3F4F6',
+    borderWidth: 1,
+    borderColor: theme.border,
+  },
+  modalConfirmButton: { 
+    paddingVertical: 12, 
+    paddingHorizontal: 20, 
+    borderRadius: 10, 
+    minWidth: 120, 
+    alignItems: 'center', 
+    backgroundColor: '#8B5CF6' 
+  },
+  modalButtonTextPrimary: { 
+    color: theme.primary, 
+    fontFamily: 'Nunito-Bold' 
+  },
+  modalButtonTextLight: { 
+    color: '#fff', 
+    fontFamily: 'Nunito-Bold' 
+  },
+  processingOverlay: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    backgroundColor: 'rgba(0,0,0,0.45)'
+  },
+  processingContainer: {
+    backgroundColor: theme.card,
+    padding: 30,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+});
+
+// --- Modal Sub-Components (Cleaned up and using updated styles) ---
+
+const ConfirmationModal = React.memo(({ visible, onClose, onConfirm, theme, styles, localLoading, appIsLoading }) => (
+  <Modal
+    visible={visible}
+    transparent
+    animationType="slide"
+    onRequestClose={onClose}
+  >
+    <TouchableWithoutFeedback onPress={onClose}>
+      <View style={styles.modalOverlay}>
+        <TouchableWithoutFeedback>
+          <View style={styles.resultContainer}>
+            <Text style={styles.resultTitle}>📝 Confirm Session Details</Text>
+            <Text style={styles.resultMessage}>
+              Are you sure you want to create and log this session now?
+            </Text>
+
+            <View style={styles.modalButtonRow}>
+              <TouchableOpacity
+                onPress={onClose}
+                style={styles.modalCancelButton}
+              >
+                <Text style={styles.modalButtonTextPrimary}>Cancel</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={onConfirm}
+                disabled={localLoading || appIsLoading}
+                style={styles.modalConfirmButton}
+              >
+                <Text style={styles.modalButtonTextLight}>Confirm</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </View>
+    </TouchableWithoutFeedback>
+  </Modal>
+));
+
+const ResultModal = React.memo(({ visible, onClose, resultTitle, resultMessage, resultActions, theme, styles }) => {
+    const isError = resultTitle.includes('Error');
+    const iconColor = isError ? theme.danger : theme.success;
+    
+    return (
+        <Modal
+            visible={visible}
+            transparent
+            animationType="slide"
+            onRequestClose={onClose}
+        >
+            <TouchableWithoutFeedback onPress={onClose}>
+                <View style={styles.modalOverlay}>
+                    <TouchableWithoutFeedback>
+                        <View style={styles.resultContainer}>
+                            {/* Use the Icon based on result type */}
+                            {isError ? (
+                                <Text style={{ fontSize: 40, marginBottom: 15 }}>❌</Text> // Simple text icon for error
+                            ) : (
+                                <SuccessIcon 
+                                    size={48} 
+                                    color={iconColor} 
+                                    style={{ alignSelf: 'center', marginBottom: 15 }} 
+                                />
+                            )}
+                            
+                            <Text style={styles.resultTitle}>{resultTitle}</Text>
+                            <Text style={styles.resultMessage}>{resultMessage}</Text>
+
+                            <View style={styles.modalButtonRow}>
+                                {resultActions.map((act, idx) => (
+                                    <TouchableOpacity
+                                        key={idx}
+                                        onPress={() => {
+                                            onClose();
+                                            setTimeout(() => {
+                                                try {
+                                                    act.onPress && act.onPress();
+                                                } catch (e) {
+                                                    console.error('Modal action error', e);
+                                                }
+                                            }, 120);
+                                        }}
+                                        style={[
+                                            styles.modalConfirmButton, 
+                                            idx > 0 && styles.modalCancelButton, // Secondary button style
+                                            idx > 0 && {backgroundColor: isError ? theme.danger + '10' : theme.card, borderColor: isError ? theme.danger : theme.border}, // Error secondary style
+                                        ]}
+                                    >
+                                        <Text style={idx === 0 ? styles.modalButtonTextLight : (isError ? {color: theme.danger, fontFamily: 'Nunito-Bold'} : styles.modalButtonTextPrimary)}>
+                                            {act.text}
+                                        </Text>
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        </View>
+                    </TouchableWithoutFeedback>
+                </View>
+            </TouchableWithoutFeedback>
+        </Modal>
+    );
+});
+
+const ProcessingModal = React.memo(({ visible, theme, styles }) => (
+  <Modal
+    visible={visible}
+    transparent
+    animationType="fade" // Changed to fade for smoother appearance
+    onRequestClose={() => {}}
+  >
+    <View style={styles.processingOverlay}>
+      <View style={styles.processingContainer}>
+        <ActivityIndicator size="large" color={theme.accent} />
+        <Text style={{ marginTop: 15, color: theme.primary, fontFamily: 'Nunito-SemiBold', fontSize: 16 }}>
+          Processing Session...
+        </Text>
+      </View>
+    </View>
+  </Modal>
+));
+
+
+// --- Main Component ---
 const NewSessionScreen = ({ navigation }) => {
   const { theme, isDark } = useTheme();
-  const { userId, createSession, isLoading: appIsLoading } = useApp();
+  const { userId, createSession, isLoading: appIsLoading } = useApp() || {};
 
   const [sessionData, setSessionData] = useState({
     title: '',
@@ -35,246 +427,22 @@ const NewSessionScreen = ({ navigation }) => {
     metaphorTheme: '',
   });
 
-  const SESSION_TYPES = [
-    'Anxiety',
-    'Confidence',
-    'Regression',
-    'Sleep',
-    'Pain Management',
-    'Smoking Cessation',
-  ];
-
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [errors, setErrors] = useState({});
-  const [localLoading, setLocalLoading] = useState(false); // For button specific loading
+  const [localLoading, setLocalLoading] = useState(false);
   const [resultModalVisible, setResultModalVisible] = useState(false);
   const [resultTitle, setResultTitle] = useState('');
   const [resultMessage, setResultMessage] = useState('');
   const [resultActions, setResultActions] = useState([]);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  
+  // 🔑 Optimization: Memoize dynamic styles
+  const styles = useMemo(() => createStyles(theme, isDark), [theme, isDark]);
 
-  const dynamicStyles = StyleSheet.create({
-    screenContainer: {
-      flex: 1,
-      backgroundColor: theme.background,
-    },
-    scrollContent: {
-      padding: 16,
-      paddingBottom: 30,
-    },
-    header: {
-      marginBottom: 20,
-      alignItems: 'center',
-    },
-    subtitle: {
-      fontSize: 15,
-      fontFamily: 'Nunito-Medium',
-      color: theme.secondary,
-      textAlign: 'center',
-      lineHeight: 22,
-      maxWidth: 300,
-    },
-    inputContainer: {
-      marginBottom: 8,
-    },
-    label: {
-      fontSize: 15,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.primary,
-      marginBottom: 8,
-    },
-    textInput: {
-      backgroundColor: theme.card,
-      borderWidth: 1,
-      borderColor: theme.border,
-      borderRadius: 12,
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      fontSize: 15,
-      fontFamily: 'Nunito-Regular',
-      color: theme.primary,
-      shadowColor: theme.cardShadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: isDark ? 0.3 : 0.1,
-      shadowRadius: 5,
-      elevation: 2,
-    },
-    inputError: {
-      borderColor: theme.danger,
-      backgroundColor: isDark ? '#3E2D2D' : '#FEF2F2',
-    },
-    errorText: {
-      color: theme.danger,
-      fontSize: 12,
-      fontFamily: 'Nunito-Medium',
-      marginTop: 6,
-      marginLeft: 4,
-    },
-    charCount: {
-      fontSize: 12,
-      fontFamily: 'Nunito-Regular',
-      color: theme.secondary,
-      textAlign: 'right',
-      marginTop: 6,
-    },
-    notesInput: {
-      minHeight: 120,
-      textAlignVertical: 'top',
-    },
-    radioRow: {
-      flexDirection: 'row',
-      flexWrap: 'wrap',
-      gap: 8,
-    },
-    radioItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingVertical: 6,
-      paddingHorizontal: 8,
-      borderRadius: 10,
-      backgroundColor: theme.card,
-      borderWidth: 1,
-      borderColor: theme.border,
-      marginRight: 8,
-    },
-    radioOuter: {
-      width: 18,
-      height: 18,
-      borderRadius: 9,
-      borderWidth: 1.5,
-      borderColor: theme.border,
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginRight: 10,
-      backgroundColor: 'transparent',
-    },
-    radioInner: {
-      width: 10,
-      height: 10,
-      borderRadius: 5,
-      backgroundColor: theme.accent,
-    },
-    radioLabel: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Regular',
-      color: theme.primary,
-    },
-    datetimeContainer: {
-      flexDirection: 'row',
-      gap: 10,
-    },
-    datetimeButton: {
-      flex: 1,
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: theme.card,
-      borderWidth: 1,
-      borderColor: theme.border,
-      borderRadius: 12,
-      paddingHorizontal: 16,
-      paddingVertical: 12,
-      gap: 8,
-      shadowColor: theme.cardShadow,
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: isDark ? 0.2 : 0.05,
-      shadowRadius: 3,
-      elevation: 1,
-    },
-    datetimeText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Medium',
-      color: theme.primary,
-    },
-    buttonContainer: {
-      flexDirection: 'row',
-      gap: 10,
-      marginTop: 12,
-      marginBottom: 16,
-    },
-    cancelButton: {
-      flex: 1,
-      backgroundColor: theme.card,
-      paddingVertical: 13,
-      borderRadius: 14,
-      alignItems: 'center',
-      borderWidth: 1,
-      borderColor: theme.border,
-    },
-    cancelButtonText: {
-      fontSize: 15,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.primary,
-    },
-    createButtonGradient: {
-      flex: 1,
-      paddingVertical: 13,
-      borderRadius: 14,
-      alignItems: 'center',
-      shadowColor: '#8B5CF6',
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.4,
-      shadowRadius: 10,
-      elevation: 6,
-    },
-    createButtonText: {
-      fontSize: 15,
-      fontFamily: 'Nunito-Bold',
-      color: '#FFFFFF',
-    },
-    createButtonDisabled: {
-      opacity: 0.5,
-      shadowOpacity: 0,
-      elevation: 0,
-    },
-    infoFooter: {
-      padding: 14,
-      backgroundColor: isDark ? '#1F2937' : '#E0F2F1',
-      borderRadius: 12,
-      borderLeftWidth: 4,
-      borderLeftColor: theme.success,
-      marginBottom: 16,
-    },
-    infoText: {
-      fontSize: 12,
-      fontFamily: 'Nunito-Regular',
-      color: isDark ? '#E5E7EB' : '#0F766E',
-    },
-    modalOverlay: {
-      flex: 1,
-      justifyContent: 'flex-end',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    pickerContainer: {
-      backgroundColor: theme.card,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      paddingVertical: 10,
-    },
-    resultContainer: {
-      backgroundColor: theme.card,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      padding: 20,
-      width: '100%',
-      alignSelf: 'center',
-    },
-    processingOverlay: {
-      flex: 1,
-      justifyContent: 'flex-end',
-      backgroundColor: 'rgba(0,0,0,0.35)'
-    },
-    processingContainer: {
-      backgroundColor: theme.card,
-      padding: 18,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: '100%',
-    },
-  });
+  // --- Helper Functions ---
 
-  const validateForm = () => {
+  const validateForm = useCallback(() => {
+    // ... (Validation logic remains the same)
     const newErrors = {};
 
     if (!sessionData.title.trim()) {
@@ -282,8 +450,6 @@ const NewSessionScreen = ({ navigation }) => {
     } else if (sessionData.title.trim().length < 3) {
       newErrors.title = 'Title must be at least 3 characters';
     }
-
-    // Session types are optional multi-select; no validation required here
 
     if (sessionData.clientName && sessionData.clientName.trim().length < 2) {
       newErrors.clientName = 'Client name must be at least 2 characters';
@@ -298,15 +464,15 @@ const NewSessionScreen = ({ navigation }) => {
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+  }, [sessionData]);
 
-  const onDateChange = (selectedDate) => {
+  const onDateChange = useCallback((selectedDate) => {
     if (selectedDate) {
-      setSessionData({ ...sessionData, date: selectedDate });
+      setSessionData(prev => ({ ...prev, date: selectedDate }));
     }
-  };
+  }, []);
 
-  const formatDate = date => {
+  const formatDate = (date) => {
     return date.toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
@@ -315,21 +481,28 @@ const NewSessionScreen = ({ navigation }) => {
     });
   };
 
-  const formatTime = date => {
+  const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true,
     });
   };
+  
+  const handleConfirm = useCallback(() => {
+    setConfirmModalVisible(false);
+    setTimeout(() => {
+      handleCreateSession();
+    }, 120);
+  }, []);
 
-  const handleCreateSession = async () => {
+  const handleCreateSession = useCallback(async () => {
     if (!validateForm()) {
       setResultTitle('Validation Error');
-      setResultMessage('Please fix the errors before submitting');
+      setResultMessage('Please fix the highlighted errors before submitting.');
       setResultActions([
         {
-          text: 'OK',
+          text: 'Review Form',
           onPress: () => {},
         },
       ]);
@@ -340,9 +513,9 @@ const NewSessionScreen = ({ navigation }) => {
     setLocalLoading(true);
     try {
       const sessionToCreate = {
-        user_id: userId, // Get from AppContext
+        user_id: userId,
         title: sessionData.title.trim(),
-        session_type: sessionData.selectedType, // Added session_type field
+        session_type: sessionData.selectedType,
         client_name: sessionData.clientName.trim(),
         session_link: sessionData.sessionLink.trim(),
         session_datetime: sessionData.date.toISOString(),
@@ -352,9 +525,9 @@ const NewSessionScreen = ({ navigation }) => {
 
       const result = await createSession(sessionToCreate);
 
-      if (result.success) {
-        setResultTitle('Session Created Successfully! 🎉');
-        setResultMessage(result.message || `Your session has been logged.`);
+      if (result?.success) {
+        setResultTitle('Session Created Successfully! 🌟');
+        setResultMessage(result.message || `Your session has been logged and the feedback link is ready.`);
         setResultActions([
           {
             text: 'View Session',
@@ -364,41 +537,41 @@ const NewSessionScreen = ({ navigation }) => {
               }),
           },
           {
-            text: 'OK',
+            text: 'Done',
             onPress: () => navigation.goBack(),
           },
         ]);
-        setResultModalVisible(true);
       } else {
-        setResultTitle('Error');
-        setResultMessage(result.message || 'Failed to create session. Please try again.');
+        setResultTitle('Creation Failed');
+        setResultMessage(result?.message || 'Failed to create session due to a server error. Please try again.');
         setResultActions([
           {
-            text: 'OK',
+            text: 'Try Again',
             onPress: () => {},
           },
         ]);
-        setResultModalVisible(true);
       }
     } catch (error) {
-      setResultTitle('Error');
-      setResultMessage('An unexpected error occurred during session creation.');
+      setResultTitle('Network Error');
+      setResultMessage('An unexpected network error occurred. Check your connection.');
       setResultActions([
         {
-          text: 'OK',
+          text: 'Close',
           onPress: () => {},
         },
       ]);
-      setResultModalVisible(true);
       console.error('Session creation error:', error);
     } finally {
       setLocalLoading(false);
+      setResultModalVisible(true);
     }
-  };
+  }, [validateForm, sessionData, userId, createSession, navigation]);
+
+  const isButtonDisabled = !sessionData.title.trim() || localLoading || appIsLoading;
 
   return (
     <KeyboardAvoidingView
-      style={dynamicStyles.screenContainer}
+      style={styles.screenContainer}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <CustomHeader
@@ -406,180 +579,185 @@ const NewSessionScreen = ({ navigation }) => {
         onBackPress={() => navigation.goBack()}
       />
       <ScrollView
-        style={dynamicStyles.screenContainer}
+        style={styles.screenContainer}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={dynamicStyles.scrollContent}
+        contentContainerStyle={styles.scrollContent}
       >
-        <View style={dynamicStyles.header}>
-          <Text style={dynamicStyles.subtitle}>
-            Track your hypnotherapy sessions and get client feedback.
+        <View style={styles.header}>
+          <Text style={styles.subtitle}>
+            Log your hypnotherapy sessions and instantly generate a feedback link for your client.
           </Text>
         </View>
 
-        <View style={dynamicStyles.inputContainer}>
-          <Text style={dynamicStyles.label}>Session Title *</Text>
+        {/* --- 1. Session Title --- */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Session Title *</Text>
           <TextInput
             style={[
-              dynamicStyles.textInput,
-              errors.title && dynamicStyles.inputError,
+              styles.textInput,
+              errors.title && styles.inputError,
             ]}
             placeholder="e.g., Anxiety Breakthrough"
             placeholderTextColor={theme.secondary}
             value={sessionData.title}
             onChangeText={text => {
-              setSessionData({ ...sessionData, title: text });
-              if (errors.title) setErrors({ ...errors, title: '' });
+              setSessionData(prev => ({ ...prev, title: text }));
+              if (errors.title) setErrors(prev => ({ ...prev, title: '' }));
             }}
             maxLength={100}
           />
           {errors.title && (
-            <Text style={dynamicStyles.errorText}>{errors.title}</Text>
+            <Text style={styles.errorText}>{errors.title}</Text>
           )}
-          <Text style={dynamicStyles.charCount}>
+          <Text style={styles.charCount}>
             {sessionData.title.length}/100
           </Text>
         </View>
 
-        <View style={dynamicStyles.inputContainer}>
-          <Text style={dynamicStyles.label}>Session Type</Text>
-          <View style={dynamicStyles.radioRow}>
+        {/* --- 2. Session Type (Radio Buttons) --- */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Session Focus</Text>
+          <View style={styles.radioRow}>
             {SESSION_TYPES.map(type => {
               const selected = sessionData.selectedType === type;
               return (
                 <TouchableOpacity
                   key={type}
-                  style={dynamicStyles.radioItem}
+                  style={[styles.radioItem, selected && styles.radioItemSelected]}
                   onPress={() => {
-                    setSessionData({ ...sessionData, selectedType: type });
+                    setSessionData(prev => ({ ...prev, selectedType: type }));
                   }}
                 >
-                  <View style={dynamicStyles.radioOuter}>
-                    {selected && <View style={dynamicStyles.radioInner} />}
-                  </View>
-                  <Text style={dynamicStyles.radioLabel}>{type}</Text>
+                  <Text style={[styles.radioLabel, {color: selected ? theme.accent : theme.primary}]}>{type}</Text>
                 </TouchableOpacity>
               );
             })}
           </View>
         </View>
 
-        <View style={dynamicStyles.inputContainer}>
-          <Text style={dynamicStyles.label}>Client Name (Optional)</Text>
+        {/* --- 3. Client Name --- */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Client Name (Optional)</Text>
           <TextInput
             style={[
-              dynamicStyles.textInput,
-              errors.clientName && dynamicStyles.inputError,
+              styles.textInput,
+              errors.clientName && styles.inputError,
             ]}
             placeholder="Enter client name"
             placeholderTextColor={theme.secondary}
             value={sessionData.clientName}
             onChangeText={text => {
-              setSessionData({ ...sessionData, clientName: text });
-              if (errors.clientName) setErrors({ ...errors, clientName: '' });
+              setSessionData(prev => ({ ...prev, clientName: text }));
+              if (errors.clientName) setErrors(prev => ({ ...prev, clientName: '' }));
             }}
             maxLength={50}
           />
           {errors.clientName && (
-            <Text style={dynamicStyles.errorText}>{errors.clientName}</Text>
+            <Text style={styles.errorText}>{errors.clientName}</Text>
           )}
-          <Text style={dynamicStyles.charCount}>
+          <Text style={styles.charCount}>
             {sessionData.clientName.length}/50
           </Text>
         </View>
 
-        <View style={dynamicStyles.inputContainer}>
-          <Text style={dynamicStyles.label}>Session Link (Optional)</Text>
+        {/* --- 4. Session Link --- */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Session Link (Optional - Zoom/Meet)</Text>
           <TextInput
             style={[
-              dynamicStyles.textInput,
-              errors.sessionLink && dynamicStyles.inputError,
+              styles.textInput,
+              errors.sessionLink && styles.inputError,
             ]}
             placeholder="e.g., https://zoom.us/j/1234567890"
             placeholderTextColor={theme.secondary}
             value={sessionData.sessionLink}
             onChangeText={text => {
-              setSessionData({ ...sessionData, sessionLink: text });
-              if (errors.sessionLink) setErrors({ ...errors, sessionLink: '' });
+              setSessionData(prev => ({ ...prev, sessionLink: text }));
+              if (errors.sessionLink) setErrors(prev => ({ ...prev, sessionLink: '' }));
             }}
             keyboardType="url"
             autoCapitalize="none"
             maxLength={200}
           />
           {errors.sessionLink && (
-            <Text style={dynamicStyles.errorText}>{errors.sessionLink}</Text>
+            <Text style={styles.errorText}>{errors.sessionLink}</Text>
           )}
-          <Text style={dynamicStyles.charCount}>
+          <Text style={styles.charCount}>
             {sessionData.sessionLink.length}/200
           </Text>
         </View>
 
-        <View style={dynamicStyles.inputContainer}>
-          <Text style={dynamicStyles.label}>Session Date & Time</Text>
-          <View style={dynamicStyles.datetimeContainer}>
+        {/* --- 5. Date & Time Picker --- */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Session Date & Time</Text>
+          <View style={styles.datetimeContainer}>
             <TouchableOpacity
-              style={dynamicStyles.datetimeButton}
+              style={styles.datetimeButton}
               onPress={() => setShowDatePicker(true)}
             >
               <CalendarIcon color={theme.accent} size={20} />
-              <Text style={dynamicStyles.datetimeText}>
+              <Text style={styles.datetimeText}>
                 {formatDate(sessionData.date)}
               </Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={dynamicStyles.datetimeButton}
-              onPress={() => setShowDatePicker(true)} // Re-using date picker for time as well
+              style={styles.datetimeButton}
+              onPress={() => setShowDatePicker(true)}
             >
               <ClockIcon size={20} color={theme.accent} />
-              <Text style={dynamicStyles.datetimeText}>
+              <Text style={styles.datetimeText}>
                 {formatTime(sessionData.date)}
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        <View style={dynamicStyles.inputContainer}>
-          <Text style={dynamicStyles.label}>Metaphor Theme (Optional)</Text>
+        {/* --- 6. Metaphor Theme --- */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Metaphor Theme (Optional)</Text>
           <TextInput
-            style={dynamicStyles.textInput}
+            style={styles.textInput}
             placeholder="e.g., Beach relaxation, Forest journey"
             placeholderTextColor={theme.secondary}
             value={sessionData.metaphorTheme}
             onChangeText={text =>
-              setSessionData({ ...sessionData, metaphorTheme: text })
+              setSessionData(prev => ({ ...prev, metaphorTheme: text }))
             }
             maxLength={60}
           />
-          <Text style={dynamicStyles.charCount}>
+          <Text style={styles.charCount}>
             {sessionData.metaphorTheme.length}/60
           </Text>
         </View>
 
-        <View style={dynamicStyles.inputContainer}>
-          <Text style={dynamicStyles.label}>Session Notes (Optional)</Text>
+        {/* --- 7. Session Notes --- */}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Session Notes (Optional)</Text>
           <TextInput
-            style={[dynamicStyles.textInput, dynamicStyles.notesInput]}
+            style={[styles.textInput, styles.notesInput]}
             placeholder="Add any notes about the session, techniques used, client responses, etc."
             placeholderTextColor={theme.secondary}
             value={sessionData.notes}
             onChangeText={text =>
-              setSessionData({ ...sessionData, notes: text })
+              setSessionData(prev => ({ ...prev, notes: text }))
             }
             multiline
             textAlignVertical="top"
             maxLength={1000}
           />
-          <Text style={dynamicStyles.charCount}>
+          <Text style={styles.charCount}>
             {sessionData.notes.length}/1000
           </Text>
         </View>
 
-        <View style={dynamicStyles.buttonContainer}>
+        {/* --- 8. Action Buttons --- */}
+        <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={dynamicStyles.cancelButton}
+            style={styles.cancelButton}
             onPress={() => navigation.goBack()}
           >
-            <Text style={dynamicStyles.cancelButtonText}>Cancel</Text>
+            <Text style={styles.cancelButtonText}>Cancel</Text>
           </TouchableOpacity>
 
           <View style={{ flex: 1 }}>
@@ -587,26 +765,23 @@ const NewSessionScreen = ({ navigation }) => {
               colors={['#8B5CF6', '#8641f4']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-                style={[
-                dynamicStyles.createButtonGradient,
-                (!sessionData.title || localLoading || appIsLoading) &&
-                  dynamicStyles.createButtonDisabled,
+              style={[
+                styles.createButtonGradient,
+                isButtonDisabled && styles.createButtonDisabled,
               ]}
             >
               <TouchableOpacity
                 onPress={() => setConfirmModalVisible(true)}
-                disabled={
-                  !sessionData.title || localLoading || appIsLoading
-                }
+                disabled={isButtonDisabled}
                 style={{
                   width: '100%',
                   alignItems: 'center',
                   paddingVertical: 0,
                 }}
               >
-                <Text style={dynamicStyles.createButtonText}>
+                <Text style={styles.createButtonText}>
                   {localLoading || appIsLoading
-                    ? 'Creating...'
+                    ? 'Processing...'
                     : 'Create Session'}
                 </Text>
               </TouchableOpacity>
@@ -614,15 +789,18 @@ const NewSessionScreen = ({ navigation }) => {
           </View>
         </View>
 
-        <View style={dynamicStyles.infoFooter}>
-          <Text style={dynamicStyles.infoText}>
-            💡 After creating the session, you'll get a feedback link to share
-            with your client.
+        {/* --- 9. Info Footer --- */}
+        <View style={styles.infoFooter}>
+          <InsightIcon color={theme.success} size={20} />
+          <Text style={styles.infoText}>
+            The session feedback link is generated immediately upon creation and will be available in the Session Detail view.
           </Text>
         </View>
       </ScrollView>
 
-      {/* Custom date/time picker modal */}
+      {/* --- Modals --- */}
+      
+      {/* Date/Time Picker Modal */}
       <CustomDateTimePicker
         visible={showDatePicker}
         date={sessionData.date}
@@ -631,153 +809,34 @@ const NewSessionScreen = ({ navigation }) => {
         theme={theme}
       />
 
-      {/* Confirmation modal before creating a session */}
-      <Modal
+      {/* Confirmation Modal */}
+      <ConfirmationModal
         visible={confirmModalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setConfirmModalVisible(false)}
-      >
-        <TouchableWithoutFeedback onPress={() => setConfirmModalVisible(false)}>
-          <View style={dynamicStyles.modalOverlay}>
-            <TouchableWithoutFeedback>
-              <View style={dynamicStyles.resultContainer}>
-                <Text style={{ fontSize: 18, fontFamily: 'Nunito-Bold', color: theme.primary, marginBottom: 8, textAlign: 'center' }}>
-                  Confirm Create Session
-                </Text>
-                <Text style={{ fontSize: 14, fontFamily: 'Nunito-Regular', color: theme.secondary, marginBottom: 16, textAlign: 'center' }}>
-                  Are you sure you want to create this session now?
-                </Text>
+        onClose={() => setConfirmModalVisible(false)}
+        onConfirm={handleConfirm}
+        theme={theme}
+        styles={styles}
+        localLoading={localLoading}
+        appIsLoading={appIsLoading}
+      />
 
-                <View style={{ flexDirection: 'row', gap: 10, justifyContent: 'center' }}>
-                  <TouchableOpacity
-                    onPress={() => setConfirmModalVisible(false)}
-                    style={{ paddingVertical: 10, paddingHorizontal: 16, borderRadius: 12, minWidth: 100, alignItems: 'center', backgroundColor: theme.card }}
-                  >
-                    <Text style={{ color: theme.primary, fontFamily: 'Nunito-SemiBold' }}>Cancel</Text>
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    onPress={() => {
-                      setConfirmModalVisible(false);
-                      // small delay so modal dismiss animation completes
-                      setTimeout(() => {
-                        handleCreateSession();
-                      }, 120);
-                    }}
-                    disabled={localLoading || appIsLoading}
-                    style={{ paddingVertical: 10, paddingHorizontal: 16, borderRadius: 12, minWidth: 100, alignItems: 'center', backgroundColor: '#8B5CF6' }}
-                  >
-                    <Text style={{ color: '#fff', fontFamily: 'Nunito-SemiBold' }}>Confirm</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-
-      {/* Result modal for success/error messages */}
-      <Modal
+      {/* Result Modal */}
+      <ResultModal
         visible={resultModalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setResultModalVisible(false)}
-      >
-        <TouchableWithoutFeedback onPress={() => setResultModalVisible(false)}>
-          <View style={dynamicStyles.modalOverlay}>
-            <TouchableWithoutFeedback>
-              <View style={dynamicStyles.resultContainer}>
-                <Text
-                  style={{
-                    fontSize: 18,
-                    fontFamily: 'Nunito-Bold',
-                    color: theme.primary,
-                    marginBottom: 8,
-                    textAlign: 'center',
-                  }}
-                >
-                  {resultTitle}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    fontFamily: 'Nunito-Regular',
-                    color: theme.secondary,
-                    marginBottom: 16,
-                    textAlign: 'center',
-                  }}
-                >
-                  {resultMessage}
-                </Text>
+        onClose={() => setResultModalVisible(false)}
+        resultTitle={resultTitle}
+        resultMessage={resultMessage}
+        resultActions={resultActions}
+        theme={theme}
+        styles={styles}
+      />
 
-                <View style={{ flexDirection: 'row', gap: 10, justifyContent: 'center' }}>
-                  {resultActions && resultActions.length > 0
-                    ? resultActions.map((act, idx) => (
-                        <TouchableOpacity
-                          key={idx}
-                          onPress={() => {
-                            setResultModalVisible(false);
-                            setTimeout(() => {
-                              try {
-                                act.onPress && act.onPress();
-                              } catch (e) {
-                                console.error('Modal action error', e);
-                              }
-                            }, 120);
-                          }}
-                          style={{
-                            paddingVertical: 10,
-                            paddingHorizontal: 16,
-                            borderRadius: 12,
-                            minWidth: 100,
-                            alignItems: 'center',
-                            backgroundColor: idx === 0 ? '#8B5CF6' : theme.card,
-                          }}
-                        >
-                          <Text style={{ color: idx === 0 ? '#fff' : theme.primary, fontFamily: 'Nunito-SemiBold' }}>
-                            {act.text}
-                          </Text>
-                        </TouchableOpacity>
-                      ))
-                    : (
-                      <TouchableOpacity
-                        onPress={() => setResultModalVisible(false)}
-                        style={{
-                          paddingVertical: 10,
-                          paddingHorizontal: 16,
-                          borderRadius: 12,
-                          minWidth: 100,
-                          alignItems: 'center',
-                          backgroundColor: '#8B5CF6',
-                        }}
-                      >
-                        <Text style={{ color: '#fff', fontFamily: 'Nunito-SemiBold' }}>OK</Text>
-                      </TouchableOpacity>
-                    )}
-                </View>
-              </View>
-            </TouchableWithoutFeedback>
-          </View>
-        </TouchableWithoutFeedback>
-      </Modal>
-
-      {/* Processing modal shown while API call is in progress */}
-      <Modal
-        visible={localLoading || appIsLoading}
-        transparent
-        animationType="none"
-        onRequestClose={() => {}}
-      >
-        <View style={dynamicStyles.processingOverlay}>
-          <View style={dynamicStyles.processingContainer}>
-            <ActivityIndicator size="large" color={theme.accent} />
-            <Text style={{ marginTop: 12, color: theme.primary, fontFamily: 'Nunito-SemiBold' }}>
-              Processing...
-            </Text>
-          </View>
-        </View>
-      </Modal>
+      {/* Processing Modal */}
+      <ProcessingModal 
+        visible={localLoading || appIsLoading} 
+        theme={theme} 
+        styles={styles} 
+      />
     </KeyboardAvoidingView>
   );
 };

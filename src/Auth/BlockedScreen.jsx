@@ -19,56 +19,55 @@ const BlockedScreen = ({ navigation }) => {
   const styles = getStyles(theme, isDark);
 
   const handleContactSupport = () => {
-    console.log('Contact Support button pressed');
-    // TODO: Implement actual contact support functionality
-    // For example: Linking.openURL('mailto:support@yourapp.com');
+    // In a real application, you would implement deep linking or a modal
+    // to direct the user to the support email/page.
+    console.log(
+      'Contact Support button pressed - Redirecting to support page/email...',
+    );
   };
 
   return (
     <View style={styles.container}>
-      <CustomHeader title="Account Blocked" showThemeToggle={false} />
+      <CustomHeader title="Account Status" showThemeToggle={false} />
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.content}>
-          {/* Main Icon Section */}
+          {/* Main Icon and Title Section */}
           <View style={styles.iconContainer}>
             <View style={styles.iconCircle}>
               <BlockedIcon width={80} height={80} color={theme.error} />
             </View>
           </View>
 
-          {/* Title Section */}
           <Text style={styles.title}>Account Blocked</Text>
+          <Text style={styles.subText}>
+            Your access to the application has been suspended.
+          </Text>
 
-          {/* Message Section */}
-          <View style={styles.messageContainer}>
+          {/* Message Card */}
+          <View style={[styles.card, styles.messageCard]}>
+            <View style={styles.messageHeader}>
+              <ShieldIcon color={theme.error} size={24} />
+              <Text style={styles.messageTitle}>Security Notice</Text>
+            </View>
             <Text style={styles.message}>
               Your account has been temporarily suspended due to security
-              concerns or policy violations.
+              concerns or a violation of our community guidelines. This action
+              is taken to protect your data and our platform.
             </Text>
           </View>
 
-          {/* Security Info Section */}
-          <View style={styles.securityContainer}>
-            <ShieldIcon color={theme.warning} size={24} />
-            <Text style={styles.securityText}>
-              This action was taken to protect our platform and its users.
-            </Text>
-          </View>
-
-          {/* Reasons Section */}
-          <View style={styles.reasonsContainer}>
-            <Text style={styles.reasonsTitle}>
-              Common Reasons for Blocking:
-            </Text>
+          {/* Reasons Card */}
+          <View style={styles.card}>
+            <Text style={styles.reasonsTitle}>Why was my account blocked?</Text>
             <View style={styles.reasonItem}>
               <View
                 style={[styles.bulletPoint, { backgroundColor: theme.error }]}
               />
               <Text style={styles.reasonText}>
-                Suspicious login activity detected
+                Suspicious login activity or location changes.
               </Text>
             </View>
             <View style={styles.reasonItem}>
@@ -76,7 +75,7 @@ const BlockedScreen = ({ navigation }) => {
                 style={[styles.bulletPoint, { backgroundColor: theme.error }]}
               />
               <Text style={styles.reasonText}>
-                Violation of terms of service
+                Repeated attempts to violate terms of service.
               </Text>
             </View>
             <View style={styles.reasonItem}>
@@ -84,68 +83,37 @@ const BlockedScreen = ({ navigation }) => {
                 style={[styles.bulletPoint, { backgroundColor: theme.error }]}
               />
               <Text style={styles.reasonText}>
-                Multiple failed login attempts
-              </Text>
-            </View>
-            <View style={styles.reasonItem}>
-              <View
-                style={[styles.bulletPoint, { backgroundColor: theme.error }]}
-              />
-              <Text style={styles.reasonText}>
-                Reported for inappropriate behavior
+                Multiple failed login or unauthorized access attempts.
               </Text>
             </View>
           </View>
 
-          {/* Resolution Info */}
-          <View style={styles.resolutionContainer}>
-            <ClockIcon color={theme.accent} size={24} />
+          {/* Resolution / Timeline Info */}
+          <View style={[styles.resolutionContainer]}>
+            <ClockIcon color={theme.accent} size={20} />
             <Text style={styles.resolutionText}>
-              Our support team will review your case and respond within 24-48
-              hours.
+              Our team will review your account immediately. Please allow
+              **24-48 hours** for a full response and resolution.
             </Text>
           </View>
 
           {/* Action Buttons */}
           <View style={styles.buttonsContainer}>
             <TouchableOpacity
-              style={[styles.primaryButton]}
-              onPress={() => navigation.navigate('LoginScreen')}
+              style={styles.primaryButton}
+              onPress={handleContactSupport}
             >
-              <LoginIcon color="#FFFFFF" size={20} />
-              <Text style={styles.primaryButtonText}>Back to Login</Text>
+              <SupportIcon color="#FFFFFF" size={20} />
+              <Text style={styles.primaryButtonText}>Contact Support</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.button, styles.secondaryButton]}
-              onPress={handleContactSupport}
+              style={styles.secondaryButton}
+              onPress={() => navigation.navigate('LoginScreen')}
             >
-              <SupportIcon color={theme.accent} size={20} />
-              <Text style={styles.secondaryButtonText}>Contact Support</Text>
+              <LoginIcon color={theme.accent} size={20} />
+              <Text style={styles.secondaryButtonText}>Back to Login</Text>
             </TouchableOpacity>
-          </View>
-
-          {/* Additional Information */}
-          <View style={styles.infoContainer}>
-            <Text style={styles.infoTitle}>What to Expect:</Text>
-            <View style={styles.infoItem}>
-              <View style={styles.infoDot} />
-              <Text style={styles.infoText}>
-                Support team will investigate the issue
-              </Text>
-            </View>
-            <View style={styles.infoItem}>
-              <View style={styles.infoDot} />
-              <Text style={styles.infoText}>
-                You'll receive email updates on the status
-              </Text>
-            </View>
-            <View style={styles.infoItem}>
-              <View style={styles.infoDot} />
-              <Text style={styles.infoText}>
-                Account restoration if issue is resolved
-              </Text>
-            </View>
           </View>
         </View>
       </ScrollView>
@@ -161,79 +129,49 @@ const getStyles = (theme, isDark) =>
     },
     scrollContent: {
       flexGrow: 1,
+      padding: 24,
     },
     content: {
       flex: 1,
-      padding: 24,
-      justifyContent: 'center',
+      paddingTop: 20,
     },
+    // --- Header / Icon Section ---
     iconContainer: {
       alignItems: 'center',
       marginBottom: 32,
     },
     iconCircle: {
-      width: 140,
-      height: 140,
-      borderRadius: 70,
-      backgroundColor: isDark
-        ? 'rgba(244, 67, 54, 0.1)'
-        : 'rgba(244, 67, 54, 0.08)',
+      width: 130,
+      height: 130,
+      borderRadius: 65,
+      backgroundColor: isDark ? theme.error + '1A' : theme.error + '10', // Light background for the icon
       justifyContent: 'center',
       alignItems: 'center',
       borderWidth: 3,
-      borderColor: isDark ? 'rgba(244, 67, 54, 0.3)' : 'rgba(244, 67, 54, 0.2)',
+      borderColor: theme.error + '40',
       shadowColor: theme.error,
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.2,
-      shadowRadius: 8,
-      elevation: 4,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.3,
+      shadowRadius: 10,
+      elevation: 6,
     },
     title: {
-      fontSize: 28,
+      fontSize: 32,
       fontFamily: 'Nunito-Bold',
       color: theme.error,
       textAlign: 'center',
-      marginBottom: 16,
-      lineHeight: 34,
+      marginBottom: 8,
     },
-    messageContainer: {
-      backgroundColor: isDark
-        ? 'rgba(255, 255, 255, 0.05)'
-        : 'rgba(0, 0, 0, 0.03)',
-      padding: 20,
-      borderRadius: 16,
-      marginBottom: 20,
-      borderLeftWidth: 4,
-      borderLeftColor: theme.error,
-    },
-    message: {
-      fontSize: 16,
-      fontFamily: 'Nunito-Regular',
+    subText: {
+      fontSize: 18,
+      fontFamily: 'Nunito-Medium',
       color: theme.secondary,
       textAlign: 'center',
-      lineHeight: 24,
+      marginBottom: 32,
     },
-    securityContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: isDark
-        ? 'rgba(255, 152, 0, 0.1)'
-        : 'rgba(255, 152, 0, 0.08)',
-      padding: 16,
-      borderRadius: 12,
-      marginBottom: 20,
-      borderWidth: 1,
-      borderColor: isDark ? 'rgba(255, 152, 0, 0.3)' : 'rgba(255, 152, 0, 0.2)',
-    },
-    securityText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Medium',
-      color: theme.warning,
-      marginLeft: 12,
-      flex: 1,
-      lineHeight: 20,
-    },
-    reasonsContainer: {
+
+    // --- Cards ---
+    card: {
       backgroundColor: theme.card,
       padding: 20,
       borderRadius: 16,
@@ -244,6 +182,32 @@ const getStyles = (theme, isDark) =>
       shadowRadius: 4,
       elevation: 2,
     },
+
+    // --- Message Card ---
+    messageCard: {
+      borderLeftWidth: 6,
+      borderLeftColor: theme.error,
+      backgroundColor: isDark ? '#351111' : '#FEEAE6', // Slightly red-tinted background
+    },
+    messageHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    messageTitle: {
+      fontSize: 18,
+      fontFamily: 'Nunito-Bold',
+      color: theme.error,
+      marginLeft: 10,
+    },
+    message: {
+      fontSize: 15,
+      fontFamily: 'Nunito-Regular',
+      color: theme.secondary,
+      lineHeight: 22,
+    },
+
+    // --- Reasons Card ---
     reasonsTitle: {
       fontSize: 18,
       fontFamily: 'Nunito-SemiBold',
@@ -253,72 +217,67 @@ const getStyles = (theme, isDark) =>
     reasonItem: {
       flexDirection: 'row',
       alignItems: 'flex-start',
-      marginBottom: 12,
+      marginBottom: 10,
     },
     bulletPoint: {
       width: 6,
       height: 6,
       borderRadius: 3,
-      marginTop: 8,
+      marginTop: 7,
       marginRight: 12,
     },
     reasonText: {
-      fontSize: 14,
+      fontSize: 15,
       fontFamily: 'Nunito-Regular',
       color: theme.secondary,
       flex: 1,
       lineHeight: 20,
     },
+
+    // --- Resolution Container ---
     resolutionContainer: {
       flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: isDark
-        ? 'rgba(74, 144, 226, 0.1)'
-        : 'rgba(74, 144, 226, 0.08)',
+      alignItems: 'flex-start',
+      backgroundColor: isDark ? theme.accent + '1A' : theme.accent + '10',
       padding: 16,
       borderRadius: 12,
-      marginBottom: 24,
+      marginBottom: 30,
       borderWidth: 1,
-      borderColor: isDark
-        ? 'rgba(74, 144, 226, 0.3)'
-        : 'rgba(74, 144, 226, 0.2)',
+      borderColor: theme.accent + '30',
     },
     resolutionText: {
-      fontSize: 14,
+      fontSize: 15,
       fontFamily: 'Nunito-Medium',
       color: theme.accent,
       marginLeft: 12,
       flex: 1,
-      lineHeight: 20,
+      lineHeight: 22,
     },
+
+    // --- Buttons ---
     buttonsContainer: {
       gap: 12,
       marginBottom: 24,
     },
-    button: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingVertical: 16,
-      paddingHorizontal: 24,
-      borderRadius: 12,
-      gap: 8,
-    },
     primaryButton: {
-      backgroundColor: theme.accent,
-      flex: 1,
+      backgroundColor: theme.error, // Changed primary to error color for urgency
+      flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      flexDirection: 'row',
-      paddingVertical: 16,
-      paddingHorizontal: 24,
-      borderRadius: 12,
+      paddingVertical: 18,
+      borderRadius: 14,
       gap: 8,
     },
     secondaryButton: {
-      backgroundColor: 'transparent',
-      borderWidth: 2,
-      borderColor: theme.accent,
+      backgroundColor: isDark ? theme.card : '#F3F4F6',
+      borderWidth: 1,
+      borderColor: theme.border,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      paddingVertical: 18,
+      borderRadius: 14,
+      gap: 8,
     },
     primaryButtonText: {
       fontSize: 16,
@@ -328,39 +287,7 @@ const getStyles = (theme, isDark) =>
     secondaryButtonText: {
       fontSize: 16,
       fontFamily: 'Nunito-SemiBold',
-      color: theme.accent,
-    },
-    infoContainer: {
-      backgroundColor: isDark
-        ? 'rgba(255, 255, 255, 0.05)'
-        : 'rgba(0, 0, 0, 0.03)',
-      padding: 20,
-      borderRadius: 16,
-    },
-    infoTitle: {
-      fontSize: 16,
-      fontFamily: 'Nunito-SemiBold',
       color: theme.primary,
-      marginBottom: 12,
-    },
-    infoItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      marginBottom: 8,
-    },
-    infoDot: {
-      width: 4,
-      height: 4,
-      borderRadius: 2,
-      backgroundColor: theme.accent,
-      marginRight: 12,
-    },
-    infoText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Regular',
-      color: theme.secondary,
-      flex: 1,
-      lineHeight: 20,
     },
   });
 

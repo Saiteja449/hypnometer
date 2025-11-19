@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,18 +7,19 @@ import {
   Dimensions,
   StyleSheet,
 } from 'react-native';
+// Assuming these imports are correct
 import ChartIcon from '../Icons/ChartIcon';
 import GrowthIcon from '../Icons/GrowthIcon';
 import SessionIcon from '../Icons/SessionIcon';
 import StarIcon from '../Icons/StarIcon';
 import InsightIcon from '../Icons/InsightIcon';
 import CustomHeader from '../Components/CustomHeader';
-import { useTheme } from '../Context/ThemeContext'; // Import useTheme
+import { useTheme } from '../Context/ThemeContext';
 
 const { width } = Dimensions.get('window');
 
 const AnalyticsScreen = ({ navigation }) => {
-  const { theme, isDark } = useTheme(); // Use the theme context
+  const { theme, isDark } = useTheme();
   const [timeRange, setTimeRange] = useState('month');
   const [selectedMetric, setSelectedMetric] = useState('overall');
 
@@ -47,6 +48,8 @@ const AnalyticsScreen = ({ navigation }) => {
       { month: 'Jun', rating: 4.5 },
     ],
   };
+
+  // --- Stylesheet Creation Function (Optimized UI) ---
   const getStyles = (theme, isDark) =>
     StyleSheet.create({
       container: {
@@ -55,60 +58,54 @@ const AnalyticsScreen = ({ navigation }) => {
       },
       scrollView: {
         flex: 1,
-        padding: 12,
+        paddingHorizontal: 16, // Use horizontal padding on scroll view
       },
       header: {
-        padding: 12,
-        paddingBottom: 6,
+        paddingVertical: 16, // Increased vertical padding
+        alignItems: 'center',
       },
       headerContent: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 4,
+        marginBottom: 8,
         justifyContent: 'center',
       },
       title: {
-        fontSize: 20,
+        fontSize: 22, // Slightly larger title
         fontFamily: 'Nunito-Bold',
         color: theme.primary,
         marginLeft: 8,
         textAlign: 'center',
       },
       subtitle: {
-        fontSize: 16,
+        fontSize: 14,
         fontFamily: 'Nunito-Medium',
         color: theme.secondary,
-        lineHeight: 22,
+        textAlign: 'center',
+        lineHeight: 20,
+        maxWidth: 350,
       },
+      // ✨ Time Range Selector Refinement
       timeRangeContainer: {
         flexDirection: 'row',
-        paddingHorizontal: 12,
-        marginBottom: 16,
+        justifyContent: 'space-between',
+        marginBottom: 20,
+        paddingHorizontal: 0,
       },
       timeRangeButton: {
         flex: 1,
-        paddingVertical: 10,
+        paddingVertical: 8, // Reduced vertical padding
         paddingHorizontal: 12,
-        borderWidth: 1,
+        borderWidth: 1.5, // Thicker default border
         borderColor: theme.border,
         backgroundColor: theme.card,
         alignItems: 'center',
-        marginHorizontal: 6,
-        borderRadius: 12,
-        shadowColor: theme.cardShadow,
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: isDark ? 0.2 : 0.05,
-        shadowRadius: 3,
-        elevation: 1,
+        marginHorizontal: 4, // Tighter spacing
+        borderRadius: 10, // Slightly smaller radius for pill
       },
       timeRangeButtonActive: {
-        borderWidth: 2,
-        borderColor: theme.accent,
-        shadowColor: theme.accent,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 6,
-        elevation: 3,
+        borderColor: theme.accent, // Highlight border
+        backgroundColor: isDark ? '#3A305D' : '#F1F0FF', // Subtle active background
       },
       timeRangeText: {
         fontSize: 14,
@@ -117,267 +114,278 @@ const AnalyticsScreen = ({ navigation }) => {
       },
       timeRangeTextActive: {
         color: theme.accent,
-        fontFamily: 'Nunito-SemiBold',
+        fontFamily: 'Nunito-Bold', // Bolder active text
       },
+      // ✨ Summary Grid Refinement
       summaryGrid: {
         flexDirection: 'row',
-        paddingHorizontal: 12,
-        marginBottom: 16,
-        gap: 6,
+        justifyContent: 'space-between',
+        marginBottom: 20,
+        gap: 12, // Increased gap
+        paddingHorizontal: 0,
       },
       summaryCard: {
         flex: 1,
         backgroundColor: theme.card,
-        padding: 10,
-        borderRadius: 16,
+        padding: 16, // Increased padding
+        borderRadius: 16, // Consistent border radius
         alignItems: 'center',
         shadowColor: theme.cardShadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: isDark ? 0.2 : 0.1,
-        shadowRadius: 8,
-        elevation: 3,
+        shadowOffset: { width: 0, height: 4 }, // Stronger shadow for depth
+        shadowOpacity: isDark ? 0.3 : 0.1,
+        shadowRadius: 6,
+        elevation: 6,
       },
       summaryIcon: {
-        marginBottom: 4,
+        marginBottom: 8, // Increased spacing
       },
       summaryNumber: {
-        fontSize: 20,
+        fontSize: 24, // Larger number
         fontFamily: 'Nunito-Bold',
         color: theme.primary,
-        marginBottom: 2,
+        marginBottom: 4,
       },
       summaryLabel: {
         fontSize: 12,
-        fontFamily: 'Nunito-Medium',
+        fontFamily: 'Nunito-SemiBold', // Bolder label
         color: theme.secondary,
+        textAlign: 'center',
       },
       growthPositive: {
-        color: theme.success,
+        color: theme.success, // Use theme success color
       },
+      // ✨ Metric Selector Refinement
       metricSelector: {
-        marginBottom: 16,
-        paddingHorizontal: 12,
+        marginBottom: 20,
+        paddingHorizontal: 0,
       },
       metricButton: {
-        paddingHorizontal: 20,
-        paddingVertical: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
         backgroundColor: theme.card,
         borderRadius: 25,
         borderWidth: 1,
         borderColor: theme.border,
-        marginRight: 6,
-        shadowColor: theme.cardShadow,
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: isDark ? 0.2 : 0.05,
-        shadowRadius: 3,
-        elevation: 1,
+        marginRight: 8, // Tighter spacing
       },
       metricButtonActive: {
-        borderColor: 'transparent',
+        borderColor: 'transparent', // Active button border is hidden/replaced by background color
         shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 4,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
       },
       metricButtonText: {
         fontSize: 14,
         fontFamily: 'Nunito-Medium',
-        color: theme.secondary,
+        color: theme.primary,
       },
       metricButtonTextActive: {
-        color: theme.buttonText,
-        fontFamily: 'Nunito-SemiBold',
+        color: '#FFFFFF', // White text on colored background
+        fontFamily: 'Nunito-Bold',
       },
+      // ✨ Chart Container Refinement
       chartContainer: {
         backgroundColor: theme.card,
-        marginHorizontal: 16,
         marginBottom: 20,
-        padding: 16,
+        padding: 20, // Increased padding
         borderRadius: 16,
         shadowColor: theme.cardShadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: isDark ? 0.2 : 0.1,
-        shadowRadius: 8,
-        elevation: 3,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: isDark ? 0.3 : 0.1,
+        shadowRadius: 6,
+        elevation: 6,
       },
       chartHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 12,
+        marginBottom: 16, // Increased spacing
       },
       chartTitle: {
-        fontSize: 17,
+        fontSize: 18,
         fontFamily: 'Nunito-Bold',
         color: theme.primary,
       },
       chartBadge: {
         paddingHorizontal: 12,
         paddingVertical: 6,
-        borderRadius: 12,
+        borderRadius: 16, // More rounded badge
       },
       chartBadgeText: {
         fontSize: 12,
         fontFamily: 'Nunito-SemiBold',
-        color: theme.buttonText,
+        color: '#FFFFFF',
       },
       chartPlaceholder: {
+        // Removed placeholder box to only show the chart
         alignItems: 'center',
-        paddingVertical: 24,
-        backgroundColor: isDark ? theme.background : theme.border,
-        borderRadius: 12,
-        marginBottom: 20,
+        paddingVertical: 0,
+        backgroundColor: 'transparent',
+        borderRadius: 0,
+        marginBottom: 10,
       },
       chartIcon: {
         marginBottom: 10,
+        // Removed ChartIcon component from the actual chart view
+        display: 'none',
       },
       chartPlaceholderText: {
-        fontSize: 15,
-        fontFamily: 'Nunito-SemiBold',
-        color: theme.primary,
-        marginBottom: 4,
+        display: 'none', // Hide placeholder text
       },
       chartSubtext: {
         fontSize: 12,
         fontFamily: 'Nunito-Regular',
         color: theme.secondary,
         textAlign: 'center',
+        marginBottom: 12, // Add space below subtext
       },
+      // ✨ Bar Chart Refinement
       barChart: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
         alignItems: 'flex-end',
-        height: 200,
-        paddingHorizontal: 10,
+        height: 180, // Slightly less height
+        paddingHorizontal: 0,
       },
       barContainer: {
         alignItems: 'center',
-        flex: 1,
+        width: 30, // Fixed width for container
       },
       barBackground: {
-        height: 150,
-        width: 12,
-        backgroundColor: isDark ? '#374151' : '#F3F4F6',
-        borderRadius: 6,
+        height: 120, // Reduced height for background
+        width: 14, // Wider bar
+        backgroundColor: isDark ? '#374151' : '#E5E7EB', // Lighter background color
+        borderRadius: 4,
         justifyContent: 'flex-end',
         marginBottom: 8,
+        overflow: 'hidden', // Ensures inner bar stays within bounds
       },
       bar: {
-        width: 12,
-        borderRadius: 6,
-        minHeight: 8,
-      },
-      barLabel: {
-        fontSize: 12,
-        fontFamily: 'Nunito-Medium',
-        color: theme.secondary,
-        marginBottom: 4,
+        width: '100%',
+        borderRadius: 4,
+        minHeight: 4, // Smaller min height
       },
       barValue: {
-        fontSize: 10,
-        fontFamily: 'Nunito-SemiBold',
+        fontSize: 12,
+        fontFamily: 'Nunito-Bold', // Bolder value
         color: theme.primary,
+        marginBottom: 4,
       },
+      barLabel: {
+        fontSize: 11,
+        fontFamily: 'Nunito-Medium',
+        color: theme.secondary,
+        textAlign: 'center',
+      },
+      // ✨ Insights Container Refinement
       insightsContainer: {
         backgroundColor: theme.card,
-        marginHorizontal: 16,
         marginBottom: 20,
-        padding: 16,
+        padding: 20,
         borderRadius: 16,
         shadowColor: theme.cardShadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: isDark ? 0.2 : 0.1,
-        shadowRadius: 8,
-        elevation: 3,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: isDark ? 0.3 : 0.1,
+        shadowRadius: 6,
+        elevation: 6,
       },
       insightsTitle: {
-        fontSize: 17,
+        fontSize: 18,
         fontFamily: 'Nunito-Bold',
         color: theme.primary,
-        marginBottom: 12,
+        marginBottom: 16,
       },
       insightItem: {
         flexDirection: 'row',
-        alignItems: 'flex-start',
-        paddingVertical: 10,
+        alignItems: 'center', // Align items center vertically
+        paddingVertical: 12, // Increased vertical padding
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderBottomColor: theme.border,
+      },
+      insightItemLast: {
+        borderBottomWidth: 0,
+        paddingBottom: 0,
       },
       insightIcon: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 44, // Slightly larger icon container
+        height: 44,
+        borderRadius: 22,
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 10,
-        // Specific colors for icons are kept, but backgrounds are adjusted
+        marginRight: 15, // Increased spacing
+        // Specific colors for backgrounds:
       },
       insightText: {
         flex: 1,
       },
       insightTitle: {
         fontSize: 15,
-        fontFamily: 'Nunito-SemiBold',
+        fontFamily: 'Nunito-Bold', // Bolder title
         color: theme.primary,
         marginBottom: 2,
       },
       insightDescription: {
-        fontSize: 14,
+        fontSize: 13, // Slightly smaller description
         fontFamily: 'Nunito-Regular',
         color: theme.secondary,
-        lineHeight: 20,
+        lineHeight: 18,
       },
+      // ✨ Stats Container Refinement
       statsContainer: {
         backgroundColor: theme.card,
-        marginHorizontal: 16,
         marginBottom: 30,
-        padding: 16,
+        padding: 20,
         borderRadius: 16,
         shadowColor: theme.cardShadow,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: isDark ? 0.2 : 0.1,
-        shadowRadius: 8,
-        elevation: 3,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: isDark ? 0.3 : 0.1,
+        shadowRadius: 6,
+        elevation: 6,
       },
       statsTitle: {
-        fontSize: 17,
+        fontSize: 18,
         fontFamily: 'Nunito-Bold',
         color: theme.primary,
-        marginBottom: 12,
+        marginBottom: 16,
       },
       statsGrid: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
       },
       statItem: {
         alignItems: 'center',
         flex: 1,
+        paddingHorizontal: 5,
       },
       statNumber: {
-        fontSize: 18,
+        fontSize: 24, // Larger number
         fontFamily: 'Nunito-Bold',
-        color: theme.accent, // Use theme accent color
-        marginBottom: 2,
+        color: theme.accent,
+        marginBottom: 4,
       },
       statLabel: {
         fontSize: 12,
-        fontFamily: 'Nunito-Medium',
+        fontFamily: 'Nunito-SemiBold',
         color: theme.secondary,
         textAlign: 'center',
       },
     });
-  const styles = getStyles(theme, isDark);
+  const styles = useMemo(() => getStyles(theme, isDark), [theme, isDark]);
 
   return (
     <View style={styles.container}>
       <CustomHeader title="Analytics" onBackPress={() => navigation.goBack()} />
       <ScrollView
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 20 }} // Add padding to bottom of scroll content
         style={styles.scrollView}
       >
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerContent}>
-            <ChartIcon />
+            <ChartIcon color={theme.primary} size={24} />
             <Text style={styles.title}>Session Analytics</Text>
           </View>
           <Text style={styles.subtitle}>
@@ -385,7 +393,7 @@ const AnalyticsScreen = ({ navigation }) => {
           </Text>
         </View>
 
-        {/* Time Range Selector */}
+        {/* --- 1. Time Range Selector --- */}
         <View style={styles.timeRangeContainer}>
           {['week', 'month', 'year'].map(range => (
             <TouchableOpacity
@@ -408,11 +416,12 @@ const AnalyticsScreen = ({ navigation }) => {
           ))}
         </View>
 
-        {/* Summary Grid */}
+        {/* --- 2. Summary Grid --- */}
         <View style={styles.summaryGrid}>
+          {/* Total Sessions */}
           <View style={styles.summaryCard}>
             <View style={styles.summaryIcon}>
-              <SessionIcon />
+              <SessionIcon color={theme.accent} size={24} />
             </View>
             <Text style={styles.summaryNumber}>
               {analyticsData.summary.totalSessions}
@@ -420,9 +429,10 @@ const AnalyticsScreen = ({ navigation }) => {
             <Text style={styles.summaryLabel}>Total Sessions</Text>
           </View>
 
+          {/* Average Rating */}
           <View style={styles.summaryCard}>
             <View style={styles.summaryIcon}>
-              <StarIcon />
+              <StarIcon color={theme.warning} size={24} />
             </View>
             <Text style={styles.summaryNumber}>
               {analyticsData.summary.averageRating}
@@ -430,9 +440,10 @@ const AnalyticsScreen = ({ navigation }) => {
             <Text style={styles.summaryLabel}>Avg Rating</Text>
           </View>
 
+          {/* Growth */}
           <View style={styles.summaryCard}>
             <View style={styles.summaryIcon}>
-              <GrowthIcon />
+              <GrowthIcon color={theme.success} size={24} />
             </View>
             <Text style={[styles.summaryNumber, styles.growthPositive]}>
               {analyticsData.summary.growth}
@@ -441,7 +452,7 @@ const AnalyticsScreen = ({ navigation }) => {
           </View>
         </View>
 
-        {/* Metric Selector */}
+        {/* --- 3. Metric Selector --- */}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -471,7 +482,7 @@ const AnalyticsScreen = ({ navigation }) => {
           ))}
         </ScrollView>
 
-        {/* Growth Chart */}
+        {/* --- 4. Growth Chart --- */}
         <View style={styles.chartContainer}>
           <View style={styles.chartHeader}>
             <Text style={styles.chartTitle}>
@@ -489,18 +500,12 @@ const AnalyticsScreen = ({ navigation }) => {
             </View>
           </View>
 
-          <View style={styles.chartPlaceholder}>
-            <View style={styles.chartIcon}>
-              <ChartIcon />
-            </View>
-            <Text style={styles.chartPlaceholderText}>Performance Trends</Text>
-            <Text style={styles.chartSubtext}>
-              Showing {timeRange}ly trends for{' '}
-              {metrics[selectedMetric].label.toLowerCase()}
-            </Text>
-          </View>
-
           {/* Simple bar chart representation */}
+          <Text style={styles.chartSubtext}>
+            Showing {timeRange}ly trends for{' '}
+            {metrics[selectedMetric].label.toLowerCase()}
+          </Text>
+
           <View style={styles.barChart}>
             {analyticsData.trends.map((item, index) => (
               <View key={index} style={styles.barContainer}>
@@ -509,61 +514,66 @@ const AnalyticsScreen = ({ navigation }) => {
                     style={[
                       styles.bar,
                       {
-                        height: `${(item.rating / 5) * 80}%`,
+                        // Calculate height relative to the max bar height (120) and max rating (5.0)
+                        height: `${(item.rating / 5) * 100}%`,
                         backgroundColor: metrics[selectedMetric].color,
                       },
                     ]}
                   />
                 </View>
+                <Text style={styles.barValue}>{item.rating.toFixed(1)}</Text>
                 <Text style={styles.barLabel}>{item.month}</Text>
-                <Text style={styles.barValue}>{item.rating}</Text>
               </View>
             ))}
           </View>
         </View>
 
-        {/* Insights */}
+        {/* --- 5. Insights --- */}
         <View style={styles.insightsContainer}>
           <Text style={styles.insightsTitle}>Performance Insights</Text>
 
+          {/* Strongest Skill Insight */}
           <View style={styles.insightItem}>
             <View
               style={[
                 styles.insightIcon,
-                { backgroundColor: isDark ? '#1F2937' : '#ECFDF5' },
+                { backgroundColor: isDark ? theme.success + '20' : '#ECFDF5' }, // Green tint
               ]}
             >
-              <InsightIcon type="strength" />
+              {/* Assuming InsightIcon takes a 'type' prop or defaults to a relevant icon */}
+              <InsightIcon color={theme.success} size={24} type="strength" />
             </View>
             <View style={styles.insightText}>
               <Text style={styles.insightTitle}>Strongest Skill</Text>
               <Text style={styles.insightDescription}>
-                Your {analyticsData.summary.topSkill} scores are consistently
-                high across all sessions
+                Your **{analyticsData.summary.topSkill}** scores are
+                consistently high across all sessions. Keep leveraging this
+                strength!
               </Text>
             </View>
           </View>
 
-          <View style={styles.insightItem}>
+          {/* Area for Improvement Insight */}
+          <View style={[styles.insightItem, styles.insightItemLast]}>
             <View
               style={[
                 styles.insightIcon,
-                { backgroundColor: isDark ? '#3E2D2D' : '#FFFBEB' },
+                { backgroundColor: isDark ? theme.warning + '20' : '#FFFBEB' }, // Yellow tint
               ]}
             >
-              <InsightIcon type="improvement" />
+              <InsightIcon color={theme.warning} size={24} type="improvement" />
             </View>
             <View style={styles.insightText}>
               <Text style={styles.insightTitle}>Area for Improvement</Text>
               <Text style={styles.insightDescription}>
-                Focus on {analyticsData.summary.improvementArea} techniques to
-                enhance client engagement
+                Focus on **{analyticsData.summary.improvementArea}** techniques
+                to enhance client engagement and depth of trance.
               </Text>
             </View>
           </View>
         </View>
 
-        {/* Additional Stats */}
+        {/* --- 6. Additional Stats --- */}
         <View style={styles.statsContainer}>
           <Text style={styles.statsTitle}>Quick Stats</Text>
           <View style={styles.statsGrid}>

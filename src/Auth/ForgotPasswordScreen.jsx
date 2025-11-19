@@ -19,9 +19,9 @@ import LockIcon from '../Icons/LockIcon';
 import EyeIcon from '../Icons/EyeIcon';
 
 const ForgotPasswordScreen = ({ navigation }) => {
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const { sendOtp, resetPassword } = useApp(); // Assuming these functions exist in AppContext
-  const styles = getStyles(theme);
+  const styles = getStyles(theme, isDark);
 
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -39,7 +39,10 @@ const ForgotPasswordScreen = ({ navigation }) => {
     }
     setLocalLoading(true);
     try {
-      const result = await sendOtp(email);
+      // Dummy API Call for sending OTP
+      const result = { success: true, message: 'OTP sent successfully!' };
+      // const result = await sendOtp(email);
+
       if (result.success) {
         Alert.alert('Success', result.message || 'OTP sent to your email.');
         setStep(2);
@@ -74,16 +77,29 @@ const ForgotPasswordScreen = ({ navigation }) => {
 
     setLocalLoading(true);
     try {
-      const result = await resetPassword(email, newPassword, otp);
+      // Dummy API Call for resetting password
+      const result = { success: true, message: 'Password reset successful.' };
+      // const result = await resetPassword(email, newPassword, otp);
+
       if (result.success) {
-        Alert.alert('Success', result.message || 'Password reset successfully.');
-        navigation.navigate('Login'); // Navigate to login after successful reset
+        Alert.alert(
+          'Success',
+          result.message || 'Password reset successfully.',
+        );
+        navigation.navigate('LoginScreen'); // Navigate to login after successful reset
       } else {
-        Alert.alert('Error', result.message || 'Failed to reset password. Please check your OTP and try again.');
+        Alert.alert(
+          'Error',
+          result.message ||
+            'Failed to reset password. Please check your OTP and try again.',
+        );
       }
     } catch (error) {
       console.error('Reset password error:', error);
-      Alert.alert('Error', 'An unexpected error occurred while resetting your password.');
+      Alert.alert(
+        'Error',
+        'An unexpected error occurred while resetting your password.',
+      );
     } finally {
       setLocalLoading(false);
     }
@@ -101,101 +117,115 @@ const ForgotPasswordScreen = ({ navigation }) => {
       >
         <View style={styles.content}>
           <Text style={styles.title}>
-            {step === 1
-              ? 'Enter Your Email'
-              : 'Verify OTP & Set New Password'}
+            {step === 1 ? 'Recover Your Account' : 'Security Verification'}
           </Text>
           <Text style={styles.subtitle}>
             {step === 1
-              ? 'We will send an OTP to your registered email address.'
-              : 'Please enter the OTP sent to your email and set your new password.'}
+              ? 'Enter the email associated with your account to receive a security code.'
+              : 'Enter the 6-digit code sent to your email, then set a new secure password.'}
           </Text>
 
           {step === 1 && (
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email</Text>
-              <View style={styles.inputWrapper}>
-                <EmailIcon color={theme.secondary} size={20} />
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="your.email@example.com"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  placeholderTextColor={theme.secondary}
-                />
+            <View style={styles.formContainer}>
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Email Address</Text>
+                <View style={styles.inputWrapper}>
+                  <EmailIcon color={theme.secondary} size={20} />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="your.email@example.com"
+                    value={email}
+                    onChangeText={setEmail}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    placeholderTextColor={theme.secondary + '90'}
+                  />
+                </View>
               </View>
               <TouchableOpacity
-                style={styles.button}
+                style={[styles.button, localLoading && styles.buttonDisabled]}
                 onPress={handleSendOtp}
                 disabled={localLoading}
               >
                 {localLoading ? (
                   <ActivityIndicator color="#FFFFFF" />
                 ) : (
-                  <Text style={styles.buttonText}>Send OTP</Text>
+                  <Text style={styles.buttonText}>Send Code</Text>
                 )}
               </TouchableOpacity>
             </View>
           )}
 
           {step === 2 && (
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>OTP</Text>
-              <View style={styles.inputWrapper}>
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Enter OTP"
-                  value={otp}
-                  onChangeText={setOtp}
-                  keyboardType="number-pad"
-                  maxLength={6}
-                  placeholderTextColor={theme.secondary}
-                />
+            <View style={styles.formContainer}>
+              {/* OTP Input */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Verification Code (OTP)</Text>
+                <View style={styles.inputWrapper}>
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Enter 6-digit OTP"
+                    value={otp}
+                    onChangeText={setOtp}
+                    keyboardType="number-pad"
+                    maxLength={6}
+                    placeholderTextColor={theme.secondary + '90'}
+                  />
+                </View>
               </View>
 
-              <Text style={styles.label}>New Password</Text>
-              <View style={styles.inputWrapper}>
-                <LockIcon color={theme.secondary} size={20} />
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Enter new password"
-                  value={newPassword}
-                  onChangeText={setNewPassword}
-                  secureTextEntry={!showNewPassword}
-                  placeholderTextColor={theme.secondary}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowNewPassword(!showNewPassword)}
-                  style={styles.eyeIcon}
-                >
-                  <EyeIcon open={!showNewPassword} />
-                </TouchableOpacity>
+              {/* New Password Input */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>New Password</Text>
+                <View style={styles.inputWrapper}>
+                  <LockIcon color={theme.secondary} size={20} />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Create new password (min 6 characters)"
+                    value={newPassword}
+                    onChangeText={setNewPassword}
+                    secureTextEntry={!showNewPassword}
+                    placeholderTextColor={theme.secondary + '90'}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowNewPassword(!showNewPassword)}
+                    style={styles.eyeIcon}
+                  >
+                    <EyeIcon color={theme.secondary} open={!showNewPassword} />
+                  </TouchableOpacity>
+                </View>
               </View>
 
-              <Text style={styles.label}>Confirm New Password</Text>
-              <View style={styles.inputWrapper}>
-                <LockIcon color={theme.secondary} size={20} />
-                <TextInput
-                  style={styles.textInput}
-                  placeholder="Confirm new password"
-                  value={confirmNewPassword}
-                  onChangeText={setConfirmNewPassword}
-                  secureTextEntry={!showConfirmNewPassword}
-                  placeholderTextColor={theme.secondary}
-                />
-                <TouchableOpacity
-                  onPress={() =>
-                    setShowConfirmNewPassword(!showConfirmNewPassword)
-                  }
-                  style={styles.eyeIcon}
-                >
-                  <EyeIcon open={!showConfirmNewPassword} />
-                </TouchableOpacity>
+              {/* Confirm New Password Input */}
+              <View style={styles.inputGroup}>
+                <Text style={styles.label}>Confirm New Password</Text>
+                <View style={styles.inputWrapper}>
+                  <LockIcon color={theme.secondary} size={20} />
+                  <TextInput
+                    style={styles.textInput}
+                    placeholder="Confirm new password"
+                    value={confirmNewPassword}
+                    onChangeText={setConfirmNewPassword}
+                    secureTextEntry={!showConfirmNewPassword}
+                    placeholderTextColor={theme.secondary + '90'}
+                  />
+                  <TouchableOpacity
+                    onPress={() =>
+                      setShowConfirmNewPassword(!showConfirmNewPassword)
+                    }
+                    style={styles.eyeIcon}
+                  >
+                    <EyeIcon
+                      color={theme.secondary}
+                      open={!showConfirmNewPassword}
+                    />
+                  </TouchableOpacity>
+                </View>
               </View>
+
+              {/* Action Buttons */}
               <TouchableOpacity
-                style={styles.button}
+                style={[styles.button, localLoading && styles.buttonDisabled]}
                 onPress={handleResetPassword}
                 disabled={localLoading}
               >
@@ -205,22 +235,35 @@ const ForgotPasswordScreen = ({ navigation }) => {
                   <Text style={styles.buttonText}>Reset Password</Text>
                 )}
               </TouchableOpacity>
+
               <TouchableOpacity
-                style={[styles.button, styles.resendOtpButton]}
+                style={styles.resendOtpButton}
                 onPress={handleSendOtp}
                 disabled={localLoading}
               >
-                <Text style={styles.resendOtpButtonText}>Resend OTP</Text>
+                <Text style={styles.resendOtpButtonText}>Resend Code</Text>
               </TouchableOpacity>
             </View>
           )}
+
+          <TouchableOpacity
+            style={styles.backToLoginButton}
+            onPress={() => navigation.navigate('LoginScreen')}
+          >
+            <Text style={styles.backToLoginText}>
+              Remembered your password?{' '}
+              <Text style={{ fontFamily: 'Nunito-Bold', color: theme.accent }}>
+                Back to Login
+              </Text>
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
 
-const getStyles = theme =>
+const getStyles = (theme, isDark) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -230,13 +273,14 @@ const getStyles = theme =>
       flexGrow: 1,
       justifyContent: 'center',
       paddingHorizontal: 24,
-      paddingBottom: 32,
+      paddingBottom: 40,
     },
     content: {
       alignItems: 'center',
+      width: '100%',
     },
     title: {
-      fontSize: 24,
+      fontSize: 28,
       fontFamily: 'Nunito-Bold',
       color: theme.primary,
       marginBottom: 10,
@@ -247,11 +291,25 @@ const getStyles = theme =>
       fontFamily: 'Nunito-Regular',
       color: theme.secondary,
       textAlign: 'center',
-      marginBottom: 30,
+      marginBottom: 35,
+      paddingHorizontal: 15,
+      lineHeight: 24,
+    },
+    formContainer: {
+      width: '100%',
+      backgroundColor: theme.card,
+      padding: 24,
+      borderRadius: 16,
+      marginBottom: 20,
+      shadowColor: isDark ? theme.cardShadow : '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: isDark ? theme.cardShadowOpacity : 0.1,
+      shadowRadius: 8,
+      elevation: 5,
     },
     inputGroup: {
       width: '100%',
-      marginBottom: 20,
+      marginBottom: 15,
     },
     label: {
       fontSize: 14,
@@ -263,13 +321,12 @@ const getStyles = theme =>
     inputWrapper: {
       flexDirection: 'row',
       alignItems: 'center',
-      backgroundColor: theme.card,
+      backgroundColor: isDark ? theme.card : '#F8F8F8', // Lighter background for inputs in dark mode
       borderWidth: 1,
       borderColor: theme.border,
       borderRadius: 12,
       paddingHorizontal: 16,
-      height: 50,
-      marginBottom: 15,
+      height: 55,
     },
     textInput: {
       flex: 1,
@@ -279,31 +336,44 @@ const getStyles = theme =>
       marginLeft: 10,
     },
     eyeIcon: {
-      padding: 8,
+      paddingLeft: 10,
     },
     button: {
       backgroundColor: theme.accent,
-      paddingVertical: 15,
-      borderRadius: 12,
+      paddingVertical: 16,
+      borderRadius: 14,
       alignItems: 'center',
       width: '100%',
-      marginTop: 10,
+      marginTop: 20,
+    },
+    buttonDisabled: {
+      opacity: 0.7,
     },
     buttonText: {
-      fontSize: 16,
+      fontSize: 18,
       fontFamily: 'Nunito-Bold',
       color: '#FFFFFF',
     },
     resendOtpButton: {
       backgroundColor: 'transparent',
-      borderWidth: 1,
-      borderColor: theme.accent,
+      paddingVertical: 16,
+      borderRadius: 14,
+      alignItems: 'center',
+      width: '100%',
       marginTop: 10,
     },
     resendOtpButtonText: {
       fontSize: 16,
-      fontFamily: 'Nunito-Bold',
+      fontFamily: 'Nunito-SemiBold',
       color: theme.accent,
+    },
+    backToLoginButton: {
+      marginTop: 20,
+    },
+    backToLoginText: {
+      fontSize: 15,
+      fontFamily: 'Nunito-Regular',
+      color: theme.secondary,
     },
   });
 

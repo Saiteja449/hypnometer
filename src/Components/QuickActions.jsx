@@ -1,17 +1,16 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Svg, { Path } from 'react-native-svg';
-// Assuming your ThemeContext.js file is in a folder named 'Context'
 import { useTheme } from '../Context/ThemeContext';
 import SessionIcon from '../Icons/SessionIcon';
 import ChartIcon from '../Icons/ChartIcon';
 import { fontFamily } from '../utils/common';
 
 const ActionGradients = {
-  newSession: ['#7A40F2', '#A673FF'],
-  analyticsHub: ['#38C172', '#58D68D'],
-  selfReview: ['#F56565', '#E33A3A'],
+  newSession: ['#7A40F2', '#A673FF'], // Purple
+  analyticsHub: ['#38C172', '#58D68D'], // Green
+  selfReview: ['#F56565', '#E33A3A'], // Red
 };
 
 // --- SVG Icons ---
@@ -29,6 +28,9 @@ const ArrowIcon = ({ color }) => (
 
 const QuickActions = ({ navigation }) => {
   const { theme, isDark } = useTheme();
+
+  // Memoize dynamic styles based on theme changes
+  const styles = useMemo(() => createStyles(theme, isDark), [theme, isDark]);
 
   const actions = [
     {
@@ -57,37 +59,101 @@ const QuickActions = ({ navigation }) => {
     // },
   ];
 
-  const dynamicStyles = StyleSheet.create({
+  const ActionCard = ({ action }) => (
+    <TouchableOpacity
+      activeOpacity={0.8}
+      onPress={() => {
+        if (navigation && navigation.navigate) {
+          // Use standard navigation pattern
+          navigation.navigate(action.screen);
+        } else {
+          console.log(`Navigating to ${action.screen}`);
+        }
+      }}
+    >
+      <LinearGradient
+        colors={action.colors}
+        start={{ x: 0.1, y: 0.1 }}
+        end={{ x: 0.9, y: 0.9 }}
+        style={styles.actionCard}
+      >
+        {/* Decoration Element */}
+        <View style={styles.cardDecoration} />
+
+        {/* Card Content */}
+        <View style={styles.actionCardContent}>
+          <View style={styles.actionLeft}>
+            <View style={styles.actionIconContainer}>{action.icon}</View>
+
+            <View style={styles.actionTextContainer}>
+              <Text style={styles.actionCardTitle}>{action.title}</Text>
+              <Text style={styles.actionDescription} numberOfLines={1}>
+                {action.description}
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.actionArrow}>
+            <ArrowIcon color="#FFFFFF" />
+          </View>
+        </View>
+      </LinearGradient>
+    </TouchableOpacity>
+  );
+
+  return (
+    <View style={styles.actionsContainer}>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Quick Actions </Text>
+        <Text style={styles.sectionSubtitle}>
+          One-tap access to your core workflows
+        </Text>
+      </View>
+
+      <View style={styles.actionsList}>
+        {actions.map(action => (
+          <ActionCard key={action.id} action={action} />
+        ))}
+      </View>
+    </View>
+  );
+};
+
+// --- Stylesheet Creation Function ---
+const createStyles = (theme, isDark) =>
+  StyleSheet.create({
     actionsContainer: {
       backgroundColor: theme.card,
-      padding: 10,
+      padding: 16, // Increased padding for a more spacious look
       borderRadius: 20,
-      shadowColor: isDark ? theme.cardShadow : theme.cardShadow,
-      shadowOffset: { width: 0, height: 5 },
-      shadowOpacity: isDark ? 0.3 : 0.15,
-      shadowRadius: 15,
-      elevation: 10,
+      borderWidth: 1,
+      borderColor: theme.border,
+      shadowColor: theme.cardShadow,
+      shadowOffset: { width: 0, height: 4 }, // Slightly softer shadow
+      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowRadius: 8,
+      elevation: 4,
     },
     sectionHeader: {
-      marginBottom: 14,
+      marginBottom: 16, // Increased margin
     },
     sectionTitle: {
       fontSize: 18,
       fontFamily: fontFamily.Nunito_Bold,
-      color: theme.primary, // Dynamic
-      marginBottom: 0,
+      color: theme.primary,
     },
     sectionSubtitle: {
       fontSize: 12,
-      color: theme.secondary, // Dynamic
+      color: theme.secondary,
       fontFamily: fontFamily.Nunito_Medium,
+      marginTop: 2,
     },
     actionsList: {
-      gap: 10,
+      gap: 12, // Increased gap between cards
     },
     actionCard: {
       borderRadius: 16,
-      padding: 14,
+      padding: 16, // Increased padding
       position: 'relative',
       overflow: 'hidden',
     },
@@ -107,97 +173,41 @@ const QuickActions = ({ navigation }) => {
       width: 48,
       height: 48,
       borderRadius: 12,
-      backgroundColor: 'rgba(255,255,255,0.15)',
+      // Use a slightly darker/more subtle background for the icon container
+      backgroundColor: 'rgba(0,0,0,0.15)',
       justifyContent: 'center',
       alignItems: 'center',
-      marginRight: 10,
+      marginRight: 12, // Increased margin
     },
     actionTextContainer: {
       flex: 1,
     },
     actionCardTitle: {
-      fontSize: 15,
+      fontSize: 16, // Slightly larger title
       fontFamily: fontFamily.Nunito_Bold,
       color: '#FFFFFF',
-      marginBottom: 0,
+      marginBottom: 2,
     },
     actionDescription: {
       fontSize: 11,
-      color: 'rgba(255,255,255,0.8)',
+      color: 'rgba(255,255,255,0.7)', // Slightly more transparent for better contrast
       fontFamily: fontFamily.Nunito_Regular,
     },
     actionArrow: {
-      backgroundColor: 'rgba(0,0,0,0.2)',
-      padding: 6,
-      borderRadius: 12,
-      marginLeft: 6,
+      backgroundColor: 'rgba(0,0,0,0.15)', // More subtle background for the arrow
+      padding: 8,
+      borderRadius: 14,
+      marginLeft: 10,
     },
     cardDecoration: {
       position: 'absolute',
-      top: -50,
-      right: -50,
-      width: 140,
-      height: 140,
-      borderRadius: 70,
-      backgroundColor: 'rgba(255,255,255,0.05)',
+      top: -60,
+      right: -60,
+      width: 150,
+      height: 150,
+      borderRadius: 75,
+      backgroundColor: 'rgba(255,255,255,0.08)', // Brighter, larger decoration circle
     },
   });
-
-  const ActionCard = ({ action }) => (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      onPress={() => {
-        if (navigation && navigation.navigate) {
-          navigation.navigate(action.screen);
-        } else {
-          console.log(`Navigating to ${action.screen}`);
-        }
-      }}
-    >
-      <LinearGradient
-        colors={action.colors}
-        start={{ x: 0.1, y: 0.1 }}
-        end={{ x: 0.9, y: 0.9 }}
-        style={dynamicStyles.actionCard}
-      >
-        <View style={dynamicStyles.actionCardContent}>
-          <View style={dynamicStyles.actionLeft}>
-            <View style={dynamicStyles.actionIconContainer}>{action.icon}</View>
-
-            <View style={dynamicStyles.actionTextContainer}>
-              <Text style={dynamicStyles.actionCardTitle}>{action.title}</Text>
-              <Text style={dynamicStyles.actionDescription}>
-                {action.description}
-              </Text>
-            </View>
-          </View>
-
-          <View style={dynamicStyles.actionArrow}>
-            <ArrowIcon color="#FFFFFF" />
-          </View>
-
-          <View style={dynamicStyles.cardDecoration} />
-        </View>
-      </LinearGradient>
-    </TouchableOpacity>
-  );
-
-  return (
-    <View style={dynamicStyles.actionsContainer}>
-      <View style={dynamicStyles.sectionHeader}>
-        <Text style={dynamicStyles.sectionTitle}>Quick Actions</Text>
-        <Text style={dynamicStyles.sectionSubtitle}>
-          One-tap access to your core workflows
-        </Text>
-      </View>
-
-      <View style={dynamicStyles.actionsList}>
-        {actions.map(action => (
-          <ActionCard key={action.id} action={action} />
-        ))}
-      </View>
-    </View>
-  );
-};
 
 export default QuickActions;

@@ -12,6 +12,7 @@ import RejectedIcon from '../Icons/RejectedIcon';
 import EmailIcon from '../Icons/EmailIcon';
 import SupportIcon from '../Icons/SupportIcon';
 import LoginIcon from '../Icons/LoginIcon';
+
 const RejectedScreen = ({ navigation }) => {
   const { theme, isDark } = useTheme();
   const styles = getStyles(theme, isDark);
@@ -33,80 +34,87 @@ const RejectedScreen = ({ navigation }) => {
           {/* Main Icon Section */}
           <View style={styles.iconContainer}>
             <View style={styles.iconCircle}>
-              <RejectedIcon width={80} height={80} color={theme.error} />
+              <RejectedIcon width={90} height={90} color={theme.error} />
             </View>
           </View>
 
           {/* Title Section */}
-          <Text style={styles.title}>Registration Rejected</Text>
+          <Text style={styles.title}>Application Declined</Text>
 
-          {/* Message Section */}
+          {/* Message Section (Refined Alert Box) */}
           <View style={styles.messageContainer}>
             <Text style={styles.message}>
               We're sorry, but your registration request has been reviewed and
-              rejected by our administration team.
+              was declined by our administration team.
             </Text>
           </View>
 
-          {/* Reasons Section */}
+          {/* Reasons Section (Elevated Card) */}
           <View style={styles.reasonsContainer}>
-            <Text style={styles.reasonsTitle}>Possible Reasons:</Text>
+            <Text style={styles.reasonsTitle}>Reasons for Decline</Text>
             <View style={styles.reasonItem}>
               <View style={styles.bulletPoint} />
               <Text style={styles.reasonText}>
-                Incomplete or inaccurate information provided
+                The documentation provided was incomplete or contained
+                inaccurate information.
               </Text>
             </View>
             <View style={styles.reasonItem}>
               <View style={styles.bulletPoint} />
               <Text style={styles.reasonText}>
-                Does not meet our platform requirements
+                The application did not meet our platform's minimum professional
+                requirements.
               </Text>
             </View>
             <View style={styles.reasonItem}>
               <View style={styles.bulletPoint} />
               <Text style={styles.reasonText}>
-                Suspicious activity detected
+                We detected potential compliance issues during the background
+                verification process.
               </Text>
             </View>
           </View>
 
-          {/* Support Info Section */}
+          {/* Support Info Section (Elevated Card) */}
           <View style={styles.supportContainer}>
             <EmailIcon color={theme.accent} size={24} />
-            <Text style={styles.supportText}>
-              If you believe this is a mistake or would like more information,
-              please contact our support team.
-            </Text>
-          </View>
-
-          {/* Action Buttons */}
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.primaryButton]}
-              onPress={() => navigation.navigate('LoginScreen')}
-            >
-              <LoginIcon color="#FFFFFF" size={20} />
-              <Text style={styles.primaryButtonText}>Back to Login</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.button, styles.secondaryButton]}
-              onPress={handleContactSupport}
-            >
-              <SupportIcon color={theme.accent} size={20} />
-              <Text style={styles.secondaryButtonText}>Contact Support</Text>
-            </TouchableOpacity>
+            <View style={styles.supportContent}>
+              <Text style={styles.supportTitle}>Need to Appeal?</Text>
+              <Text style={styles.supportText}>
+                If you believe this is a mistake or would like to submit an
+                appeal, please contact our support team.
+              </Text>
+            </View>
           </View>
 
           {/* Additional Help */}
           <View style={styles.helpContainer}>
             <Text style={styles.helpText}>
-              Our support team typically responds within 24 hours.
+              Our support team typically responds to appeals within 24 business
+              hours.
             </Text>
           </View>
         </View>
       </ScrollView>
+
+      {/* Action Buttons (Fixed Footer) */}
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={[styles.button, styles.primaryButton]}
+          onPress={() => navigation.navigate('LoginScreen')}
+        >
+          <LoginIcon color="#FFFFFF" size={20} />
+          <Text style={styles.primaryButtonText}>Back to Login</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.button, styles.secondaryButton]}
+          onPress={handleContactSupport}
+        >
+          <SupportIcon color={theme.accent} size={20} />
+          <Text style={styles.secondaryButtonText}>Contact Support</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
@@ -119,153 +127,192 @@ const getStyles = (theme, isDark) =>
     },
     scrollContent: {
       flexGrow: 1,
+      paddingBottom: 150, // Space for fixed footer
     },
     content: {
       flex: 1,
       padding: 24,
-      justifyContent: 'center',
+      paddingTop: 40,
     },
     iconContainer: {
       alignItems: 'center',
       marginBottom: 32,
     },
     iconCircle: {
-      width: 140,
-      height: 140,
-      borderRadius: 70,
+      width: 150,
+      height: 150,
+      borderRadius: 75,
       backgroundColor: isDark
         ? 'rgba(244, 67, 54, 0.1)'
         : 'rgba(244, 67, 54, 0.08)',
       justifyContent: 'center',
       alignItems: 'center',
-      borderWidth: 3,
-      borderColor: isDark ? 'rgba(244, 67, 54, 0.3)' : 'rgba(244, 67, 54, 0.2)',
+      borderWidth: 4,
+      borderColor: theme.error,
+      opacity: 0.8,
     },
     title: {
       fontSize: 28,
       fontFamily: 'Nunito-Bold',
       color: theme.error,
       textAlign: 'center',
-      marginBottom: 16,
+      marginBottom: 20,
       lineHeight: 34,
     },
+    // Message/Alert Box Style
     messageContainer: {
       backgroundColor: isDark
-        ? 'rgba(255, 255, 255, 0.05)'
-        : 'rgba(0, 0, 0, 0.03)',
+        ? 'rgba(244, 67, 54, 0.1)'
+        : 'rgba(244, 67, 54, 0.05)',
       padding: 20,
       borderRadius: 16,
       marginBottom: 24,
-      borderLeftWidth: 4,
+      borderLeftWidth: 5,
       borderLeftColor: theme.error,
     },
     message: {
       fontSize: 16,
       fontFamily: 'Nunito-Regular',
-      color: theme.secondary,
+      color: theme.primary,
       textAlign: 'center',
       lineHeight: 24,
     },
+    // Reasons Card (Elevated)
     reasonsContainer: {
       backgroundColor: theme.card,
       padding: 20,
       borderRadius: 16,
       marginBottom: 24,
       shadowColor: isDark ? theme.cardShadow : '#000',
-      shadowOffset: { width: 0, height: 2 },
+      shadowOffset: { width: 0, height: 4 },
       shadowOpacity: isDark ? theme.cardShadowOpacity : 0.1,
-      shadowRadius: 4,
-      elevation: 2,
+      shadowRadius: 8,
+      elevation: 5,
     },
     reasonsTitle: {
       fontSize: 18,
-      fontFamily: 'Nunito-SemiBold',
+      fontFamily: 'Nunito-Bold',
       color: theme.primary,
       marginBottom: 12,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.border,
+      paddingBottom: 8,
     },
     reasonItem: {
       flexDirection: 'row',
       alignItems: 'flex-start',
-      marginBottom: 8,
+      marginBottom: 10,
+      paddingTop: 5,
     },
     bulletPoint: {
-      width: 6,
-      height: 6,
-      borderRadius: 3,
+      width: 8,
+      height: 8,
+      borderRadius: 4,
       backgroundColor: theme.error,
-      marginTop: 8,
+      marginTop: 6,
       marginRight: 12,
     },
     reasonText: {
-      fontSize: 14,
+      fontSize: 15,
       fontFamily: 'Nunito-Regular',
       color: theme.secondary,
       flex: 1,
-      lineHeight: 20,
+      lineHeight: 22,
     },
+    // Support Card (Elevated)
     supportContainer: {
       flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: isDark
-        ? 'rgba(74, 144, 226, 0.1)'
-        : 'rgba(74, 144, 226, 0.08)',
+      alignItems: 'flex-start',
+      backgroundColor: theme.card,
       padding: 20,
       borderRadius: 16,
       marginBottom: 24,
-      borderWidth: 1,
-      borderColor: isDark
-        ? 'rgba(74, 144, 226, 0.3)'
-        : 'rgba(74, 144, 226, 0.2)',
+      shadowColor: isDark ? theme.cardShadow : '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: isDark ? theme.cardShadowOpacity : 0.1,
+      shadowRadius: 8,
+      elevation: 5,
+    },
+    supportContent: {
+      flex: 1,
+      marginLeft: 15,
+    },
+    supportTitle: {
+      fontSize: 17,
+      fontFamily: 'Nunito-SemiBold',
+      color: theme.accent,
+      marginBottom: 4,
     },
     supportText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Medium',
-      color: theme.accent,
-      marginLeft: 12,
-      flex: 1,
-      lineHeight: 20,
+      fontSize: 15,
+      fontFamily: 'Nunito-Regular',
+      color: theme.secondary,
+      lineHeight: 22,
     },
-    buttonsContainer: {
-      gap: 12,
-      marginBottom: 20,
+    // Help Footer Text
+    helpContainer: {
+      alignItems: 'center',
+      padding: 16,
+    },
+    helpText: {
+      fontSize: 14,
+      fontFamily: 'Nunito-Regular',
+      color: theme.secondary,
+      textAlign: 'center',
+      fontStyle: 'italic',
+      opacity: 0.7,
+    },
+    // Fixed Footer with Buttons
+    footer: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: theme.card,
+      paddingHorizontal: 24,
+      paddingVertical: 15,
+      borderTopWidth: 1,
+      borderTopColor: theme.border,
+      shadowColor: isDark ? theme.cardShadow : '#000',
+      shadowOffset: { width: 0, height: -2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 8,
+      gap: 12, // Spacing between buttons
     },
     button: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
       paddingVertical: 16,
-      paddingHorizontal: 24,
-      borderRadius: 12,
-      gap: 8,
+      borderRadius: 14,
+      gap: 10,
     },
+    // Primary Button (Back to Login) - Elevated
     primaryButton: {
       backgroundColor: theme.accent,
+      shadowColor: theme.accent,
+      shadowOffset: { width: 0, height: 6 },
+      shadowOpacity: 0.4,
+      shadowRadius: 10,
+      elevation: 6,
     },
+    primaryButtonText: {
+      fontSize: 18,
+      fontFamily: 'Nunito-Bold',
+      color: '#FFFFFF',
+    },
+    // Secondary Button (Contact Support) - Outline
     secondaryButton: {
       backgroundColor: 'transparent',
       borderWidth: 2,
       borderColor: theme.accent,
-    },
-    primaryButtonText: {
-      fontSize: 16,
-      fontFamily: 'Nunito-Bold',
-      color: '#FFFFFF',
+      elevation: 0, // Remove elevation for clean outline look
     },
     secondaryButtonText: {
-      fontSize: 16,
-      fontFamily: 'Nunito-SemiBold',
+      fontSize: 18,
+      fontFamily: 'Nunito-Bold',
       color: theme.accent,
-    },
-    helpContainer: {
-      alignItems: 'center',
-      padding: 16,
-    },
-    helpText: {
-      fontSize: 12,
-      fontFamily: 'Nunito-Regular',
-      color: theme.secondary,
-      textAlign: 'center',
-      fontStyle: 'italic',
     },
   });
 

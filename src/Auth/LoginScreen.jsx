@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
-  Dimensions,
+  ActivityIndicator, // Added for loading state in button
 } from 'react-native';
 import CustomHeader from '../Components/CustomHeader';
 import { useTheme } from '../Context/ThemeContext';
@@ -19,12 +19,10 @@ import EyeIcon from '../Icons/EyeIcon';
 
 import { useApp } from '../Context/AppContext';
 
-const { width } = Dimensions.get('window');
-
 const LoginScreen = ({ navigation }) => {
-  const { theme } = useTheme();
+  const { theme, isDark } = useTheme();
   const { login } = useApp();
-  const styles = getStyles(theme);
+  const styles = getStyles(theme, isDark);
 
   const [formData, setFormData] = useState({
     email: '',
@@ -40,6 +38,7 @@ const LoginScreen = ({ navigation }) => {
   const [modalMessage, setModalMessage] = useState('');
   const [modalButtons, setModalButtons] = useState([]);
 
+  // --- Validation Logic (Kept as is) ---
   const validateField = (field, value) => {
     let error = '';
     switch (field) {
@@ -110,10 +109,9 @@ const LoginScreen = ({ navigation }) => {
         }
       }
     } catch (error) {
-      // Prefer the server-provided message (if available via axios error response),
-      // fall back to error.message or a generic message.
       const serverMessage = error?.response?.data?.message;
-      const message = serverMessage || error?.message || 'An unexpected error occurred.';
+      const message =
+        serverMessage || error?.message || 'An unexpected error occurred.';
 
       setModalTitle('Login Failed');
       setModalMessage(message);
@@ -135,6 +133,50 @@ const LoginScreen = ({ navigation }) => {
       [field]: error,
     });
   };
+
+  // --- Render Functions ---
+
+  const renderInputField = (
+    field,
+    placeholder,
+    IconComponent,
+    isPassword = false,
+  ) => (
+    <View style={styles.inputGroup}>
+      <View
+        style={[
+          styles.inputWrapper,
+          errors[field] && styles.inputError,
+          isLoading && styles.inputWrapperDisabled,
+        ]}
+      >
+        <View style={styles.iconContainer}>
+          <IconComponent color={errors[field] ? '#EF4444' : theme.secondary} />
+        </View>
+        <TextInput
+          style={styles.textInput}
+          placeholder={placeholder}
+          value={formData[field]}
+          onChangeText={text => updateFormData(field, text)}
+          keyboardType={field === 'email' ? 'email-address' : 'default'}
+          autoCapitalize={field === 'email' ? 'none' : 'sentences'}
+          secureTextEntry={isPassword && !showPassword}
+          placeholderTextColor={theme.secondary + '90'}
+          editable={!isLoading}
+        />
+        {isPassword && (
+          <TouchableOpacity
+            onPress={() => setShowPassword(!showPassword)}
+            style={styles.eyeIcon}
+            disabled={isLoading}
+          >
+            <EyeIcon open={!showPassword} />
+          </TouchableOpacity>
+        )}
+      </View>
+      {errors[field] && <Text style={styles.errorText}>{errors[field]}</Text>}
+    </View>
+  );
 
   const renderModal = () => (
     <Modal
@@ -189,70 +231,28 @@ const LoginScreen = ({ navigation }) => {
         keyboardShouldPersistTaps="handled"
       >
         <View style={styles.formContainer}>
+          {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>Welcome Back</Text>
             <Text style={styles.subtitle}>
-              Log in to your account to continue.
+              Log in to your account to continue your journey.
             </Text>
           </View>
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Email</Text>
-            <View
-              style={[styles.inputWrapper, errors.email && styles.inputError]}
-            >
-              <TextInput
-                style={styles.textInput}
-                placeholder="your.email@example.com"
-                value={formData.email}
-                onChangeText={text => updateFormData('email', text)}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                placeholderTextColor={theme.secondary}
-                editable={!isLoading}
-              />
-            </View>
-            {errors.email && (
-              <Text style={styles.errorText}>{errors.email}</Text>
-            )}
-          </View>
+          {/* Form Fields */}
+          {renderInputField('email', 'Email Address', EmailIcon)}
+          {renderInputField('password', 'Password', LockIcon, true)}
 
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Password</Text>
-            <View
-              style={[
-                styles.inputWrapper,
-                errors.password && styles.inputError,
-              ]}
-            >
-              <TextInput
-                style={styles.textInput}
-                placeholder="••••••••"
-                value={formData.password}
-                onChangeText={text => updateFormData('password', text)}
-                secureTextEntry={!showPassword}
-                placeholderTextColor={theme.secondary}
-                editable={!isLoading}
-              />
-              <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
-                style={styles.eyeIcon}
-              >
-                <EyeIcon open={!showPassword} />
-              </TouchableOpacity>
-            </View>
-            {errors.password && (
-              <Text style={styles.errorText}>{errors.password}</Text>
-            )}
-          </View>
-
+          {/* Forgot Password */}
           <TouchableOpacity
             onPress={() => navigation.navigate('ForgotPasswordScreen')}
             style={styles.forgotPasswordButton}
+            disabled={isLoading}
           >
             <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
           </TouchableOpacity>
 
+          {/* Login Button */}
           <TouchableOpacity
             style={[
               styles.loginButton,
@@ -261,11 +261,14 @@ const LoginScreen = ({ navigation }) => {
             onPress={handleLogin}
             disabled={isLoading}
           >
-            <Text style={styles.loginButtonText}>
-              {isLoading ? 'Logging in...' : 'Log In'}
-            </Text>
+            {isLoading ? (
+              <ActivityIndicator color="#FFFFFF" size="small" />
+            ) : (
+              <Text style={styles.loginButtonText}>Log In</Text>
+            )}
           </TouchableOpacity>
 
+          {/* Footer/Sign Up Link */}
           <View style={styles.footer}>
             <Text style={styles.footerText}>
               Don't have an account?{' '}
@@ -284,7 +287,7 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 
-const getStyles = theme =>
+const getStyles = (theme, isDark) =>
   StyleSheet.create({
     container: {
       flex: 1,
@@ -298,14 +301,14 @@ const getStyles = theme =>
       paddingBottom: 32,
     },
     formContainer: {
-      marginTop: 24,
+      marginTop: 40, // Increased spacing from header
     },
     header: {
       alignItems: 'center',
-      marginBottom: 32,
+      marginBottom: 48, // Increased spacing to form
     },
     title: {
-      fontSize: 28,
+      fontSize: 26, // Larger title
       fontFamily: 'Nunito-Bold',
       color: theme.primary,
       marginBottom: 8,
@@ -315,60 +318,71 @@ const getStyles = theme =>
       fontFamily: 'Nunito-Regular',
       color: theme.secondary,
       textAlign: 'center',
+      paddingHorizontal: 10,
     },
     inputGroup: {
-      marginBottom: 16,
+      marginBottom: 20, // Increased spacing between inputs
     },
-    label: {
-      fontSize: 14,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.primary,
-      marginBottom: 8,
-    },
+    // Removed 'label' style
+
+    // NEW INPUT STYLES (Icon integrated)
     inputWrapper: {
       flexDirection: 'row',
       alignItems: 'center',
       backgroundColor: theme.card,
       borderWidth: 1,
       borderColor: theme.border,
-      borderRadius: 12,
-      paddingHorizontal: 16,
-      height: 50,
+      borderRadius: 14, // Slightly more rounded
+      paddingHorizontal: 0, // Icons are contained within the wrapper
+      height: 56, // Taller input field
+    },
+    inputWrapperDisabled: {
+      opacity: 0.7,
+      backgroundColor: isDark ? '#1F2937' : '#F3F4F6',
     },
     inputError: {
       borderColor: '#EF4444',
+      borderWidth: 2,
+    },
+    iconContainer: {
+      paddingHorizontal: 16,
     },
     textInput: {
       flex: 1,
       fontSize: 16,
       fontFamily: 'Nunito-Regular',
       color: theme.primary,
+      // Removed left padding, using iconContainer instead
     },
     eyeIcon: {
-      padding: 8,
+      paddingHorizontal: 16, // Padding for touchable area
     },
     errorText: {
       color: '#EF4444',
-      fontSize: 12,
+      fontSize: 13, // Slightly larger error text
       fontFamily: 'Nunito-Medium',
       marginTop: 8,
+      marginLeft: 4,
     },
     forgotPasswordButton: {
       alignSelf: 'flex-end',
-      marginTop: -10, // Adjust to position correctly below password input
-      marginBottom: 10,
+      marginTop: -10,
+      marginBottom: 20, // Added bottom margin
     },
     forgotPasswordText: {
-      fontSize: 14,
+      fontSize: 15,
       fontFamily: 'Nunito-SemiBold',
       color: theme.accent,
     },
+    // LOGIN BUTTON STYLES
     loginButton: {
       backgroundColor: theme.accent,
-      paddingVertical: 16,
-      borderRadius: 12,
+      paddingVertical: 18, // Taller button
+      borderRadius: 14,
       alignItems: 'center',
-      marginTop: 16,
+      marginTop: 20,
+      minHeight: 56, // Ensure height even when showing ActivityIndicator
+      justifyContent: 'center',
     },
     loginButtonDisabled: {
       backgroundColor: '#C7B2F4',
@@ -380,10 +394,10 @@ const getStyles = theme =>
     },
     footer: {
       alignItems: 'center',
-      marginTop: 24,
+      marginTop: 32, // Increased spacing
     },
     footerText: {
-      fontSize: 14,
+      fontSize: 15,
       fontFamily: 'Nunito-Regular',
       color: theme.secondary,
     },
@@ -391,7 +405,7 @@ const getStyles = theme =>
       color: theme.accent,
       fontFamily: 'Nunito-Bold',
     },
-    // Modal Styles
+    // Modal Styles (Kept largely the same, minor font/color adjustments)
     centeredView: {
       flex: 1,
       justifyContent: 'center',
@@ -401,49 +415,50 @@ const getStyles = theme =>
     modalView: {
       margin: 20,
       backgroundColor: theme.card,
-      borderRadius: 20,
-      padding: 20,
+      borderRadius: 16, // Consistent rounding
+      padding: 24,
       alignItems: 'center',
       shadowColor: '#000',
       shadowOffset: {
         width: 0,
-        height: 2,
+        height: 4,
       },
-      shadowOpacity: 0.25,
-      shadowRadius: 4,
-      elevation: 5,
-      width: '80%',
+      shadowOpacity: 0.15,
+      shadowRadius: 6,
+      elevation: 8,
+      width: '85%',
     },
     modalTitle: {
-      marginBottom: 10,
+      marginBottom: 12,
       textAlign: 'center',
-      fontSize: 18,
+      fontSize: 20,
       fontFamily: 'Nunito-Bold',
       color: theme.primary,
     },
     modalMessage: {
-      marginBottom: 15,
+      marginBottom: 20,
       textAlign: 'center',
-      fontSize: 16,
+      fontSize: 15,
       fontFamily: 'Nunito-Regular',
       color: theme.secondary,
     },
     modalButtonContainer: {
       flexDirection: 'row',
-      justifyContent: 'space-around',
+      justifyContent: 'center',
       width: '100%',
-      marginTop: 8,
+      gap: 10,
     },
     modalButton: {
       borderRadius: 10,
-      padding: 10,
-      elevation: 2,
+      paddingVertical: 12,
+      paddingHorizontal: 20,
       backgroundColor: theme.accent,
       minWidth: 100,
       alignItems: 'center',
+      flex: 1,
     },
     modalButtonCancel: {
-      backgroundColor: theme.border,
+      backgroundColor: isDark ? '#374151' : '#E5E7EB',
     },
     modalButtonText: {
       color: 'white',

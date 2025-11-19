@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,16 +6,32 @@ import {
   Modal,
   StyleSheet,
   ScrollView,
+  Platform,
+  Dimensions,
 } from 'react-native';
-import { useTheme } from '../Context/ThemeContext';
+import { useTheme } from '../Context/ThemeContext'; // Assuming this is where useTheme comes from
 import LeftArrowIcon from '../Icons/LeftArrowIcon';
 import RightArrowIcon from '../Icons/RightArrowIcon';
 
-const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) => {
+const CustomDateTimePicker = ({ visible, date, onDateChange, onClose }) => {
+  const { theme, isDark } = useTheme(); // Use context for theme
   const [selectedDate, setSelectedDate] = useState(date || new Date());
   const [mode, setMode] = useState('date'); // 'date' or 'time'
-  const [currentMonth, setCurrentMonth] = useState(date ? date.getMonth() : new Date().getMonth());
-  const [currentYear, setCurrentYear] = useState(date ? date.getFullYear() : new Date().getFullYear());
+  const [currentMonth, setCurrentMonth] = useState(
+    date ? date.getMonth() : new Date().getMonth(),
+  );
+  const [currentYear, setCurrentYear] = useState(
+    date ? date.getFullYear() : new Date().getFullYear(),
+  );
+
+  const hourScrollRef = useRef(null);
+  const minuteScrollRef = useRef(null);
+  const { height } = Dimensions.get('window');
+
+  // Constants
+  const ITEM_HEIGHT = 45; // Adjusted height for better scroll appearance
+
+  // --- Effects ---
 
   useEffect(() => {
     if (date) {
@@ -25,17 +41,43 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
     }
   }, [date, visible]);
 
-  // Get days in a month
+  // Auto-scroll logic for Time Picker (simulating native picker)
+  useEffect(() => {
+    if (visible && mode === 'time') {
+      const currentHour = selectedDate.getHours();
+      const currentMinute = selectedDate.getMinutes();
+
+      // Calculate scroll position (centered view)
+      const hourIndex = currentHour;
+      const minuteIndex = currentMinute;
+
+      const scrollToCenter = (ref, index, count) => {
+        if (ref.current) {
+          // Calculate offset to center the item (index * ITEM_HEIGHT - (container_height / 2) + (item_height / 2))
+          // TimePicker height is 180, item is 45. 180/2 = 90. 45/2 = 22.5. Center offset: 90 - 22.5 = 67.5 (approx 2 items)
+          const offset = index * ITEM_HEIGHT - (90 - ITEM_HEIGHT / 2);
+          ref.current.scrollTo({ y: offset, animated: true });
+        }
+      };
+
+      // Delay scroll slightly to ensure the modal is fully rendered
+      setTimeout(() => {
+        scrollToCenter(hourScrollRef, hourIndex, 24);
+        scrollToCenter(minuteScrollRef, minuteIndex, 60);
+      }, 300);
+    }
+  }, [visible, mode, selectedDate]);
+
+  // --- Calendar Logic ---
+
   const getDaysInMonth = (month, year) => {
     return new Date(year, month + 1, 0).getDate();
   };
 
-  // Get first day of month (0 = Sunday)
   const getFirstDayOfMonth = (month, year) => {
     return new Date(year, month, 1).getDay();
   };
 
-  // Generate calendar days
   const generateCalendarDays = () => {
     const daysInMonth = getDaysInMonth(currentMonth, currentYear);
     const firstDay = getFirstDayOfMonth(currentMonth, currentYear);
@@ -54,12 +96,20 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
     return days;
   };
 
-  const handleDateSelect = (day) => {
+  const handleDateSelect = day => {
     if (day) {
-      const newDate = new Date(currentYear, currentMonth, day, selectedDate.getHours(), selectedDate.getMinutes());
+      const newDate = new Date(
+        currentYear,
+        currentMonth,
+        day,
+        selectedDate.getHours(),
+        selectedDate.getMinutes(),
+      );
       setSelectedDate(newDate);
     }
   };
+
+  // --- Time Logic ---
 
   const handleTimeChange = (type, value) => {
     const newDate = new Date(selectedDate);
@@ -71,82 +121,150 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
     setSelectedDate(newDate);
   };
 
+  // Handlers for month navigation
+  const goToPreviousMonth = () => {
+    setSelectedDate(prevDate => {
+      const newMonth = prevDate.getMonth() === 0 ? 11 : prevDate.getMonth() - 1;
+      const newYear =
+        prevDate.getMonth() === 0
+          ? prevDate.getFullYear() - 1
+          : prevDate.getFullYear();
+      const newDay = Math.min(
+        prevDate.getDate(),
+        getDaysInMonth(newMonth, newYear),
+      );
+      return new Date(
+        newYear,
+        newMonth,
+        newDay,
+        prevDate.getHours(),
+        prevDate.getMinutes(),
+      );
+    });
+    setCurrentMonth(prev => (prev === 0 ? 11 : prev - 1));
+    setCurrentYear(prev => (currentMonth === 0 ? prev - 1 : prev));
+  };
+
+  const goToNextMonth = () => {
+    setSelectedDate(prevDate => {
+      const newMonth = prevDate.getMonth() === 11 ? 0 : prevDate.getMonth() + 1;
+      const newYear =
+        prevDate.getMonth() === 11
+          ? prevDate.getFullYear() + 1
+          : prevDate.getFullYear();
+      const newDay = Math.min(
+        prevDate.getDate(),
+        getDaysInMonth(newMonth, newYear),
+      );
+      return new Date(
+        newYear,
+        newMonth,
+        newDay,
+        prevDate.getHours(),
+        prevDate.getMinutes(),
+      );
+    });
+    setCurrentMonth(prev => (prev === 11 ? 0 : prev + 1));
+    setCurrentYear(prev => (currentMonth === 11 ? prev + 1 : prev));
+  };
+
+  // --- Confirmation ---
+
   const handleConfirm = () => {
     onDateChange(selectedDate);
     onClose();
   };
 
-  const goToPreviousMonth = () => {
-    if (currentMonth === 0) {
-      setCurrentMonth(11);
-      setCurrentYear(currentYear - 1);
-    } else {
-      setCurrentMonth(currentMonth - 1);
-    }
-  };
-
-  const goToNextMonth = () => {
-    if (currentMonth === 11) {
-      setCurrentMonth(0);
-      setCurrentYear(currentYear + 1);
-    } else {
-      setCurrentMonth(currentMonth + 1);
-    }
-  };
+  // --- Data and Formatting ---
 
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
   ];
 
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const calendarDays = generateCalendarDays();
 
-  const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
-  const minutes = Array.from({ length: 60 }, (_, i) => i.toString().padStart(2, '0'));
+  const hours = Array.from({ length: 24 }, (_, i) =>
+    i.toString().padStart(2, '0'),
+  );
+  const minutes = Array.from({ length: 60 }, (_, i) =>
+    i.toString().padStart(2, '0'),
+  );
+
+  const formatDate = d => {
+    const options = {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    };
+    return d.toLocaleDateString('en-US', options);
+  };
+
+  const formatTime = d => {
+    return d.toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
+  // --- Styles (Updated UI) ---
 
   const styles = StyleSheet.create({
     container: {
       flex: 1,
       justifyContent: 'flex-end',
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      backgroundColor: 'rgba(0, 0, 0, 0.6)', // Darker overlay
     },
     pickerContainer: {
       backgroundColor: theme.card,
-      borderTopLeftRadius: 20,
-      borderTopRightRadius: 20,
-      paddingVertical: 16,
-      paddingHorizontal: 16,
-      maxHeight: '90%',
+      borderTopLeftRadius: 24, // More rounded corners
+      borderTopRightRadius: 24,
+      paddingVertical: 20,
+      paddingHorizontal: 20,
+      maxHeight: height * 0.8, // Limit height on smaller screens
     },
     header: {
       flexDirection: 'row',
-      justifyContent: 'space-between',
+      justifyContent: 'center',
       alignItems: 'center',
       marginBottom: 16,
-      paddingBottom: 12,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.border,
+      // Removed border for a cleaner look
     },
     headerText: {
-      fontSize: 18,
-      fontFamily: 'Nunito-SemiBold',
+      fontSize: 20,
+      fontFamily: 'Nunito-Bold',
       color: theme.primary,
     },
+    // ✨ Mode Toggle
     modeToggleContainer: {
       flexDirection: 'row',
-      gap: 8,
-      marginBottom: 16,
+      gap: 10,
+      marginBottom: 20,
+      paddingHorizontal: 0,
     },
     modeButton: {
       flex: 1,
-      paddingVertical: 10,
-      paddingHorizontal: 12,
-      borderRadius: 8,
+      paddingVertical: 12, // Increased padding
+      borderRadius: 12, // Pill shape corners
       alignItems: 'center',
       backgroundColor: theme.background,
       borderWidth: 1,
       borderColor: theme.border,
+      flexDirection: 'row',
+      justifyContent: 'center',
     },
     modeButtonActive: {
       backgroundColor: theme.accent,
@@ -156,9 +274,30 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
       fontSize: 14,
       fontFamily: 'Nunito-SemiBold',
       color: theme.secondary,
+      marginLeft: 6,
     },
     modeButtonTextActive: {
       color: '#FFFFFF',
+    },
+    // ✨ Selected Display
+    selectedDisplay: {
+      backgroundColor: isDark ? theme.background : theme.border + '50', // Light contrast background
+      paddingVertical: 16,
+      paddingHorizontal: 16,
+      borderRadius: 12,
+      marginBottom: 20,
+      alignItems: 'center',
+    },
+    selectedText: {
+      fontSize: 18,
+      fontFamily: 'Nunito-Bold',
+      color: theme.primary,
+      marginBottom: 4,
+    },
+    selectedSubText: {
+      fontSize: 15,
+      fontFamily: 'Nunito-Medium',
+      color: theme.secondary,
     },
     // Calendar styles
     monthYearHeader: {
@@ -166,30 +305,25 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
       justifyContent: 'space-between',
       alignItems: 'center',
       marginBottom: 16,
-      paddingHorizontal: 8,
+      paddingHorizontal: 4,
     },
     monthYearText: {
-      fontSize: 16,
-      fontFamily: 'Nunito-SemiBold',
+      fontSize: 18,
+      fontFamily: 'Nunito-Bold',
       color: theme.primary,
     },
     navButton: {
-      paddingHorizontal: 12,
-      paddingVertical: 8,
-      borderRadius: 6,
+      padding: 8, // Square button
+      borderRadius: 10,
       backgroundColor: theme.background,
-      borderWidth: 1,
-      borderColor: theme.border,
-    },
-    navButtonText: {
-      fontSize: 18,
-      color: theme.primary,
+      justifyContent: 'center',
+      alignItems: 'center',
     },
     dayNamesContainer: {
       flexDirection: 'row',
       justifyContent: 'space-around',
-      marginBottom: 12,
-      paddingHorizontal: 4,
+      marginBottom: 8,
+      paddingHorizontal: 0,
     },
     dayNameCell: {
       flex: 1,
@@ -199,7 +333,7 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
     },
     dayNameText: {
       fontSize: 12,
-      fontFamily: 'Nunito-SemiBold',
+      fontFamily: 'Nunito-Medium',
       color: theme.secondary,
     },
     calendarGrid: {
@@ -212,11 +346,11 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
       aspectRatio: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      borderRadius: 8,
-      marginBottom: 4,
+      borderRadius: 50, // Perfect circle
+      marginVertical: 2,
     },
     dayCellText: {
-      fontSize: 14,
+      fontSize: 15,
       fontFamily: 'Nunito-Regular',
       color: theme.primary,
     },
@@ -225,19 +359,19 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
     },
     dayCellSelectedText: {
       color: '#FFFFFF',
-      fontFamily: 'Nunito-SemiBold',
+      fontFamily: 'Nunito-Bold',
     },
     dayCellDisabled: {
       backgroundColor: 'transparent',
     },
     dayCellDisabledText: {
-      color: theme.border,
+      color: theme.border + '90', // Slightly visible empty days
     },
     dayCellToday: {
       borderWidth: 2,
-      borderColor: theme.accent,
+      borderColor: theme.accent, // Border for today
     },
-    // Time styles
+    // ✨ Time styles
     timeContainer: {
       marginBottom: 16,
     },
@@ -245,116 +379,102 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
       flexDirection: 'row',
       justifyContent: 'space-around',
       gap: 16,
-      marginBottom: 16,
+      marginBottom: 0,
     },
     timeColumn: {
       flex: 1,
     },
     timeLabel: {
-      fontSize: 12,
+      fontSize: 14,
       fontFamily: 'Nunito-SemiBold',
       color: theme.secondary,
       textAlign: 'center',
       marginBottom: 8,
     },
     timePicker: {
-      height: 150,
+      height: 180, // Larger height to show more options
       borderWidth: 1,
       borderColor: theme.border,
-      borderRadius: 10,
+      borderRadius: 12,
       backgroundColor: theme.background,
       overflow: 'hidden',
     },
     timePickerItem: {
-      height: 40,
+      height: ITEM_HEIGHT,
       justifyContent: 'center',
       alignItems: 'center',
+      paddingHorizontal: 10,
     },
     timePickerItemText: {
-      fontSize: 16,
-      fontFamily: 'Nunito-Regular',
+      fontSize: 18, // Larger font size
+      fontFamily: 'Nunito-Medium',
       color: theme.secondary,
     },
     timePickerItemActive: {
-      fontFamily: 'Nunito-SemiBold',
+      fontFamily: 'Nunito-Bold',
       color: theme.primary,
     },
-    selectedDisplay: {
-      backgroundColor: theme.background,
-      paddingVertical: 12,
-      paddingHorizontal: 16,
-      borderRadius: 10,
-      marginBottom: 16,
-      alignItems: 'center',
-    },
-    selectedText: {
-      fontSize: 16,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.primary,
-      marginBottom: 4,
-    },
-    selectedSubText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Regular',
-      color: theme.secondary,
-    },
+    // ✨ Button Styles
     buttonContainer: {
       flexDirection: 'row',
       gap: 10,
+      marginTop: 8,
     },
     cancelButton: {
       flex: 1,
-      paddingVertical: 12,
-      paddingHorizontal: 16,
-      borderRadius: 10,
+      paddingVertical: 14,
+      borderRadius: 12,
       backgroundColor: theme.background,
       borderWidth: 1,
       borderColor: theme.border,
       alignItems: 'center',
     },
     cancelButtonText: {
-      fontSize: 14,
+      fontSize: 16,
       fontFamily: 'Nunito-SemiBold',
       color: theme.primary,
     },
     confirmButton: {
       flex: 1,
-      paddingVertical: 12,
-      paddingHorizontal: 16,
-      borderRadius: 10,
+      paddingVertical: 14,
+      borderRadius: 12,
       backgroundColor: theme.accent,
       alignItems: 'center',
     },
     confirmButtonText: {
-      fontSize: 14,
+      fontSize: 16,
       fontFamily: 'Nunito-SemiBold',
       color: '#FFFFFF',
     },
   });
 
-  const formatDate = (d) => {
-    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-    return d.toLocaleDateString('en-US', options);
-  };
-
-  const formatTime = (d) => {
-    return d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-  };
+  // --- Render Functions ---
 
   const renderCalendar = () => {
     const today = new Date();
-    const isToday = (day) => {
-      return day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+    const isToday = day => {
+      return (
+        day === today.getDate() &&
+        currentMonth === today.getMonth() &&
+        currentYear === today.getFullYear()
+      );
     };
 
-    const isSelected = (day) => {
-      return day === selectedDate.getDate() && currentMonth === selectedDate.getMonth() && currentYear === selectedDate.getFullYear();
+    const isSelected = day => {
+      return (
+        day === selectedDate.getDate() &&
+        currentMonth === selectedDate.getMonth() &&
+        currentYear === selectedDate.getFullYear()
+      );
     };
 
     return (
       <View>
         <View style={styles.monthYearHeader}>
-          <TouchableOpacity style={styles.navButton} onPress={goToPreviousMonth}>
+          <TouchableOpacity
+            style={styles.navButton}
+            onPress={goToPreviousMonth}
+          >
             <LeftArrowIcon width={20} height={20} color={theme.primary} />
           </TouchableOpacity>
           <Text style={styles.monthYearText}>
@@ -366,7 +486,7 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
         </View>
 
         <View style={styles.dayNamesContainer}>
-          {dayNames.map((dayName) => (
+          {dayNames.map(dayName => (
             <View key={dayName} style={styles.dayNameCell}>
               <Text style={styles.dayNameText}>{dayName}</Text>
             </View>
@@ -385,6 +505,7 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
               ]}
               onPress={() => handleDateSelect(day)}
               disabled={!day}
+              activeOpacity={day ? 0.7 : 1}
             >
               <Text
                 style={[
@@ -406,66 +527,55 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
     const currentHour = selectedDate.getHours().toString().padStart(2, '0');
     const currentMinute = selectedDate.getMinutes().toString().padStart(2, '0');
 
+    // Helper to render the time scroll view
+    const renderTimeScroll = (data, type, scrollRef, currentValue) => (
+      <View style={styles.timeColumn}>
+        <Text style={styles.timeLabel}>
+          {type.charAt(0).toUpperCase() + type.slice(1)}
+        </Text>
+        <ScrollView
+          ref={scrollRef}
+          style={styles.timePicker}
+          contentContainerStyle={{
+            paddingTop: styles.timePicker.height / 2 - ITEM_HEIGHT / 2,
+            paddingBottom: styles.timePicker.height / 2 - ITEM_HEIGHT / 2,
+          }}
+          snapToInterval={ITEM_HEIGHT}
+          decelerationRate="fast"
+          showsVerticalScrollIndicator={false}
+          scrollEventThrottle={16}
+        >
+          {data.map(value => (
+            <TouchableOpacity
+              key={value}
+              style={[
+                styles.timePickerItem,
+                currentValue === value && {
+                  backgroundColor: theme.accent + '20',
+                },
+              ]}
+              onPress={() => handleTimeChange(type, value)}
+              activeOpacity={0.7}
+            >
+              <Text
+                style={[
+                  styles.timePickerItemText,
+                  currentValue === value && styles.timePickerItemActive,
+                ]}
+              >
+                {value}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+    );
+
     return (
       <View style={styles.timeContainer}>
         <View style={styles.timeRow}>
-          <View style={styles.timeColumn}>
-            <Text style={styles.timeLabel}>Hour</Text>
-            <ScrollView
-              style={styles.timePicker}
-              scrollEventThrottle={16}
-              showsVerticalScrollIndicator={false}
-            >
-              {hours.map((hour) => (
-                <TouchableOpacity
-                  key={hour}
-                  style={[
-                    styles.timePickerItem,
-                    currentHour === hour && { backgroundColor: `${theme.accent}20` },
-                  ]}
-                  onPress={() => handleTimeChange('hour', hour)}
-                >
-                  <Text
-                    style={[
-                      styles.timePickerItemText,
-                      currentHour === hour && styles.timePickerItemActive,
-                    ]}
-                  >
-                    {hour}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
-
-          <View style={styles.timeColumn}>
-            <Text style={styles.timeLabel}>Minute</Text>
-            <ScrollView
-              style={styles.timePicker}
-              scrollEventThrottle={16}
-              showsVerticalScrollIndicator={false}
-            >
-              {minutes.map((minute) => (
-                <TouchableOpacity
-                  key={minute}
-                  style={[
-                    styles.timePickerItem,
-                    currentMinute === minute && { backgroundColor: `${theme.accent}20` },
-                  ]}
-                  onPress={() => handleTimeChange('minute', minute)}
-                >
-                  <Text
-                    style={[
-                      styles.timePickerItemText,
-                      currentMinute === minute && styles.timePickerItemActive,
-                    ]}
-                  >
-                    {minute}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          </View>
+          {renderTimeScroll(hours, 'hour', hourScrollRef, currentHour)}
+          {renderTimeScroll(minutes, 'minute', minuteScrollRef, currentMinute)}
         </View>
       </View>
     );
@@ -473,14 +583,16 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
 
   return (
     <Modal visible={visible} transparent={true} animationType="slide">
+      {/* Backdrop to close modal */}
       <TouchableOpacity
         style={styles.container}
         activeOpacity={1}
         onPress={onClose}
       >
+        {/* Modal Content container, stops propagation */}
         <TouchableOpacity
           activeOpacity={1}
-          onPress={(e) => e.stopPropagation()}
+          onPress={e => e.stopPropagation()}
           style={styles.pickerContainer}
         >
           <View style={styles.header}>
@@ -489,6 +601,7 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
             </Text>
           </View>
 
+          {/* Mode Toggle */}
           <View style={styles.modeToggleContainer}>
             <TouchableOpacity
               style={[
@@ -525,25 +638,35 @@ const CustomDateTimePicker = ({ visible, date, onDateChange, onClose, theme }) =
             </TouchableOpacity>
           </View>
 
+          {/* Selected Date/Time Display */}
           <View style={styles.selectedDisplay}>
             <Text style={styles.selectedText}>{formatDate(selectedDate)}</Text>
-            <Text style={styles.selectedSubText}>{formatTime(selectedDate)}</Text>
+            <Text style={styles.selectedSubText}>
+              {formatTime(selectedDate)}
+            </Text>
           </View>
 
-          <ScrollView showsVerticalScrollIndicator={false} style={{ maxHeight: 300, marginBottom: 16 }}>
+          {/* Date Picker or Time Picker Content */}
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{ maxHeight: height * 0.4, marginBottom: 16 }} // Dynamic max height
+          >
             {mode === 'date' ? renderCalendar() : renderTimePicker()}
           </ScrollView>
 
+          {/* Action Buttons */}
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={styles.cancelButton}
               onPress={onClose}
+              activeOpacity={0.7}
             >
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.confirmButton}
               onPress={handleConfirm}
+              activeOpacity={0.7}
             >
               <Text style={styles.confirmButtonText}>Confirm</Text>
             </TouchableOpacity>

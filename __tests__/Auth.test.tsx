@@ -7,6 +7,17 @@ import BlockedScreen from '../src/Auth/BlockedScreen';
 import RejectedScreen from '../src/Auth/RejectedScreen';
 import PendingApprovalScreen from '../src/Auth/PendingApprovalScreen';
 
+jest.mock('react', () => ({
+  ...jest.requireActual('react'),
+  useRef: jest.fn(() => ({
+    current: {
+      setValue: jest.fn(),
+      interpolate: jest.fn(),
+    },
+  })),
+  useEffect: jest.fn(),
+}));
+
 // Mock common React Native modules
 jest.mock('react-native', () => ({
   View: 'View',
@@ -30,6 +41,19 @@ jest.mock('react-native', () => ({
     alert: jest.fn(),
   },
   ActivityIndicator: 'ActivityIndicator',
+  Animated: {
+    Value: jest.fn(() => ({
+      interpolate: jest.fn(),
+      start: jest.fn(),
+      setValue: jest.fn(),
+    })),
+    timing: jest.fn(() => ({
+      start: jest.fn(),
+    })),
+    spring: jest.fn(() => ({
+      start: jest.fn(),
+    })),
+  },
 }));
 
 jest.mock('@react-navigation/native', () => ({
@@ -85,9 +109,20 @@ jest.mock('../src/Context/AppContext', () => ({
 }));
 
 jest.mock('../src/Components/CustomHeader', () => 'CustomHeader');
+jest.mock('react-native-svg', () => {
+  const Svg = (props) => <div {...props}>{props.children}</div>;
+  Svg.Path = (props) => <div {...props} />;
+  Svg.Circle = (props) => <div {...props} />;
+  return Svg;
+});
+
 jest.mock('../src/Icons/EmailIcon', () => 'EmailIcon');
 jest.mock('../src/Icons/LockIcon', () => 'LockIcon');
 jest.mock('../src/Icons/EyeIcon', () => 'EyeIcon');
+jest.mock('../src/Icons/BlockedIcon', () => 'BlockedIcon');
+jest.mock('../src/Icons/RejectedIcon', () => 'RejectedIcon');
+jest.mock('../src/Icons/EmailIconPending', () => 'EmailIconPending');
+jest.mock('../src/Icons/LoginIcon', () => 'LoginIcon');
 
 describe('Auth Screens', () => {
   describe('LoginScreen', () => {

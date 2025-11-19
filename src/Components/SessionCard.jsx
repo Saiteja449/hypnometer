@@ -1,13 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import Svg, { Path, Circle, Rect, Defs, Stop } from 'react-native-svg';
-
+import Svg, { Path, Circle } from 'react-native-svg';
 import { useTheme } from '../Context/ThemeContext';
-
-const StaticColors = {
-  accentGradient: ['#8A2BE2', '#4C51BF'],
-  success: '#38A169',
-};
+import { fontFamily } from '../utils/common'; // Assuming you have this helper
 
 const SessionCard = ({
   session,
@@ -16,450 +11,327 @@ const SessionCard = ({
   compact = true,
 }) => {
   const { theme, isDark } = useTheme();
+  const styles = useMemo(() => createStyles(theme, isDark), [theme, isDark]);
 
-  console.log('SESSION', session);
-
-  // Support both internal prop names and API response keys
+  // --- Data Normalization ---
   const {
-    id,
-    title,
+    title = 'Untitled Session',
     type,
+    session_type,
     date,
+    created_at,
+    session_datetime,
     average_rating,
-    ratings = [],
-    notes,
-    feedbackLink,
-    status = 'completed',
+    client_name,
     clientName,
+    status = 'completed',
+    feedback_link,
+    feedbackLink,
   } = session;
 
-  // Fallbacks for API field names
-  const sessionType = type || session.session_type || session.sessionType;
-  const sessionDate =
-    date ||
-    session.session_datetime ||
-    session.sessionDate ||
-    session.created_at;
-  const sessionAvgRating = average_rating;
-  const sessionFeedbackLink =
-    feedbackLink || session.feedback_link || session.feedbackLink;
-  const sessionClientName =
-    clientName || session.client_name || session.clientName;
-  const sessionRatings = ratings || session.ratings || [];
+  const displayType = type || session_type || 'General';
+  const displayDate = date || session_datetime || created_at || new Date();
+  const displayClient = clientName || client_name || 'Unknown Client';
+  const displayLink = feedbackLink || feedback_link;
 
-  const iconColor = theme.secondary;
-  const accentColor = theme.accent;
+  // Handle Rating logic
+  const rawRating = parseFloat(average_rating || 0);
+  const hasRating = rawRating > 0;
+  const formattedRating = hasRating ? rawRating.toFixed(1) : '-';
 
-  const CalendarIcon = () => (
+  // --- Icons ---
+  const CalendarIcon = ({ color }) => (
     <Svg width="12" height="12" viewBox="0 0 12 12" fill="none">
       <Path
-        d="M10 2H2C1.44772 2 1 2.44772 1 3V10C1 10.5523 1.44772 11 2 11H10C10.5523 11 11 10.5523 11 10V3C11 2.44772 10.5523 2 10 2Z"
-        stroke={iconColor}
-        strokeWidth="1"
-      />
-      <Path d="M1 4H11" stroke={iconColor} strokeWidth="1" />
-      <Path
-        d="M3 1V3"
-        stroke={iconColor}
-        strokeWidth="1"
+        d="M9 1.5V3M3 1.5V3M1.5 4.5H10.5M2.5 1.5H9.5C10.0523 1.5 10.5 1.94772 10.5 2.5V10.5C10.5 11.0523 10.0523 11.5 9.5 11.5H2.5C1.94772 11.5 1.5 11.0523 1.5 10.5V2.5C1.5 1.94772 1.94772 1.5 2.5 1.5Z"
+        stroke={color}
+        strokeWidth="1.2"
         strokeLinecap="round"
-      />
-      <Path
-        d="M9 1V3"
-        stroke={iconColor}
-        strokeWidth="1"
-        strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </Svg>
   );
 
-  const ClientIcon = () => (
+  const UserIcon = ({ color }) => (
     <Svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-      <Circle cx="6" cy="3" r="2" stroke={iconColor} strokeWidth="1" />
+      <Circle cx="6" cy="3.5" r="2.5" stroke={color} strokeWidth="1.2" />
       <Path
-        d="M9 11C9 8.79086 7.20914 7 5 7C2.79086 7 1 8.79086 1 11"
-        stroke={iconColor}
-        strokeWidth="1"
+        d="M10.5 10.5V9.5C10.5 8.39543 9.60457 7.5 8.5 7.5H3.5C2.39543 7.5 1.5 8.39543 1.5 9.5V10.5"
+        stroke={color}
+        strokeWidth="1.2"
         strokeLinecap="round"
       />
     </Svg>
   );
 
-  const ShareIcon = () => (
-    <Svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-      <Path
-        d="M10 9C9.60444 9 9.21776 8.8827 8.88886 8.66294C8.55996 8.44318 8.30362 8.13082 8.15224 7.76537C8.00087 7.39991 7.96126 6.99778 8.03843 6.60982C8.1156 6.22186 8.30608 5.86549 8.58579 5.58579C8.86549 5.30608 9.22186 5.1156 9.60982 5.03843C9.99778 4.96126 10.3999 5.00087 10.7654 5.15224C11.1308 5.30362 11.4432 5.55996 11.6629 5.88886C11.8827 6.21776 12 6.60444 12 7C12 7.53043 11.7893 8.03914 11.4142 8.41421C11.0391 8.78929 10.5304 9 10 9Z"
-        stroke={accentColor}
-        strokeWidth="1"
-      />
-      <Path
-        d="M4 5C3.60444 5 3.21776 4.8827 2.88886 4.66294C2.55996 4.44318 2.30362 4.13082 2.15224 3.76537C2.00087 3.39991 1.96126 2.99778 2.03843 2.60982C2.1156 2.22186 2.30608 1.86549 2.58579 1.58579C2.86549 1.30608 3.22186 1.1156 3.60982 1.03843C3.99778 0.96126 4.39991 1.00087 4.76537 1.15224C5.13082 1.30362 5.44318 1.55996 5.66294 1.88886C5.8827 2.21776 6 2.60444 6 3C6 3.53043 5.78929 4.03914 5.41421 4.41421C5.03914 4.78929 4.53043 5 4 5Z"
-        stroke={accentColor}
-        strokeWidth="1"
-      />
-      <Path
-        d="M10 9L7 7M7 7L10 5M7 7L4 5M7 7L4 9"
-        stroke={accentColor}
-        strokeWidth="1"
-        strokeLinecap="round"
-      />
+  const ShareIcon = ({ color }) => (
+    <Svg
+      width="14"
+      height="14"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke={color}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <Circle cx="18" cy="5" r="3" />
+      <Circle cx="6" cy="12" r="3" />
+      <Circle cx="18" cy="19" r="3" />
+      <Path d="M8.59 13.51L15.42 17.49" />
+      <Path d="M15.41 6.51L8.59 10.49" />
     </Svg>
   );
 
-  const getSessionTypeColor = sessionType => {
-    const colors = {
-      Anxiety: '#FF6B6B',
-      Confidence: '#4ECDC4',
-      Regression: '#45B7D1',
-      Smoking: '#96CEB4',
-      'Weight Loss': '#FFEAA7',
-      Sleep: '#DDA0DD',
-      'Pain Management': '#F4A460',
-      Stress: '#A78BFA',
-      Phobias: '#F59E0B',
-      Performance: '#10B981',
-      Habits: '#8B5CF6',
-      default: theme.accent, // Use theme accent as fallback
-    };
-    return colors[sessionType] || colors.default;
+  // --- Helpers ---
+  const formatDate = dateStr => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   };
 
-  const getStatusInfo = status => {
-    const statusConfig = {
-      completed: { label: 'Completed', color: '#10B981', icon: '✓' },
-      'pending-feedback': {
-        label: 'Pending Feedback',
-        color: '#F59E0B',
-        icon: '⏳',
-      },
-      recording: { label: 'Recording', color: '#3B82F6', icon: '●' },
-    };
-    return statusConfig[status] || statusConfig.completed;
-  };
-
-  const formatDate = dateString => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays}d ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
-
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-    });
-  };
-
-  const handleShareFeedback = () => {
-    if (sessionFeedbackLink) {
-      Alert.alert(
-        'Share Feedback Link',
-        'Copy this link to share with clients or peers for ratings:',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          {
-            text: 'Copy Link',
-            onPress: () => {
-              console.log('Copy link:', sessionFeedbackLink);
-              Alert.alert('Success', 'Link copied to clipboard!');
-            },
-          },
-        ],
-      );
+  const getStatusColor = s => {
+    switch (s?.toLowerCase()) {
+      case 'completed':
+        return theme.success || '#10B981';
+      case 'recording':
+        return theme.danger || '#EF4444';
+      case 'pending':
+      case 'pending-feedback':
+        return theme.warning || '#F59E0B';
+      default:
+        return theme.secondary;
     }
   };
 
-  // If API gives feedback_expires_at and it's in the future, mark as pending-feedback
-  const resolvedStatus =
-    session.feedback_expires_at &&
-    new Date(session.feedback_expires_at) > new Date()
-      ? 'pending-feedback'
-      : status;
+  const statusColor = getStatusColor(status);
 
-  const statusInfo = getStatusInfo(resolvedStatus);
-
-  const cardStyles = StyleSheet.create({
-    container: {
-      backgroundColor: theme.card,
-      padding: 12,
-      borderRadius: 16,
-      marginBottom: 8,
-      borderWidth: 1,
-      borderColor: theme.border,
-      shadowColor: isDark ? '#000' : theme.cardShadow,
-      shadowOffset: { width: 0, height: 2 },
-      shadowOpacity: isDark ? 0.2 : 0.05,
-      shadowRadius: 4,
-      elevation: 3,
-    },
-    compactContainer: {
-      padding: 8,
-      marginBottom: 6,
-    },
-    title: {
-      fontSize: 16,
-      fontFamily: 'Nunito-SemiBold',
-      color: theme.primary, // Dynamic primary color
-      flex: 1,
-      lineHeight: 20,
-    },
-    ratingBadge: {
-      backgroundColor: theme.background, // Use background for badge color
-      paddingHorizontal: 6,
-      paddingVertical: 2,
-      borderRadius: 8,
-      borderWidth: 1,
-      borderColor: theme.border, // Dynamic border color
-      marginLeft: 6,
-    },
-    ratingNumber: {
-      fontSize: 14,
-      fontFamily: 'Nunito-Bold',
-      color: accentColor, // Dynamic accent color
-    },
-    metaText: {
-      fontSize: 12,
-      color: theme.secondary, // Dynamic secondary color
-      fontFamily: 'Nunito-Medium',
-    },
-    notesContainer: {
-      backgroundColor: isDark ? theme.border : theme.background, // Subtle contrast
-      padding: 6,
-      borderRadius: 8,
-      marginBottom: 6,
-    },
-    notes: {
-      fontSize: 12,
-      color: theme.secondary, // Dynamic secondary color
-      fontFamily: 'Nunito-Regular',
-      lineHeight: 16,
-    },
-    ratingsBreakdown: {
-      borderTopWidth: 1,
-      borderTopColor: theme.border, // Dynamic border color
-      paddingTop: 6,
-    },
-    skillLabel: {
-      fontSize: 10,
-      color: theme.tertiary, // Tertiary/lighter text color
-      fontFamily: 'Nunito-Medium',
-      marginBottom: 0,
-    },
-    skillRating: {
-      fontSize: 12,
-      fontFamily: 'Nunito-Bold',
-      color: theme.primary, // Dynamic primary color
-    },
-    feedbackLinkContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      backgroundColor: isDark ? '#1C2E4A' : '#F0F9FF', // Specific blue background for link
-      padding: 10,
-      borderRadius: 8,
-      borderWidth: 1,
-      borderColor: isDark ? '#2D4464' : '#E0F2FE',
-      gap: 6,
-    },
-    feedbackLinkText: {
-      fontSize: 14,
-      fontFamily: 'Nunito-SemiBold',
-      color: isDark ? '#93C5FD' : '#0369A1', // Light blue text for contrast
-      marginBottom: 0,
-    },
-    feedbackLinkSubtext: {
-      fontSize: 11,
-      color: isDark ? '#60A5FA' : '#0EA5E9',
-      fontFamily: 'Nunito-Regular',
-    },
-  });
+  const handleShare = () => {
+    if (!displayLink) return;
+    Alert.alert('Share Feedback Link', 'Copy link to clipboard?', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Copy', onPress: () => console.log('Copied', displayLink) },
+    ]);
+  };
 
   return (
-    <TouchableOpacity
-      style={[cardStyles.container, compact && cardStyles.compactContainer]}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      <View style={cardStaticStyles.header}>
-        <View style={cardStaticStyles.titleSection}>
-          <View style={cardStaticStyles.titleRow}>
-            <Text style={cardStyles.title} numberOfLines={2}>
-              {title}
-            </Text>
-            <View style={cardStyles.ratingBadge}>
-              <Text style={cardStyles.ratingNumber}>
-                {average_rating == 0
-                  ? average_rating.toString().concat('.0')
-                  : average_rating.toString()}
+    <TouchableOpacity style={styles.card} onPress={onPress} activeOpacity={0.7}>
+      <View style={styles.mainRow}>
+        {/* Left Side: Info */}
+        <View style={styles.infoSection}>
+          {/* Type Badge */}
+          <View style={styles.headerRow}>
+            <View style={[styles.typeTag, { borderColor: theme.accent }]}>
+              <Text style={[styles.typeText, { color: theme.accent }]}>
+                {displayType}
               </Text>
             </View>
+            {status === 'recording' && (
+              <View
+                style={[styles.statusDot, { backgroundColor: statusColor }]}
+              />
+            )}
           </View>
 
-          <View style={cardStaticStyles.typeStatusRow}>
-            <View
-              style={[
-                cardStaticStyles.typeBadge,
-                { backgroundColor: getSessionTypeColor(sessionType) },
-              ]}
-            >
-              <Text style={cardStaticStyles.typeText}>
-                {sessionType || 'Session'}
-              </Text>
-            </View>
+          {/* Title */}
+          <Text style={styles.title} numberOfLines={1}>
+            {title}
+          </Text>
 
-            <View
-              style={[
-                cardStaticStyles.statusBadge,
-                { backgroundColor: statusInfo.color },
-              ]}
-            >
-              <Text style={cardStaticStyles.statusIcon}>{statusInfo.icon}</Text>
-              <Text style={cardStaticStyles.statusText}>
-                {statusInfo.label}
-              </Text>
+          {/* Meta Row */}
+          <View style={styles.metaRow}>
+            <View style={styles.metaItem}>
+              <UserIcon color={theme.secondary} />
+              <Text style={styles.metaText}>{displayClient}</Text>
+            </View>
+            <View style={styles.metaDivider} />
+            <View style={styles.metaItem}>
+              <CalendarIcon color={theme.secondary} />
+              <Text style={styles.metaText}>{formatDate(displayDate)}</Text>
             </View>
           </View>
         </View>
-      </View>
 
-      <View style={cardStaticStyles.metaContainer}>
-        {sessionClientName && (
-          <View style={cardStaticStyles.metaItem}>
-            <ClientIcon />
-            <Text style={cardStyles.metaText}>{sessionClientName}</Text>
+        {/* Right Side: Rating Box */}
+        <View style={styles.ratingSection}>
+          <View
+            style={[
+              styles.ratingBox,
+              {
+                backgroundColor: hasRating
+                  ? isDark
+                    ? 'rgba(255,255,255,0.05)'
+                    : '#F0F4F8'
+                  : 'transparent',
+                borderColor: hasRating ? 'transparent' : theme.border,
+              },
+            ]}
+          >
+            {hasRating ? (
+              <>
+                <Text style={[styles.ratingNumber, { color: theme.primary }]}>
+                  {formattedRating}
+                </Text>
+                <Svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 12 12"
+                  fill={theme.warning}
+                >
+                  <Path d="M6 0L7.80568 3.92705L12 4.39052L8.87356 7.25491L9.7353 11.3855L6 9.25458L2.2647 11.3855L3.12644 7.25491L0 4.39052L4.19432 3.92705L6 0Z" />
+                </Svg>
+              </>
+            ) : (
+              <Text style={[styles.noRatingText, { color: theme.secondary }]}>
+                --
+              </Text>
+            )}
           </View>
-        )}
-        <View style={cardStaticStyles.metaItem}>
-          <CalendarIcon />
-          <Text style={cardStyles.metaText}>{formatDate(sessionDate)}</Text>
-        </View>
-      </View>
-
-      {notes && !compact && (
-        <View style={cardStyles.notesContainer}>
-          <Text style={cardStyles.notes} numberOfLines={2}>
-            {notes}
+          <Text style={[styles.ratingLabel, { color: theme.secondary }]}>
+            {hasRating ? 'Avg Score' : 'No Rating'}
           </Text>
         </View>
-      )}
+      </View>
 
-      {sessionRatings.length > 0 && !compact && (
-        <View style={cardStyles.ratingsBreakdown}>
-          <View style={cardStaticStyles.skillsGrid}>
-            <View style={cardStaticStyles.skillItem}>
-              <Text style={cardStyles.skillLabel}>Creativity</Text>
-              <Text style={cardStyles.skillRating}>
-                {sessionRatings[0]?.toFixed(1)}
-              </Text>
-            </View>
-            <View style={cardStaticStyles.skillItem}>
-              <Text style={cardStyles.skillLabel}>Express</Text>
-              <Text style={cardStyles.skillRating}>
-                {sessionRatings[1]?.toFixed(1)}
-              </Text>
-            </View>
-            <View style={cardStaticStyles.skillItem}>
-              <Text style={cardStyles.skillLabel}>Submod</Text>
-              <Text style={cardStyles.skillRating}>
-                {sessionRatings[2]?.toFixed(1)}
-              </Text>
-            </View>
-          </View>
-        </View>
+      {/* Optional Feedback Link Footer */}
+      {showFeedbackLink && displayLink && status === 'pending-feedback' && (
+        <TouchableOpacity
+          style={styles.footerButton}
+          onPress={handleShare}
+          activeOpacity={0.8}
+        >
+          <ShareIcon color={theme.accent} />
+          <Text style={[styles.footerText, { color: theme.accent }]}>
+            Share Feedback Link
+          </Text>
+        </TouchableOpacity>
       )}
-
-      {showFeedbackLink &&
-        sessionFeedbackLink &&
-        status === 'pending-feedback' && (
-          <TouchableOpacity
-            style={cardStyles.feedbackLinkContainer}
-            onPress={handleShareFeedback}
-          >
-            <ShareIcon />
-            <View style={cardStaticStyles.feedbackText}>
-              <Text style={cardStyles.feedbackLinkText}>
-                Share Feedback Link
-              </Text>
-              <Text style={cardStyles.feedbackLinkSubtext}>
-                Expires in 24 hours
-              </Text>
-            </View>
-          </TouchableOpacity>
-        )}
     </TouchableOpacity>
   );
 };
 
-const cardStaticStyles = StyleSheet.create({
-  header: {
-    marginBottom: 8,
-  },
-  titleSection: {
-    gap: 6,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-  },
-  typeStatusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  typeBadge: {
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  typeText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontFamily: 'Nunito-SemiBold',
-    textTransform: 'uppercase',
-  },
-  statusBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 4,
-    paddingVertical: 1,
-    borderRadius: 6,
-    gap: 1,
-  },
-  statusIcon: {
-    fontSize: 8,
-    color: '#FFFFFF',
-    fontFamily: 'Nunito-Bold',
-  },
-  statusText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontFamily: 'Nunito-Medium',
-  },
-  metaContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    marginBottom: 6,
-  },
-  metaItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 2,
-  },
-  skillsGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  skillItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  feedbackText: {
-    flex: 1,
-  },
-});
+const createStyles = (theme, isDark) =>
+  StyleSheet.create({
+    card: {
+      backgroundColor: theme.card,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: theme.border,
+      padding: 16,
+      marginBottom: 12,
+      shadowColor: theme.cardShadow,
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: theme.cardShadowOpacity || 0.05,
+      shadowRadius: 8,
+      elevation: 2,
+    },
+    mainRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    infoSection: {
+      flex: 1,
+      paddingRight: 16,
+    },
+    headerRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 6,
+      gap: 8,
+    },
+    typeTag: {
+      paddingHorizontal: 8,
+      paddingVertical: 2,
+      borderRadius: 6,
+      borderWidth: 1,
+      alignSelf: 'flex-start',
+    },
+    typeText: {
+      fontSize: 10,
+      fontFamily: fontFamily.Nunito_Bold || 'System',
+      textTransform: 'uppercase',
+      letterSpacing: 0.5,
+    },
+    statusDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+    },
+    title: {
+      fontSize: 16,
+      fontFamily: fontFamily.Nunito_Bold || 'System',
+      color: theme.primary,
+      marginBottom: 6,
+    },
+    metaRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    metaItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 4,
+    },
+    metaText: {
+      fontSize: 12,
+      fontFamily: fontFamily.Nunito_Medium || 'System',
+      color: theme.secondary,
+    },
+    metaDivider: {
+      width: 3,
+      height: 3,
+      borderRadius: 1.5,
+      backgroundColor: theme.border,
+      marginHorizontal: 8,
+    },
+
+    // Rating Section
+    ratingSection: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      minWidth: 50,
+    },
+    ratingBox: {
+      width: 44,
+      height: 44,
+      borderRadius: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderWidth: 1,
+      borderStyle: 'solid',
+      marginBottom: 4,
+    },
+    ratingNumber: {
+      fontSize: 14,
+      fontFamily: fontFamily.Nunito_Bold || 'System',
+      fontWeight: '800',
+      marginBottom: -2,
+    },
+    noRatingText: {
+      fontSize: 14,
+      fontFamily: fontFamily.Nunito_Bold || 'System',
+    },
+    ratingLabel: {
+      fontSize: 9,
+      fontFamily: fontFamily.Nunito_Medium || 'System',
+      opacity: 0.8,
+    },
+
+    // Footer
+    footerButton: {
+      marginTop: 12,
+      paddingTop: 12,
+      borderTopWidth: 1,
+      borderTopColor: theme.border,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: 6,
+    },
+    footerText: {
+      fontSize: 12,
+      fontFamily: fontFamily.Nunito_SemiBold || 'System',
+    },
+  });
 
 export default SessionCard;

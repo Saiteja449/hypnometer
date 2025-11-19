@@ -97,6 +97,13 @@ jest.mock('../src/Context/AppContext', () => ({
   }),
 }));
 
+jest.mock('react-native-svg', () => {
+  const Svg = (props) => <div {...props}>{props.children}</div>;
+  Svg.Path = (props) => <div {...props} />;
+  Svg.Circle = (props) => <div {...props} />;
+  return Svg;
+});
+
 jest.mock('../src/Components/CustomHeader', () => 'CustomHeader');
 jest.mock('../src/Components/CustomDateTimePicker', () => 'CustomDateTimePicker');
 jest.mock('../src/Icons/CalendarIcon', () => 'CalendarIcon');

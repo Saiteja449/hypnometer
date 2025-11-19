@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,7 @@ import {
   StyleSheet,
 } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
-import Svg, {
-  Path,
-  Circle,
-  G,
-  Defs,
-  LinearGradient,
-  Stop,
-} from 'react-native-svg';
+import Svg, { Path, G, Defs, LinearGradient, Stop } from 'react-native-svg'; // Keeping unused imports just in case
 import { useTheme } from '../Context/ThemeContext';
 import { useApp } from '../Context/AppContext';
 import { fontFamily } from '../utils/common';
@@ -22,20 +15,17 @@ import { fontFamily } from '../utils/common';
 const GrowthGraph = () => {
   const { theme, isDark } = useTheme();
 
+  // Calculate screen width once for chart responsiveness
   const screenWidth = Dimensions.get('window').width - 40;
 
   const timeRanges = ['1W', '1M', '3M', '1Y'];
   const [selectedRange, setSelectedRange] = React.useState('1M');
 
-  const ActiveRangeGradient = ['#8A2BE2', '#E28A2B']; // Violet to Gold
-
   const { sessions: contextSessions } = useApp();
 
   // Helper: parse numeric rating from session object
   const getSessionScore = session => {
-    // common keys where average score might exist
     const v =
-      session.average_rating ||
       session.average_rating ||
       session.average_ratings ||
       session.average ||
@@ -47,12 +37,12 @@ const GrowthGraph = () => {
 
   // Build buckets for the selected range and compute average score per bucket
   const buildChartFromSessions = sessions => {
+    // ... (Your existing logic for bucketing sessions remains here) ...
     const now = new Date();
     let buckets = [];
     let labels = [];
 
     if (selectedRange === '1W') {
-      // last 7 days (labels: Mon, Tue...)
       for (let i = 6; i >= 0; i--) {
         const day = new Date(now);
         day.setDate(now.getDate() - i);
@@ -63,7 +53,6 @@ const GrowthGraph = () => {
         labels.push(start.toLocaleDateString(undefined, { weekday: 'short' }));
       }
     } else if (selectedRange === '1M') {
-      // last 6 weeks
       for (let i = 5; i >= 0; i--) {
         const start = new Date(now);
         start.setDate(now.getDate() - i * 7);
@@ -74,7 +63,6 @@ const GrowthGraph = () => {
         labels.push(`Wk ${6 - i}`);
       }
     } else if (selectedRange === '3M') {
-      // last 3 months, monthly buckets
       for (let i = 2; i >= 0; i--) {
         const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
         const end = new Date(start.getFullYear(), start.getMonth() + 1, 1);
@@ -82,7 +70,6 @@ const GrowthGraph = () => {
         labels.push(start.toLocaleDateString(undefined, { month: 'short' }));
       }
     } else {
-      // 1Y: last 12 months
       for (let i = 11; i >= 0; i--) {
         const start = new Date(now.getFullYear(), now.getMonth() - i, 1);
         const end = new Date(start.getFullYear(), start.getMonth() + 1, 1);
@@ -112,13 +99,19 @@ const GrowthGraph = () => {
     return { labels, data: points };
   };
 
-  const currentData = buildChartFromSessions(contextSessions || []);
+  const currentData = useMemo(
+    () => buildChartFromSessions(contextSessions || []),
+    [contextSessions, selectedRange],
+  );
 
-  const chartLineColor = (opacity = 1) =>
-    `rgba(${parseInt(theme.accent.slice(1, 3), 16)}, ${parseInt(
-      theme.accent.slice(3, 5),
-      16,
-    )}, ${parseInt(theme.accent.slice(5, 7), 16)}, ${opacity})`;
+  // Helper to correctly derive RGBA color from the accent HEX for chart-kit
+  const chartLineColor = (opacity = 1) => {
+    const hex = theme.accent.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  };
 
   const chartData = {
     labels: currentData.labels,
@@ -131,161 +124,256 @@ const GrowthGraph = () => {
     ],
   };
 
-  const chartConfig = {
-    backgroundColor: theme.card,
-    backgroundGradientFrom: theme.card,
-    backgroundGradientTo: theme.card,
+  const chartConfig = useMemo(
+    () => ({
+      backgroundColor: theme.card,
+      backgroundGradientFrom: theme.card,
+      backgroundGradientTo: theme.card,
 
-    decimalPlaces: 1,
-    color: chartLineColor,
-    labelColor: (opacity = 1) =>
-      isDark
-        ? `rgba(255, 255, 255, ${opacity})`
-        : `rgba(113, 128, 150, ${opacity})`,
-    style: {
-      borderRadius: 16,
-    },
-    propsForDots: {
-      r: '6',
-      strokeWidth: '2',
-      stroke: theme.accent,
-      fill: theme.card,
-    },
-    propsForBackgroundLines: {
-      strokeDasharray: '',
-      stroke: theme.border,
-      strokeWidth: 1,
-    },
-    propsForLabels: {
-      fontSize: 10,
-      fontFamily: fontFamily.Nunito_Medium,
-    },
-  };
-
-  const TrendArrow = ({ trend }) => (
-    <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-      {trend === 'up' ? (
-        <Path
-          d="M4 10L8 6L12 10"
-          stroke="#27ae60"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      ) : (
-        <Path
-          d="M4 6L8 10L12 6"
-          stroke="#e74c3c"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      )}
-    </Svg>
+      decimalPlaces: 1,
+      color: chartLineColor,
+      labelColor: (opacity = 1) => theme.secondary,
+      style: {
+        borderRadius: 16,
+      },
+      propsForDots: {
+        r: '6',
+        strokeWidth: '2',
+        stroke: theme.accent,
+        fill: theme.card, // Dot center color
+      },
+      propsForBackgroundLines: {
+        strokeDasharray: '', // Solid lines
+        stroke: theme.border,
+        strokeWidth: 1,
+      },
+      propsForLabels: {
+        fontSize: 10,
+        fontFamily: fontFamily.Nunito_Medium,
+      },
+      // The LineChart needs to know the range, otherwise it can render strangely
+      yAxisInterval: 1,
+      // Set min/max to ensure a consistent scale (e.g., 0 to 5, or 0 to 10)
+      yAxisSuffix: '',
+    }),
+    [theme],
   );
+
+  const TrendArrow = React.memo(({ trend }) => (
+    <Svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <Path
+        d={trend === 'up' ? 'M4 10L8 6L12 10' : 'M4 6L8 10L12 6'}
+        stroke={trend === 'up' ? '#27ae60' : '#e74c3c'}
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  ));
 
   const calculateMetrics = () => {
     const data = currentData.data;
     const current = data[data.length - 1];
     const previous = data.length > 1 ? data[data.length - 2] : data[0] || 0;
+
     let growth = 0;
     if (previous && previous !== 0) {
       growth = ((current - previous) / previous) * 100;
     } else if (previous === 0 && current !== 0) {
-      growth = 100; // arbitrary positive growth from zero
+      growth = 100;
     }
+
     const trend = growth >= 0 ? 'up' : 'down';
+    const hasData = data.some(val => val > 0);
+    const validData = data.filter(v => v !== 0);
 
     return {
       currentScore: current,
       growth: Math.abs(growth).toFixed(1),
       trend,
-      highest: Math.max(...data),
-      average: (data.reduce((a, b) => a + b, 0) / data.length).toFixed(1),
+      highest: hasData ? Math.max(...validData).toFixed(1) : '0.0',
+      average: hasData
+        ? (validData.reduce((a, b) => a + b, 0) / validData.length).toFixed(1)
+        : '0.0',
     };
   };
 
   const metrics = calculateMetrics();
 
-  const dynamicStyles = StyleSheet.create({
+  // Stylesheet wrapped in useMemo for optimal performance
+  const styles = useMemo(() => createStyles(theme, isDark), [theme, isDark]);
+
+  return (
+    <View style={styles.graphContainer}>
+      {/* Header: Title and Current Score */}
+      <View style={styles.graphHeader}>
+        <View>
+          <Text style={styles.sectionTitle}>Growth Progress</Text>
+          <Text style={styles.graphSubtitle}>Metaphor Mastery Score</Text>
+        </View>
+        <View style={styles.currentScore}>
+          <Text style={styles.scoreValue}>{metrics.currentScore}</Text>
+          <Text style={styles.scoreLabel}>Current</Text>
+        </View>
+      </View>
+
+      {/* Time Range Selector */}
+      <View style={styles.timeRangeContainer}>
+        {timeRanges.map(range => (
+          <TouchableOpacity
+            key={range}
+            style={styles.timeRangeButton}
+            onPress={() => setSelectedRange(range)}
+          >
+            <View
+              style={[
+                styles.timeRangeInner,
+                selectedRange === range && {
+                  backgroundColor: theme.accent,
+                  borderRadius: 12,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.timeRangeText,
+                  selectedRange === range && styles.timeRangeTextActive,
+                ]}
+              >
+                {range}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* Line Chart */}
+      <View style={styles.chartWrapper}>
+        <LineChart
+          data={chartData}
+          width={screenWidth - 20} // Subtract padding from container
+          height={200}
+          chartConfig={chartConfig}
+          bezier
+          style={styles.chart}
+          withVerticalLines={false}
+          withHorizontalLines={true}
+          withInnerLines={true}
+          withOuterLines={false}
+          fromZero={true} // Scores should start from 0
+        />
+      </View>
+
+      {/* Metrics Cards */}
+      <View style={styles.metricsContainer}>
+        {/* Growth */}
+        <View style={styles.metricCard}>
+          <View style={styles.metricHeader}>
+            <Text style={styles.metricLabel}>Growth</Text>
+            <TrendArrow trend={metrics.trend} />
+          </View>
+          <Text
+            style={[
+              styles.metricValue,
+              { color: metrics.trend === 'up' ? '#27ae60' : '#e74c3c' },
+            ]}
+          >
+            {metrics.trend === 'up' ? '+' : ''}
+            {metrics.growth}%
+          </Text>
+        </View>
+
+        {/* Highest */}
+        <View style={styles.metricCard}>
+          <Text style={styles.metricLabel}>Highest</Text>
+          <Text style={styles.metricValue}>{metrics.highest}</Text>
+        </View>
+
+        {/* Average */}
+        <View style={styles.metricCard}>
+          <Text style={styles.metricLabel}>Average</Text>
+          <Text style={styles.metricValue}>{metrics.average}</Text>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+const createStyles = (theme, isDark) =>
+  StyleSheet.create({
     graphContainer: {
       backgroundColor: theme.card,
-      padding: 10,
+      padding: 16,
       borderRadius: 20,
-      shadowColor: isDark ? theme.cardShadow : theme.cardShadow,
+      shadowColor: theme.cardShadow,
       shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: isDark ? 0.3 : 0.1,
+      shadowOpacity: theme.cardShadowOpacity || 0.1,
       shadowRadius: 12,
       elevation: 4,
       borderWidth: 1,
       borderColor: theme.border,
+      marginBottom: 16,
     },
     graphHeader: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'flex-start',
-      marginBottom: 10,
+      marginBottom: 12,
     },
     sectionTitle: {
-      fontSize: 16,
-      fontFamily: 'Nunito-Bold',
+      fontSize: 18,
+      fontFamily: fontFamily.Nunito_Bold,
       color: theme.primary,
-      marginBottom: 0,
     },
     graphSubtitle: {
       fontSize: 12,
       color: theme.secondary,
-      fontFamily: 'Nunito-Medium',
+      fontFamily: fontFamily.Nunito_Medium,
+      marginTop: 2,
     },
     currentScore: {
       alignItems: 'center',
-      backgroundColor: isDark ? theme.background : '#F8FAFF',
-      paddingHorizontal: 6,
-      paddingVertical: 4,
-      borderRadius: 12,
+      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : '#E6F0FF',
+      paddingHorizontal: 10,
+      paddingVertical: 6,
+      borderRadius: 14,
       borderWidth: 1,
-      borderColor: theme.border,
+      borderColor: isDark ? theme.border : '#CCE0FF',
     },
     scoreValue: {
-      fontSize: 15,
-      fontFamily: 'Nunito-Bold',
+      fontSize: 16,
+      fontFamily: fontFamily.Nunito_Bold,
       color: theme.accent,
-      marginBottom: 0,
     },
     scoreLabel: {
       fontSize: 10,
       color: theme.secondary,
-      fontFamily: 'Nunito-Medium',
+      fontFamily: fontFamily.Nunito_Medium,
     },
     timeRangeContainer: {
       flexDirection: 'row',
       backgroundColor: isDark ? theme.background : '#F7FAFC',
-      padding: 2,
-      borderRadius: 14, // Adjusted borderRadius
-      marginBottom: 10,
+      padding: 4,
+      borderRadius: 16,
+      marginBottom: 16,
       borderWidth: 1,
       borderColor: theme.border,
     },
     timeRangeButton: {
       flex: 1,
-      paddingVertical: 6,
-      paddingHorizontal: 6,
-      borderRadius: 12,
       alignItems: 'center',
       justifyContent: 'center',
-      marginHorizontal: 4,
+      padding: 2,
     },
-    timeRangeButtonActive: {
-      flex: 1,
+    timeRangeInner: {
       width: '100%',
-      height: '100%',
+      paddingVertical: 6,
+      borderRadius: 12,
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: 12,
-      backgroundColor: isDark ? '#4B0082' : '#FFD700',
     },
     timeRangeText: {
-      fontSize: 10,
+      fontSize: 12,
       fontFamily: fontFamily.Nunito_Medium,
       color: theme.secondary,
     },
@@ -295,148 +383,42 @@ const GrowthGraph = () => {
     },
     chartWrapper: {
       alignItems: 'center',
-      marginBottom: 10,
+      marginBottom: 16,
+      marginHorizontal: -10,
     },
     chart: {
       borderRadius: 16,
-      marginVertical: 4,
     },
     metricsContainer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 10,
-      gap: 6,
+      gap: 8,
     },
     metricCard: {
       flex: 1,
       backgroundColor: isDark ? theme.background : '#F8FAFF',
-      padding: 8,
+      padding: 10,
       borderRadius: 12,
       borderWidth: 1,
       borderColor: theme.border,
-      alignItems: 'center',
+      alignItems: 'flex-start',
     },
     metricHeader: {
       flexDirection: 'row',
       alignItems: 'center',
-      marginBottom: 0,
+      marginBottom: 4,
+      gap: 4,
     },
     metricLabel: {
-      fontSize: 10,
+      fontSize: 11,
       color: theme.secondary,
-      fontFamily: 'Nunito-Medium',
-      marginRight: 0,
+      fontFamily: fontFamily.Nunito_Medium,
     },
     metricValue: {
-      fontSize: 13,
-      fontFamily: 'Nunito-Bold',
+      fontSize: 14,
+      fontFamily: fontFamily.Nunito_Bold,
       color: theme.primary,
     },
-    performanceIndicator: {
-      backgroundColor: isDark ? '#332700' : '#FFF9E6',
-      padding: 10,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: isDark ? '#665100' : '#FFE999',
-    },
-    performanceBar: {
-      height: 6,
-      backgroundColor: theme.border,
-      borderRadius: 3,
-      marginBottom: 4,
-      overflow: 'hidden',
-    },
-    performanceFill: {
-      height: '100%',
-      backgroundColor: theme.accent,
-      borderRadius: 3,
-    },
-    performanceText: {
-      fontSize: 12,
-      fontFamily: 'Nunito-SemiBold',
-      color: isDark ? '#FFD700' : '#D97706',
-      textAlign: 'center',
-    },
   });
-
-  return (
-    <View style={dynamicStyles.graphContainer}>
-      <View style={dynamicStyles.graphHeader}>
-        <View>
-          <Text style={dynamicStyles.sectionTitle}>Growth Progress</Text>
-          <Text style={dynamicStyles.graphSubtitle}>
-            Metaphor Mastery Score
-          </Text>
-        </View>
-        <View style={dynamicStyles.currentScore}>
-          <Text style={dynamicStyles.scoreValue}>{metrics.currentScore}</Text>
-          <Text style={dynamicStyles.scoreLabel}>Current</Text>
-        </View>
-      </View>
-
-      <View style={dynamicStyles.timeRangeContainer}>
-        {timeRanges.map(range => (
-          <TouchableOpacity
-            key={range} // Add padding styles here if you didn't add them to dynamicStyles.timeRangeButton
-            style={dynamicStyles.timeRangeButton}
-            onPress={() => setSelectedRange(range)}
-          >
-            {selectedRange === range ? (
-              <View style={dynamicStyles.timeRangeButtonActive}>
-                <Text style={dynamicStyles.timeRangeTextActive}>{range}</Text> 
-              </View>
-            ) : (
-              <Text style={dynamicStyles.timeRangeText}>{range}</Text>
-            )}
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      <View style={dynamicStyles.chartWrapper}>
-        <LineChart
-          data={chartData}
-          width={screenWidth}
-          height={200}
-          chartConfig={chartConfig}
-          bezier
-          style={dynamicStyles.chart}
-          withVerticalLines={true}
-          withHorizontalLines={true}
-          withInnerLines={true}
-          withOuterLines={false}
-          fromZero={false}
-        />
-      </View>
-
-      <View style={dynamicStyles.metricsContainer}>
-        <View style={dynamicStyles.metricCard}>
-          <View style={dynamicStyles.metricHeader}>
-            <Text style={dynamicStyles.metricLabel}>Growth</Text>
-            <TrendArrow trend={metrics.trend} />
-          </View>
-          <Text
-            style={[
-              dynamicStyles.metricValue,
-              { color: metrics.trend === 'up' ? '#27ae60' : '#e74c3c' },
-            ]}
-          >
-            {metrics.trend === 'up' ? '+' : '-'}
-            {metrics.growth}%
-          </Text>
-        </View>
-
-        <View style={dynamicStyles.metricCard}>
-          <Text style={dynamicStyles.metricLabel}>Highest</Text>
-          <Text style={dynamicStyles.metricValue}>{metrics.highest}</Text>
-        </View>
-
-        <View style={dynamicStyles.metricCard}>
-          <Text style={dynamicStyles.metricLabel}>Average</Text>
-          <Text style={dynamicStyles.metricValue}>{metrics.average}</Text>
-        </View>
-      </View>
-    </View>
-  );
-};
 
 export default GrowthGraph;

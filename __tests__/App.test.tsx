@@ -82,6 +82,7 @@ jest.mock('@react-navigation/native-stack', () => ({
   createNativeStackNavigator: () => ({
     Navigator: ({ children }) => <>{children}</>,
     Screen: ({ children }) => <>{children}</>,
+    Group: ({ children }) => <>{children}</>,
   }),
 }));
 
@@ -124,6 +125,12 @@ jest.mock('../src/Context/ThemeContext', () => ({
     colorScheme: 'light',
   }),
   ThemeProvider: ({ children }) => <>{children}</>, // Mock ThemeProvider
+}));
+
+jest.mock('react-native-safe-area-context', () => ({
+  useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }),
+  SafeAreaProvider: ({ children }) => <>{children}</>,
+  SafeAreaView: ({ children }) => <>{children}</>,
 }));
 
 // Mock all screen components
