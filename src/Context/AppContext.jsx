@@ -220,13 +220,13 @@ export const AppProvider = ({ children }) => {
         ...sessionData,
         user_id: userId,
       };
-      // console.log('Creating session with payload:', payload);
+      console.log('Creating session with payload:', payload);
       const response = await axios.post(
         `${API_BASE_URL}create-session`,
         payload,
       );
+      console.log('RESPONSE', response.data);
       if (response.data.success) {
-        // console.log('RESPONSE', response.data);
         return {
           success: true,
           message: response.data.message,
