@@ -100,7 +100,7 @@ const ProfileHeader = ({ setShowUpdateProfileModal }) => {
 
   const styles = useMemo(() => createStyles(theme, isDark), [theme, isDark]);
 
-  const name = user?.name || 'John Doe';
+  const name = user?.first_name + ' ' + user?.last_name || 'John Doe';
   const email = user?.email || '';
 
   if (!user) return null;
@@ -235,7 +235,7 @@ const ProfileHeader = ({ setShowUpdateProfileModal }) => {
                 {name
                   .split(' ')
                   .map(n => n[0])
-                  .slice(0, 2) // Limit to two initials
+                  .slice(0, 2)
                   .join('')}
               </Text>
             </View>

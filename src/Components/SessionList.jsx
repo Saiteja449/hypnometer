@@ -63,6 +63,8 @@ const SessionList = ({
     </View>
   );
 
+  console.log('Sessions', sessions);
+
   const renderSessionItem = ({ item }) => (
     <View style={styles.sessionItemWrapper}>
       {/* Assuming SessionCard handles its own internal styling, 

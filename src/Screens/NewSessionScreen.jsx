@@ -67,6 +67,9 @@ const createStyles = (theme, isDark) =>
       color: theme.primary,
       marginBottom: 8,
     },
+    requiredLabel: {
+      color: theme.danger,
+    },
     textInput: {
       backgroundColor: isDark ? theme.card : '#FFFFFF',
       borderWidth: 1,
@@ -340,7 +343,8 @@ const ResultModal = React.memo(
     theme,
     styles,
   }) => {
-    const isError = resultTitle.includes('Error') || resultTitle.includes('Failed');
+    const isError =
+      resultTitle.includes('Error') || resultTitle.includes('Failed');
     const iconColor = isError ? theme.danger : theme.success;
 
     return (
@@ -467,13 +471,14 @@ const NewSessionScreen = ({ navigation }) => {
   // 🔑 Optimization: Memoize dynamic styles
   const styles = useMemo(() => createStyles(theme, isDark), [theme, isDark]);
 
-  const onDateChange = (selectedDate) => {
+  const onDateChange = selectedDate => {
     if (selectedDate) {
       setSessionData(prev => ({ ...prev, date: selectedDate }));
+      if (errors.date) setErrors(prev => ({ ...prev, date: '' }));
     }
   };
 
-  const formatDate = (date) => {
+  const formatDate = date => {
     return date.toLocaleDateString('en-US', {
       weekday: 'short',
       year: 'numeric',
@@ -482,7 +487,7 @@ const NewSessionScreen = ({ navigation }) => {
     });
   };
 
-  const formatTime = (date) => {
+  const formatTime = date => {
     return date.toLocaleTimeString('en-US', {
       hour: '2-digit',
       minute: '2-digit',
@@ -491,26 +496,42 @@ const NewSessionScreen = ({ navigation }) => {
   };
 
   const handleCreateSession = async () => {
-    // Validate with current state directly
+    // Validate all fields except notes
     const newErrors = {};
 
     console.log('Validating sessionData:', sessionData);
 
+    // Title - required
     if (!sessionData.title.trim()) {
       newErrors.title = 'Session title is required';
     } else if (sessionData.title.trim().length < 3) {
       newErrors.title = 'Title must be at least 3 characters';
     }
 
-    if (sessionData.clientName && sessionData.clientName.trim().length < 2) {
+    // Session Type - required
+    if (!sessionData.selectedType) {
+      newErrors.selectedType = 'Please select a session focus';
+    }
+
+    // Client Name - required
+    if (!sessionData.clientName.trim()) {
+      newErrors.clientName = 'Client name is required';
+    } else if (sessionData.clientName.trim().length < 2) {
       newErrors.clientName = 'Client name must be at least 2 characters';
     }
 
-    if (
-      sessionData.sessionLink &&
-      !/^https?:\/\/\S+$/.test(sessionData.sessionLink)
-    ) {
+    // Session Link - required and must be valid URL
+    if (!sessionData.sessionLink.trim()) {
+      newErrors.sessionLink = 'Session link is required';
+    } else if (!/^https?:\/\/\S+$/.test(sessionData.sessionLink)) {
       newErrors.sessionLink = 'Please enter a valid URL for the session link';
+    }
+
+    // Metaphor Theme - required
+    if (!sessionData.metaphorTheme.trim()) {
+      newErrors.metaphorTheme = 'Metaphor theme is required';
+    } else if (sessionData.metaphorTheme.trim().length < 3) {
+      newErrors.metaphorTheme = 'Metaphor theme must be at least 3 characters';
     }
 
     // Set errors immediately
@@ -543,6 +564,8 @@ const NewSessionScreen = ({ navigation }) => {
         metaphor_theme: sessionData.metaphorTheme.trim(),
       };
 
+      console.log('Result', sessionToCreate);
+
       const result = await createSession(sessionToCreate);
 
       if (result?.success) {
@@ -555,7 +578,7 @@ const NewSessionScreen = ({ navigation }) => {
           {
             text: 'View Session',
             onPress: () =>
-              navigation.navigate('SessionDetail', {
+              navigation.navigate('SessionList', {
                 sessionId: result.data?.id,
               }),
           },
@@ -602,7 +625,20 @@ const NewSessionScreen = ({ navigation }) => {
     }, 120);
   };
 
-  const isButtonDisabled = !sessionData.title.trim() || localLoading || appIsLoading;
+  const isButtonDisabled =
+    !sessionData.title.trim() ||
+    !sessionData.selectedType ||
+    !sessionData.clientName.trim() ||
+    !sessionData.sessionLink.trim() ||
+    !sessionData.metaphorTheme.trim() ||
+    localLoading ||
+    appIsLoading;
+
+  const renderLabel = (label, isRequired = true) => (
+    <Text style={styles.label}>
+      {label} {isRequired && <Text style={styles.requiredLabel}>*</Text>}
+    </Text>
+  );
 
   return (
     <KeyboardAvoidingView
@@ -627,7 +663,7 @@ const NewSessionScreen = ({ navigation }) => {
 
         {/* --- 1. Session Title --- */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Session Title *</Text>
+          {renderLabel('Session Title')}
           <TextInput
             style={[styles.textInput, errors.title && styles.inputError]}
             placeholder="e.g., Anxiety Breakthrough"
@@ -645,19 +681,23 @@ const NewSessionScreen = ({ navigation }) => {
 
         {/* --- 2. Session Type (Radio Buttons) --- */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Session Focus</Text>
+          {renderLabel('Session Focus')}
           <View style={styles.radioRow}>
             {SESSION_TYPES.map(type => {
               const selected = sessionData.selectedType === type;
+              const hasError = errors.selectedType;
               return (
                 <TouchableOpacity
                   key={type}
                   style={[
                     styles.radioItem,
                     selected && styles.radioItemSelected,
+                    hasError && styles.inputError,
                   ]}
                   onPress={() => {
                     setSessionData(prev => ({ ...prev, selectedType: type }));
+                    if (errors.selectedType)
+                      setErrors(prev => ({ ...prev, selectedType: '' }));
                   }}
                 >
                   <Text
@@ -672,11 +712,14 @@ const NewSessionScreen = ({ navigation }) => {
               );
             })}
           </View>
+          {errors.selectedType && (
+            <Text style={styles.errorText}>{errors.selectedType}</Text>
+          )}
         </View>
 
         {/* --- 3. Client Name --- */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Client Name (Optional)</Text>
+          {renderLabel('Client Name')}
           <TextInput
             style={[styles.textInput, errors.clientName && styles.inputError]}
             placeholder="Enter client name"
@@ -699,7 +742,7 @@ const NewSessionScreen = ({ navigation }) => {
 
         {/* --- 4. Session Link --- */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Session Link (Optional - Zoom/Meet)</Text>
+          {renderLabel('Session Link (Zoom/Meet)')}
           <TextInput
             style={[styles.textInput, errors.sessionLink && styles.inputError]}
             placeholder="e.g., https://zoom.us/j/1234567890"
@@ -724,10 +767,10 @@ const NewSessionScreen = ({ navigation }) => {
 
         {/* --- 5. Date & Time Picker --- */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Session Date & Time</Text>
+          {renderLabel('Session Date & Time')}
           <View style={styles.datetimeContainer}>
             <TouchableOpacity
-              style={styles.datetimeButton}
+              style={[styles.datetimeButton, errors.date && styles.inputError]}
               onPress={() => setShowDatePicker(true)}
             >
               <CalendarIcon color={theme.accent} size={20} />
@@ -737,7 +780,7 @@ const NewSessionScreen = ({ navigation }) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.datetimeButton}
+              style={[styles.datetimeButton, errors.date && styles.inputError]}
               onPress={() => setShowDatePicker(true)}
             >
               <ClockIcon size={20} color={theme.accent} />
@@ -746,21 +789,30 @@ const NewSessionScreen = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
           </View>
+          {errors.date && <Text style={styles.errorText}>{errors.date}</Text>}
         </View>
 
         {/* --- 6. Metaphor Theme --- */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Metaphor Theme (Optional)</Text>
+          {renderLabel('Metaphor Theme')}
           <TextInput
-            style={styles.textInput}
+            style={[
+              styles.textInput,
+              errors.metaphorTheme && styles.inputError,
+            ]}
             placeholder="e.g., Beach relaxation, Forest journey"
             placeholderTextColor={theme.secondary}
             value={sessionData.metaphorTheme}
-            onChangeText={text =>
-              setSessionData(prev => ({ ...prev, metaphorTheme: text }))
-            }
+            onChangeText={text => {
+              setSessionData(prev => ({ ...prev, metaphorTheme: text }));
+              if (errors.metaphorTheme)
+                setErrors(prev => ({ ...prev, metaphorTheme: '' }));
+            }}
             maxLength={60}
           />
+          {errors.metaphorTheme && (
+            <Text style={styles.errorText}>{errors.metaphorTheme}</Text>
+          )}
           <Text style={styles.charCount}>
             {sessionData.metaphorTheme.length}/60
           </Text>
@@ -768,7 +820,7 @@ const NewSessionScreen = ({ navigation }) => {
 
         {/* --- 7. Session Notes --- */}
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Session Notes (Optional)</Text>
+          {renderLabel('Session Notes', false)}
           <TextInput
             style={[styles.textInput, styles.notesInput]}
             placeholder="Add any notes about the session, techniques used, client responses, etc."
@@ -781,9 +833,7 @@ const NewSessionScreen = ({ navigation }) => {
             textAlignVertical="top"
             maxLength={1000}
           />
-          <Text style={styles.charCount}>
-            {sessionData.notes.length}/1000
-          </Text>
+          <Text style={styles.charCount}>{sessionData.notes.length}/1000</Text>
         </View>
 
         {/* --- 8. Action Buttons --- */}
