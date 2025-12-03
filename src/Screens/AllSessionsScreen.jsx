@@ -9,6 +9,7 @@ import {
   Dimensions,
   RefreshControl,
   Share,
+  Platform,
 } from 'react-native';
 // Assuming these imports are correct based on the original code
 import SearchIcon from '../Icons/SearchIcon';
@@ -25,7 +26,7 @@ const AllSessionsScreen = ({ navigation, route }) => {
   const { theme, isDark } = useTheme();
   const { sessions: contextSessions, getSessions, userId } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
-  const [filter, setFilter] = useState('all');
+  const [filter, setFilter] = useState('active');
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
@@ -34,7 +35,6 @@ const AllSessionsScreen = ({ navigation, route }) => {
     }
   }, [userId, getSessions]);
 
-  // --- Data Normalization (Kept robust logic from original) ---
   const normalizeSessions = sessions => {
     return sessions
       .filter(session => session.session_datetime) // Filter out sessions without a date
@@ -74,7 +74,6 @@ const AllSessionsScreen = ({ navigation, route }) => {
           statusDisplay: statusDisplay,
           rating: session.average_rating || 0,
           notes: session.notes || session.metaphor_theme || '',
-          // Use rating * 20 for a 0-100% proxy
           progress: session.average_rating
             ? Math.round(session.average_rating * 20)
             : 0,
@@ -547,27 +546,29 @@ const AllSessionsScreen = ({ navigation, route }) => {
             { key: 'all', label: 'All Sessions' },
             { key: 'done', label: 'Completed' },
             { key: 'active', label: 'Active' },
-          ].map(tab => (
-            <TouchableOpacity
-              key={tab.key}
-              onPress={() => setFilter(tab.key)}
-              style={[
-                styles.filterTab,
-                filter === tab.key && styles.filterTabActive,
-              ]}
-              activeOpacity={0.9}
-            >
-              <Text
+          ]
+            .reverse()
+            .map(tab => (
+              <TouchableOpacity
+                key={tab.key}
+                onPress={() => setFilter(tab.key)}
                 style={[
-                  styles.filterTabText,
-                  filter === tab.key && styles.filterTabTextActive,
+                  styles.filterTab,
+                  filter === tab.key && styles.filterTabActive,
                 ]}
-                numberOfLines={1}
+                activeOpacity={0.9}
               >
-                {tab.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
+                <Text
+                  style={[
+                    styles.filterTabText,
+                    filter === tab.key && styles.filterTabTextActive,
+                  ]}
+                  numberOfLines={1}
+                >
+                  {tab.label}
+                </Text>
+              </TouchableOpacity>
+            ))}
         </View>
 
         {/* Session List */}

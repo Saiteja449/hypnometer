@@ -13,10 +13,16 @@ import { useTheme } from '../Context/ThemeContext'; // Assuming this is where us
 import LeftArrowIcon from '../Icons/LeftArrowIcon';
 import RightArrowIcon from '../Icons/RightArrowIcon';
 
-const CustomDateTimePicker = ({ visible, date, onDateChange, onClose }) => {
+const CustomDateTimePicker = ({
+  visible,
+  date,
+  onDateChange,
+  onClose,
+  openstate,
+}) => {
   const { theme, isDark } = useTheme(); // Use context for theme
   const [selectedDate, setSelectedDate] = useState(date || new Date());
-  const [mode, setMode] = useState('date'); // 'date' or 'time'
+  const [mode, setMode] = useState(openstate || 'date'); // 'date' or 'time'
   const [currentMonth, setCurrentMonth] = useState(
     date ? date.getMonth() : new Date().getMonth(),
   );

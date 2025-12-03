@@ -32,6 +32,7 @@ const SESSION_TYPES = [
   'Sleep',
   'Pain Management',
   'Smoking Cessation',
+  'Other',
 ];
 
 // --- Custom Stylesheet Creation Function ---
@@ -280,6 +281,50 @@ const createStyles = (theme, isDark) =>
       justifyContent: 'center',
       width: '100%',
     },
+    emailInputContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 10,
+    },
+    emailInput: {
+      flex: 1,
+    },
+    addButton: {
+      backgroundColor: theme.accent,
+      paddingHorizontal: 16,
+      paddingVertical: 12,
+      borderRadius: 10,
+    },
+    addButtonText: {
+      color: '#FFFFFF',
+      fontFamily: 'Nunito-Bold',
+      fontSize: 16,
+    },
+    emailList: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      gap: 8,
+      marginTop: 12,
+    },
+    emailTag: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: isDark ? theme.card : '#E5E7EB',
+      borderRadius: 16,
+      paddingHorizontal: 12,
+      paddingVertical: 8,
+      gap: 8,
+    },
+    emailTagText: {
+      fontFamily: 'Nunito-SemiBold',
+      color: theme.primary,
+    },
+    removeEmailText: {
+      fontFamily: 'Nunito-Bold',
+      color: theme.secondary,
+      fontSize: 16,
+      lineHeight: 16,
+    },
   });
 
 // --- Modal Sub-Components ---
@@ -452,14 +497,18 @@ const NewSessionScreen = ({ navigation }) => {
   const [sessionData, setSessionData] = useState({
     title: '',
     selectedType: '',
-    clientName: '',
+    otherFocus: '',
+    sessionVisibility: 'public',
+    clientEmails: [],
     date: new Date(),
     sessionLink: '',
     notes: '',
     metaphorTheme: '',
   });
+  const [currentEmail, setCurrentEmail] = useState('');
 
   const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [errors, setErrors] = useState({});
   const [localLoading, setLocalLoading] = useState(false);
   const [resultModalVisible, setResultModalVisible] = useState(false);
@@ -468,14 +517,56 @@ const NewSessionScreen = ({ navigation }) => {
   const [resultActions, setResultActions] = useState([]);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
-  // 🔑 Optimization: Memoize dynamic styles
   const styles = useMemo(() => createStyles(theme, isDark), [theme, isDark]);
 
-  const onDateChange = selectedDate => {
-    if (selectedDate) {
-      setSessionData(prev => ({ ...prev, date: selectedDate }));
-      if (errors.date) setErrors(prev => ({ ...prev, date: '' }));
+  const onDateChange = (event, selectedDate) => {
+    const currentDate = selectedDate || sessionData.date;
+    setShowDatePicker(Platform.OS === 'ios');
+    setSessionData(prev => ({ ...prev, date: currentDate }));
+  };
+
+  const onTimeChange = (event, selectedTime) => {
+    const currentTime = selectedTime || sessionData.date;
+    setShowTimePicker(Platform.OS === 'ios');
+    // Combine date and time
+    const newDate = new Date(sessionData.date);
+    newDate.setHours(currentTime.getHours());
+    newDate.setMinutes(currentTime.getMinutes());
+    setSessionData(prev => ({ ...prev, date: newDate }));
+  };
+
+  const handleAddEmail = () => {
+    const newEmail = currentEmail.trim();
+    const emailRegex = new RegExp(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+    );
+
+    if (newEmail && emailRegex.test(newEmail)) {
+      if (!sessionData.clientEmails.includes(newEmail)) {
+        setSessionData(prev => ({
+          ...prev,
+          clientEmails: [...prev.clientEmails, newEmail],
+        }));
+        setCurrentEmail('');
+        if (errors.clientEmails) {
+          setErrors(prev => ({ ...prev, clientEmails: '' }));
+        }
+      } else {
+        setErrors(prev => ({ ...prev, clientEmails: 'Email already added.' }));
+      }
+    } else {
+      setErrors(prev => ({
+        ...prev,
+        clientEmails: 'Please enter a valid email.',
+      }));
     }
+  };
+
+  const handleRemoveEmail = index => {
+    setSessionData(prev => ({
+      ...prev,
+      clientEmails: prev.clientEmails.filter((_, i) => i !== index),
+    }));
   };
 
   const formatDate = date => {
@@ -499,54 +590,45 @@ const NewSessionScreen = ({ navigation }) => {
     // Validate all fields except notes
     const newErrors = {};
 
-    console.log('Validating sessionData:', sessionData);
-
-    // Title - required
     if (!sessionData.title.trim()) {
       newErrors.title = 'Session title is required';
     } else if (sessionData.title.trim().length < 3) {
       newErrors.title = 'Title must be at least 3 characters';
     }
 
-    // Session Type - required
     if (!sessionData.selectedType) {
       newErrors.selectedType = 'Please select a session focus';
+    } else if (
+      sessionData.selectedType === 'Other' &&
+      !sessionData.otherFocus.trim()
+    ) {
+      newErrors.otherFocus = 'Please specify the focus';
     }
 
-    // Client Name - required
-    if (!sessionData.clientName.trim()) {
-      newErrors.clientName = 'Client name is required';
-    } else if (sessionData.clientName.trim().length < 2) {
-      newErrors.clientName = 'Client name must be at least 2 characters';
+    if (
+      sessionData.sessionVisibility === 'private' &&
+      sessionData.clientEmails.length === 0
+    ) {
+      newErrors.clientEmails =
+        'At least one client email is required for private sessions';
     }
 
-    // Session Link - required and must be valid URL
     if (!sessionData.sessionLink.trim()) {
       newErrors.sessionLink = 'Session link is required';
     } else if (!/^https?:\/\/\S+$/.test(sessionData.sessionLink)) {
       newErrors.sessionLink = 'Please enter a valid URL for the session link';
     }
 
-    // Metaphor Theme - required
     if (!sessionData.metaphorTheme.trim()) {
       newErrors.metaphorTheme = 'Metaphor theme is required';
-    } else if (sessionData.metaphorTheme.trim().length < 3) {
-      newErrors.metaphorTheme = 'Metaphor theme must be at least 3 characters';
     }
 
-    // Set errors immediately
     setErrors(newErrors);
 
-    // If there are errors, show validation message
     if (Object.keys(newErrors).length > 0) {
       setResultTitle('Validation Error');
       setResultMessage('Please fix the highlighted errors before submitting.');
-      setResultActions([
-        {
-          text: 'Review Form',
-          onPress: () => {},
-        },
-      ]);
+      setResultActions([{ text: 'Review Form', onPress: () => {} }]);
       setResultModalVisible(true);
       return;
     }
@@ -556,8 +638,12 @@ const NewSessionScreen = ({ navigation }) => {
       const sessionToCreate = {
         user_id: userId,
         title: sessionData.title.trim(),
-        session_type: sessionData.selectedType,
-        client_name: sessionData.clientName.trim(),
+        session_type:
+          sessionData.selectedType === 'Other'
+            ? sessionData.otherFocus.trim()
+            : sessionData.selectedType,
+        session_visibility: sessionData.sessionVisibility,
+        client_emails: sessionData.clientEmails,
         session_link: sessionData.sessionLink.trim(),
         session_datetime: sessionData.date.toISOString(),
         notes: sessionData.notes.trim(),
@@ -628,7 +714,9 @@ const NewSessionScreen = ({ navigation }) => {
   const isButtonDisabled =
     !sessionData.title.trim() ||
     !sessionData.selectedType ||
-    !sessionData.clientName.trim() ||
+    (sessionData.selectedType === 'Other' && !sessionData.otherFocus.trim()) ||
+    (sessionData.sessionVisibility === 'private' &&
+      sessionData.clientEmails.length === 0) ||
     !sessionData.sessionLink.trim() ||
     !sessionData.metaphorTheme.trim() ||
     localLoading ||
@@ -717,32 +805,141 @@ const NewSessionScreen = ({ navigation }) => {
           )}
         </View>
 
-        {/* --- 3. Client Name --- */}
+        {/* Render "Other Focus" input if selected */}
+        {sessionData.selectedType === 'Other' && (
+          <View style={styles.inputContainer}>
+            {renderLabel('Other Focus')}
+            <TextInput
+              style={[styles.textInput, errors.otherFocus && styles.inputError]}
+              placeholder="Please specify the focus"
+              placeholderTextColor={theme.secondary}
+              value={sessionData.otherFocus}
+              onChangeText={text => {
+                setSessionData(prev => ({ ...prev, otherFocus: text }));
+                if (errors.otherFocus)
+                  setErrors(prev => ({ ...prev, otherFocus: '' }));
+              }}
+              maxLength={50}
+            />
+            {errors.otherFocus && (
+              <Text style={styles.errorText}>{errors.otherFocus}</Text>
+            )}
+            <Text style={styles.charCount}>
+              {sessionData.otherFocus.length}/50
+            </Text>
+          </View>
+        )}
+
+        {/* --- Session Visibility --- */}
         <View style={styles.inputContainer}>
-          {renderLabel('Client Name')}
-          <TextInput
-            style={[styles.textInput, errors.clientName && styles.inputError]}
-            placeholder="Enter client name"
-            placeholderTextColor={theme.secondary}
-            value={sessionData.clientName}
-            onChangeText={text => {
-              setSessionData(prev => ({ ...prev, clientName: text }));
-              if (errors.clientName)
-                setErrors(prev => ({ ...prev, clientName: '' }));
-            }}
-            maxLength={50}
-          />
-          {errors.clientName && (
-            <Text style={styles.errorText}>{errors.clientName}</Text>
-          )}
-          <Text style={styles.charCount}>
-            {sessionData.clientName.length}/50
-          </Text>
+          {renderLabel('Session Visibility')}
+          <View style={styles.radioRow}>
+            <TouchableOpacity
+              style={[
+                styles.radioItem,
+                sessionData.sessionVisibility === 'public' &&
+                  styles.radioItemSelected,
+              ]}
+              onPress={() =>
+                setSessionData(prev => ({
+                  ...prev,
+                  sessionVisibility: 'public',
+                }))
+              }
+            >
+              <Text
+                style={[
+                  styles.radioLabel,
+                  {
+                    color:
+                      sessionData.sessionVisibility === 'public'
+                        ? theme.accent
+                        : theme.primary,
+                  },
+                ]}
+              >
+                Public
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.radioItem,
+                sessionData.sessionVisibility === 'private' &&
+                  styles.radioItemSelected,
+              ]}
+              onPress={() =>
+                setSessionData(prev => ({
+                  ...prev,
+                  sessionVisibility: 'private',
+                }))
+              }
+            >
+              <Text
+                style={[
+                  styles.radioLabel,
+                  {
+                    color:
+                      sessionData.sessionVisibility === 'private'
+                        ? theme.accent
+                        : theme.primary,
+                  },
+                ]}
+              >
+                Private
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
+
+        {/* --- Client Emails (if private) --- */}
+        {sessionData.sessionVisibility === 'private' && (
+          <View style={styles.inputContainer}>
+            {renderLabel('Client Emails')}
+            <View style={styles.emailInputContainer}>
+              <TextInput
+                style={[
+                  styles.textInput,
+                  styles.emailInput,
+                  errors.clientEmails && styles.inputError,
+                ]}
+                placeholder="Enter client email"
+                placeholderTextColor={theme.secondary}
+                value={currentEmail}
+                onChangeText={text => {
+                  setCurrentEmail(text);
+                  if (errors.clientEmails)
+                    setErrors(prev => ({ ...prev, clientEmails: '' }));
+                }}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={handleAddEmail}
+              >
+                <Text style={styles.addButtonText}>Add</Text>
+              </TouchableOpacity>
+            </View>
+            {errors.clientEmails && (
+              <Text style={styles.errorText}>{errors.clientEmails}</Text>
+            )}
+
+            <View style={styles.emailList}>
+              {sessionData.clientEmails.map((email, index) => (
+                <View key={index} style={styles.emailTag}>
+                  <Text style={styles.emailTagText}>{email}</Text>
+                  <TouchableOpacity onPress={() => handleRemoveEmail(index)}>
+                    <Text style={styles.removeEmailText}>×</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+          </View>
+        )}
 
         {/* --- 4. Session Link --- */}
         <View style={styles.inputContainer}>
-          {renderLabel('Session Link (Zoom/Meet)')}
+          {renderLabel('Session URL (Zoom/Meet)')}
           <TextInput
             style={[styles.textInput, errors.sessionLink && styles.inputError]}
             placeholder="e.g., https://zoom.us/j/1234567890"
@@ -781,7 +978,7 @@ const NewSessionScreen = ({ navigation }) => {
 
             <TouchableOpacity
               style={[styles.datetimeButton, errors.date && styles.inputError]}
-              onPress={() => setShowDatePicker(true)}
+              onPress={() => setShowTimePicker(true)}
             >
               <ClockIcon size={20} color={theme.accent} />
               <Text style={styles.datetimeText}>
@@ -886,14 +1083,31 @@ const NewSessionScreen = ({ navigation }) => {
 
       {/* --- Modals --- */}
 
-      {/* Date/Time Picker Modal */}
-      <CustomDateTimePicker
-        visible={showDatePicker}
-        date={sessionData.date}
-        onDateChange={onDateChange}
-        onClose={() => setShowDatePicker(false)}
-        theme={theme}
-      />
+      {/* Date Picker Modal */}
+      {showDatePicker && (
+        <CustomDateTimePicker
+          visible={showDatePicker}
+          date={sessionData.date}
+          onChange={onDateChange}
+          onClose={() => setShowDatePicker(false)}
+          theme={theme}
+          mode="date"
+          openstate={'date'}
+        />
+      )}
+
+      {/* Time Picker Modal */}
+      {showTimePicker && (
+        <CustomDateTimePicker
+          visible={showTimePicker}
+          date={sessionData.date}
+          onChange={onTimeChange}
+          onClose={() => setShowTimePicker(false)}
+          theme={theme}
+          mode="time"
+          openstate={'time'}
+        />
+      )}
 
       {/* Confirmation Modal */}
       <ConfirmationModal
